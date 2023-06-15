@@ -1,0 +1,12 @@
+mainnet:
+  networkName: mainnet
+  startBlock: 0
+arbitrum-rinkeby:
+  networkName: arbitrum-rinkeby
+  startBlock: 0
+arbitrum-one:
+  networkName: arbitrum-one
+  startBlock: 0
+localhost:
+  networkName: localhost
+  startBlock: 0

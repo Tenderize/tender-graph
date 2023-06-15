@@ -1,0 +1,64 @@
+type Asset @entity {
+  id: ID! # token address
+
+  tvl: BigDecimal! # total value locked
+  tenderizerCount: Int! # number of tenderizers for this asset
+}
+
+type Tenderizer @entity {
+  id: ID! # Tenderizer address
+
+  # mirrored from the smart contract
+  symbol: String!
+  name: String!
+  validator: String!
+  asset: Asset!
+
+  tvl: BigDecimal! # total value locked
+
+  stakes: [Stake!]! @derivedFrom(field: "tenderizer")
+}
+
+type User @entity {
+  id: ID! # user address
+  stakes: [Stake!] @derivedFrom(field: "user")
+}
+
+type Stake @entity {
+  id: ID! # tenderizer address + user address
+  user: User!
+  asset: Asset!
+  tenderizer: Tenderizer!
+  balance: BigDecimal!
+  shares: BigDecimal!
+}
+
+type Unlock @entity {
+  id: ID! # ID of the unlock
+  user: User!
+  tenderizer: Tenderizer!
+  amount: BigDecimal!
+  maturity: BigInt!
+  redeemed: Boolean!
+}
+
+enum TransactionType {
+    DEPOSIT
+    UNLOCK
+    WITHDRAW
+}
+
+# TODO: Figure out better way ? 
+# Would be for dashboard overview
+type Transaction @entity {
+    id: ID! # transaction hash
+    blockNumber: BigInt!
+    timestamp: BigInt!
+
+    type: TransactionType!
+    amount: BigDecimal!
+    validator: String!
+    unlockID: BigInt!
+
+    user: User!
+}

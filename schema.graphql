@@ -1,8 +1,13 @@
+# Types
+
 type Asset @entity {
   id: ID! # token address
 
   tvl: BigDecimal! # total value locked
   tenderizerCount: Int! # number of tenderizers for this asset
+
+  # time series
+  assetDays: [AssetDay!]! @derivedFrom(field: "asset")
 }
 
 type Tenderizer @entity {
@@ -15,6 +20,7 @@ type Tenderizer @entity {
   asset: Asset!
 
   tvl: BigDecimal! # total value locked
+  shares: BigDecimal! # total shares
 
   stakes: [Stake!]! @derivedFrom(field: "tenderizer")
 }
@@ -29,7 +35,6 @@ type Stake @entity {
   user: User!
   asset: Asset!
   tenderizer: Tenderizer!
-  balance: BigDecimal!
   shares: BigDecimal!
 }
 
@@ -42,23 +47,28 @@ type Unlock @entity {
   redeemed: Boolean!
 }
 
-enum TransactionType {
-    DEPOSIT
-    UNLOCK
-    WITHDRAW
+# Time Series
+
+# Day data uses timestamps at 12:00 UTC for each day
+# This is done by dividing the timestamp by 86400 and flooring it
+
+type AssetDay @entity {
+    id: ID! # asset address + date
+    date: Int!
+
+    asset: Asset!
+
+    tvl: BigDecimal!
+    rewards: BigDecimal!
 }
 
-# TODO: Figure out better way ? 
-# Would be for dashboard overview
-type Transaction @entity {
-    id: ID! # transaction hash
-    blockNumber: BigInt!
-    timestamp: BigInt!
+# type TenderizerDay @entity {
+# id: ID! # tenderizer address + date
+# date: Int!
 
-    type: TransactionType!
-    amount: BigDecimal!
-    validator: String!
-    unlockID: BigInt!
+# tenderizer: Tenderizer!
 
-    user: User!
-}
+# tvl: BigDecimal!
+# rewards: BigDecimal!
+# shares: BigDecimal!
+# }

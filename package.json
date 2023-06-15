@@ -15,8 +15,8 @@
     "auth": "graph auth https://api.thegraph.com/ $GRAPH_ACCESS_TOKEN",
     "build": "graph build",
     "codegen": "graph codegen --output-dir src/types/",
-    "prettier": "npx prettier --check 'src/mappings/*.ts'",
-    "prettier:write": "npx prettier --write 'src/mappings/*.ts'"
+    "prettier:check": "prettier --check \"**/*.{ts,md,yaml}\"",
+    "prettier:write": "prettier --write \"**/*.{ts,md,yaml}\""
   },
   "devDependencies": {
     "@graphprotocol/graph-cli": "^0.51.1",

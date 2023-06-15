@@ -6,7 +6,7 @@ schema:
 dataSources:
   - kind: ethereum/contract
     name: Registry
-    network: {{networkName}}
+    network: { { networkName } }
     source:
       startBlock: 0 # Define start block
       address: '0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f' # Define deterministic Registry address here
@@ -30,7 +30,7 @@ dataSources:
 templates:
   - name: Tenderizer
     kind: ethereum/contract
-    network: {{networkName}}
+    network: { { networkName } }
     source:
       abi: Tenderizer
     mapping:

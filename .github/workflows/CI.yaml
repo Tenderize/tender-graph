@@ -28,7 +28,7 @@ jobs:
       - run: yarn workspace @tender-graph/subgraph install
       - run: yarn workspace @tender-graph/subgraph prettier:check
       - run: yarn workspace @tender-graph/subgraph prepare:localhost
-      - run: NETWORK_NAME=localhost yarn workspace @tender-graph/subgraph codegen
+      - run: yarn workspace @tender-graph/subgraph codegen
       - run: yarn workspace @tender-graph/subgraph build
       - run: yarn workspace @tender-graph/client install
       - run: yarn workspace @tender-graph/client prettier:check

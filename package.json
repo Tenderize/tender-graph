@@ -1,5 +1,5 @@
 {
-  "name": "tender-graph",
+  "name": "@tender-graph/monorepo",
   "packageManager": "yarn@3.6.1",
   "private": true,
   "workspaces": {

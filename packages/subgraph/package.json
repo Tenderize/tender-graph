@@ -1,5 +1,5 @@
 {
-  "name": "subgraph",
+  "name": "@tender-graph/subgraph",
   "version": "1.0.0",
   "description": "Tenderize v2 subgraph",
   "main": "index.js",

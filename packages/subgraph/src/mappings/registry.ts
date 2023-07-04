@@ -19,7 +19,7 @@ export function handleNewTenderizer(event: NewTenderizer): void {
   tenderizer.name = ERC20.bind(event.params.tenderizer).name()
   tenderizer.symbol = ERC20.bind(event.params.tenderizer).symbol()
   tenderizer.validator = event.params.validator.toHex()
-
   tenderizer.tvl = BigDecimal.fromString('0')
+  tenderizer.shares = BigDecimal.fromString('0')
   tenderizer.save()
 }

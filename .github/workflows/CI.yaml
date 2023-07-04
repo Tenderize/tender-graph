@@ -32,4 +32,4 @@ jobs:
       - run: yarn workspace @tender-graph/subgraph build
       - run: yarn workspace @tender-graph/client install
       - run: yarn workspace @tender-graph/client prettier:check
-      - run: yarn workspace @tender-graph/client build
+      - run: yarn workspace @tender-graph/client codegen

@@ -5,6 +5,28 @@
         "type": "constructor"
     },
     {
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "adapter",
+                "type": "address"
+            }
+        ],
+        "name": "InvalidAdapter",
+        "type": "error"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "treasury",
+                "type": "address"
+            }
+        ],
+        "name": "InvalidTreasury",
+        "type": "error"
+    },
+    {
         "anonymous": false,
         "inputs": [
             {

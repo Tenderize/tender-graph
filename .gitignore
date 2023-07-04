@@ -5,3 +5,4 @@ src/types/
 yarn-error.log
 test/.latest.json
 subgraph.yaml
+data

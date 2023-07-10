@@ -1,6 +1,6 @@
 {
   "name": "@tender-graph/subgraph",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "description": "Tenderize v2 subgraph",
   "main": "index.js",
   "author": "Tenderize Labs Ltd",

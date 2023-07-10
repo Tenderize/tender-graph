@@ -1,6 +1,6 @@
 {
     "name": "@tender-graph/client",
-    "version": "v0.0.1-alpha",
+    "version": "0.0.1",
     "description": "Tenderize Subgraph Client",
     "main": ".graphclient/index.ts",
     "author": "Tenderize Labs Ltd",

@@ -1,0 +1,12 @@
+query GetAsset($id: ID!) {
+  asset(id: $id) {
+    id
+    tvl
+    assetDays {
+      id
+      date
+      tvl
+      rewards
+    }
+  }
+}

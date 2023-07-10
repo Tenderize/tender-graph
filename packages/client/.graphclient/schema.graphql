@@ -261,6 +261,24 @@ type Query {
     """Set to `allow` to receive data even if the subgraph has skipped over errors while syncing."""
     subgraphError: _SubgraphErrorPolicy_! = deny
   ): [AssetDay!]!
+  tenderizerDay(
+    id: ID!
+    """The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted."""
+    block: Block_height
+    """Set to `allow` to receive data even if the subgraph has skipped over errors while syncing."""
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): TenderizerDay
+  tenderizerDays(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: TenderizerDay_orderBy
+    orderDirection: OrderDirection
+    where: TenderizerDay_filter
+    """The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted."""
+    block: Block_height
+    """Set to `allow` to receive data even if the subgraph has skipped over errors while syncing."""
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): [TenderizerDay!]!
   """Access to subgraph metadata"""
   _meta(block: Block_height): _Meta_
 }
@@ -474,6 +492,24 @@ type Subscription {
     """Set to `allow` to receive data even if the subgraph has skipped over errors while syncing."""
     subgraphError: _SubgraphErrorPolicy_! = deny
   ): [AssetDay!]!
+  tenderizerDay(
+    id: ID!
+    """The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted."""
+    block: Block_height
+    """Set to `allow` to receive data even if the subgraph has skipped over errors while syncing."""
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): TenderizerDay
+  tenderizerDays(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: TenderizerDay_orderBy
+    orderDirection: OrderDirection
+    where: TenderizerDay_filter
+    """The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted."""
+    block: Block_height
+    """Set to `allow` to receive data even if the subgraph has skipped over errors while syncing."""
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): [TenderizerDay!]!
   """Access to subgraph metadata"""
   _meta(block: Block_height): _Meta_
 }
@@ -487,6 +523,91 @@ type Tenderizer {
   tvl: BigDecimal!
   shares: BigDecimal!
   stakes(skip: Int = 0, first: Int = 100, orderBy: Stake_orderBy, orderDirection: OrderDirection, where: Stake_filter): [Stake!]!
+  tenderizerDays(skip: Int = 0, first: Int = 100, orderBy: TenderizerDay_orderBy, orderDirection: OrderDirection, where: TenderizerDay_filter): [TenderizerDay!]!
+}
+
+type TenderizerDay {
+  id: ID!
+  date: Int!
+  tenderizer: Tenderizer!
+  tvl: BigDecimal!
+  rewards: BigDecimal!
+  shares: BigDecimal!
+}
+
+input TenderizerDay_filter {
+  id: ID
+  id_not: ID
+  id_gt: ID
+  id_lt: ID
+  id_gte: ID
+  id_lte: ID
+  id_in: [ID!]
+  id_not_in: [ID!]
+  date: Int
+  date_not: Int
+  date_gt: Int
+  date_lt: Int
+  date_gte: Int
+  date_lte: Int
+  date_in: [Int!]
+  date_not_in: [Int!]
+  tenderizer: String
+  tenderizer_not: String
+  tenderizer_gt: String
+  tenderizer_lt: String
+  tenderizer_gte: String
+  tenderizer_lte: String
+  tenderizer_in: [String!]
+  tenderizer_not_in: [String!]
+  tenderizer_contains: String
+  tenderizer_contains_nocase: String
+  tenderizer_not_contains: String
+  tenderizer_not_contains_nocase: String
+  tenderizer_starts_with: String
+  tenderizer_starts_with_nocase: String
+  tenderizer_not_starts_with: String
+  tenderizer_not_starts_with_nocase: String
+  tenderizer_ends_with: String
+  tenderizer_ends_with_nocase: String
+  tenderizer_not_ends_with: String
+  tenderizer_not_ends_with_nocase: String
+  tenderizer_: Tenderizer_filter
+  tvl: BigDecimal
+  tvl_not: BigDecimal
+  tvl_gt: BigDecimal
+  tvl_lt: BigDecimal
+  tvl_gte: BigDecimal
+  tvl_lte: BigDecimal
+  tvl_in: [BigDecimal!]
+  tvl_not_in: [BigDecimal!]
+  rewards: BigDecimal
+  rewards_not: BigDecimal
+  rewards_gt: BigDecimal
+  rewards_lt: BigDecimal
+  rewards_gte: BigDecimal
+  rewards_lte: BigDecimal
+  rewards_in: [BigDecimal!]
+  rewards_not_in: [BigDecimal!]
+  shares: BigDecimal
+  shares_not: BigDecimal
+  shares_gt: BigDecimal
+  shares_lt: BigDecimal
+  shares_gte: BigDecimal
+  shares_lte: BigDecimal
+  shares_in: [BigDecimal!]
+  shares_not_in: [BigDecimal!]
+  """Filter for the block changed event."""
+  _change_block: BlockChangedFilter
+}
+
+enum TenderizerDay_orderBy {
+  id
+  date
+  tenderizer
+  tvl
+  rewards
+  shares
 }
 
 input Tenderizer_filter {
@@ -596,6 +717,7 @@ input Tenderizer_filter {
   shares_in: [BigDecimal!]
   shares_not_in: [BigDecimal!]
   stakes_: Stake_filter
+  tenderizerDays_: TenderizerDay_filter
   """Filter for the block changed event."""
   _change_block: BlockChangedFilter
 }
@@ -609,6 +731,7 @@ enum Tenderizer_orderBy {
   tvl
   shares
   stakes
+  tenderizerDays
 }
 
 type Unlock {
@@ -707,6 +830,7 @@ enum Unlock_orderBy {
 type User {
   id: ID!
   stakes(skip: Int = 0, first: Int = 100, orderBy: Stake_orderBy, orderDirection: OrderDirection, where: Stake_filter): [Stake!]
+  unlocks(skip: Int = 0, first: Int = 100, orderBy: Unlock_orderBy, orderDirection: OrderDirection, where: Unlock_filter): [Unlock!]
 }
 
 input User_filter {
@@ -719,6 +843,7 @@ input User_filter {
   id_in: [ID!]
   id_not_in: [ID!]
   stakes_: Stake_filter
+  unlocks_: Unlock_filter
   """Filter for the block changed event."""
   _change_block: BlockChangedFilter
 }
@@ -726,6 +851,7 @@ input User_filter {
 enum User_orderBy {
   id
   stakes
+  unlocks
 }
 
 type _Block_ {

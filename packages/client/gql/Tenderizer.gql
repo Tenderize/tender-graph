@@ -1,0 +1,37 @@
+query GetTenderizers($asset: String, $first: Int = 1000, $skip: Int = 0) {
+  tenderizers(first: $first, skip: $skip, where: { asset: $asset }) {
+    id
+    symbol
+    name
+    validator
+    asset
+    tvl
+    shares
+    tenderizerDays {
+      id
+      date
+      tvl
+      rewards
+      shares
+    }
+  }
+}
+
+query GetTenderizer($id: ID!) {
+  tenderizer(id: $id) {
+    id
+    symbol
+    name
+    validator
+    asset
+    tvl
+    shares
+    tenderizerDays {
+      id
+      date
+      tvl
+      rewards
+      shares
+    }
+  }
+}

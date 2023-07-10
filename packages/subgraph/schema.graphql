@@ -23,11 +23,15 @@ type Tenderizer @entity {
   shares: BigDecimal! # total shares
 
   stakes: [Stake!]! @derivedFrom(field: "tenderizer")
+
+  # time series
+  tenderizerDays: [TenderizerDay!]! @derivedFrom(field: "tenderizer")
 }
 
 type User @entity {
   id: ID! # user address
   stakes: [Stake!] @derivedFrom(field: "user")
+  unlocks: [Unlock!] @derivedFrom(field: "user")
 }
 
 type Stake @entity {
@@ -62,13 +66,13 @@ type AssetDay @entity {
     rewards: BigDecimal!
 }
 
-# type TenderizerDay @entity {
-# id: ID! # tenderizer address + date
-# date: Int!
+type TenderizerDay @entity {
+    id: ID! # tenderizer address + date
+    date: Int!
 
-# tenderizer: Tenderizer!
+    tenderizer: Tenderizer!
 
-# tvl: BigDecimal!
-# rewards: BigDecimal!
-# shares: BigDecimal!
-# }
+    tvl: BigDecimal!
+    rewards: BigDecimal!
+    shares: BigDecimal!
+}

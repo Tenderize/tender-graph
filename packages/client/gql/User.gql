@@ -1,0 +1,24 @@
+query GetUser($id: ID!) {
+  user(id: $id) {
+    id
+    stakes {
+      id
+      asset
+      tenderizer
+      shares
+    }
+    unlocks {
+      id
+      tenderizer {
+        id
+        asset
+        validator
+        symbol
+        name
+      }
+      amount
+      maturity
+      redeemed
+    }
+  }
+}

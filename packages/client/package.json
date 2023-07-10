@@ -1,6 +1,6 @@
 {
     "name": "@tender-graph/client",
-    "version": "1.0.0",
+    "version": "v0.0.1-alpha",
     "description": "Tenderize Subgraph Client",
     "main": "index.ts",
     "author": "Tenderize Labs Ltd",
@@ -21,7 +21,7 @@
     "scripts": {
         "codegen": "graphclient build",
         "dev": "graphclient serve-dev",
-        "prettier:check": "prettier --check \"**/*.{ts,md,yaml}\"",
-        "prettier:write": "prettier --write \"**/*.{ts,md,yaml}\""
+        "prettier:check": "prettier --check \"**/*.{ts,md,yaml,gql}\"",
+        "prettier:write": "prettier --write \"**/*.{ts,md,yaml,gql}\""
     }
 }

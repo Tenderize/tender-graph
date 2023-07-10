@@ -181,6 +181,8 @@ export type Query = {
   unlocks: Array<Unlock>;
   assetDay?: Maybe<AssetDay>;
   assetDays: Array<AssetDay>;
+  tenderizerDay?: Maybe<TenderizerDay>;
+  tenderizerDays: Array<TenderizerDay>;
   /** Access to subgraph metadata */
   _meta?: Maybe<_Meta_>;
 };
@@ -289,6 +291,24 @@ export type QueryassetDaysArgs = {
   orderBy?: InputMaybe<AssetDay_orderBy>;
   orderDirection?: InputMaybe<OrderDirection>;
   where?: InputMaybe<AssetDay_filter>;
+  block?: InputMaybe<Block_height>;
+  subgraphError?: _SubgraphErrorPolicy_;
+};
+
+
+export type QuerytenderizerDayArgs = {
+  id: Scalars['ID'];
+  block?: InputMaybe<Block_height>;
+  subgraphError?: _SubgraphErrorPolicy_;
+};
+
+
+export type QuerytenderizerDaysArgs = {
+  skip?: InputMaybe<Scalars['Int']>;
+  first?: InputMaybe<Scalars['Int']>;
+  orderBy?: InputMaybe<TenderizerDay_orderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  where?: InputMaybe<TenderizerDay_filter>;
   block?: InputMaybe<Block_height>;
   subgraphError?: _SubgraphErrorPolicy_;
 };
@@ -410,6 +430,8 @@ export type Subscription = {
   unlocks: Array<Unlock>;
   assetDay?: Maybe<AssetDay>;
   assetDays: Array<AssetDay>;
+  tenderizerDay?: Maybe<TenderizerDay>;
+  tenderizerDays: Array<TenderizerDay>;
   /** Access to subgraph metadata */
   _meta?: Maybe<_Meta_>;
 };
@@ -523,6 +545,24 @@ export type SubscriptionassetDaysArgs = {
 };
 
 
+export type SubscriptiontenderizerDayArgs = {
+  id: Scalars['ID'];
+  block?: InputMaybe<Block_height>;
+  subgraphError?: _SubgraphErrorPolicy_;
+};
+
+
+export type SubscriptiontenderizerDaysArgs = {
+  skip?: InputMaybe<Scalars['Int']>;
+  first?: InputMaybe<Scalars['Int']>;
+  orderBy?: InputMaybe<TenderizerDay_orderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  where?: InputMaybe<TenderizerDay_filter>;
+  block?: InputMaybe<Block_height>;
+  subgraphError?: _SubgraphErrorPolicy_;
+};
+
+
 export type Subscription_metaArgs = {
   block?: InputMaybe<Block_height>;
 };
@@ -536,6 +576,7 @@ export type Tenderizer = {
   tvl: Scalars['BigDecimal'];
   shares: Scalars['BigDecimal'];
   stakes: Array<Stake>;
+  tenderizerDays: Array<TenderizerDay>;
 };
 
 
@@ -546,6 +587,98 @@ export type TenderizerstakesArgs = {
   orderDirection?: InputMaybe<OrderDirection>;
   where?: InputMaybe<Stake_filter>;
 };
+
+
+export type TenderizertenderizerDaysArgs = {
+  skip?: InputMaybe<Scalars['Int']>;
+  first?: InputMaybe<Scalars['Int']>;
+  orderBy?: InputMaybe<TenderizerDay_orderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  where?: InputMaybe<TenderizerDay_filter>;
+};
+
+export type TenderizerDay = {
+  id: Scalars['ID'];
+  date: Scalars['Int'];
+  tenderizer: Tenderizer;
+  tvl: Scalars['BigDecimal'];
+  rewards: Scalars['BigDecimal'];
+  shares: Scalars['BigDecimal'];
+};
+
+export type TenderizerDay_filter = {
+  id?: InputMaybe<Scalars['ID']>;
+  id_not?: InputMaybe<Scalars['ID']>;
+  id_gt?: InputMaybe<Scalars['ID']>;
+  id_lt?: InputMaybe<Scalars['ID']>;
+  id_gte?: InputMaybe<Scalars['ID']>;
+  id_lte?: InputMaybe<Scalars['ID']>;
+  id_in?: InputMaybe<Array<Scalars['ID']>>;
+  id_not_in?: InputMaybe<Array<Scalars['ID']>>;
+  date?: InputMaybe<Scalars['Int']>;
+  date_not?: InputMaybe<Scalars['Int']>;
+  date_gt?: InputMaybe<Scalars['Int']>;
+  date_lt?: InputMaybe<Scalars['Int']>;
+  date_gte?: InputMaybe<Scalars['Int']>;
+  date_lte?: InputMaybe<Scalars['Int']>;
+  date_in?: InputMaybe<Array<Scalars['Int']>>;
+  date_not_in?: InputMaybe<Array<Scalars['Int']>>;
+  tenderizer?: InputMaybe<Scalars['String']>;
+  tenderizer_not?: InputMaybe<Scalars['String']>;
+  tenderizer_gt?: InputMaybe<Scalars['String']>;
+  tenderizer_lt?: InputMaybe<Scalars['String']>;
+  tenderizer_gte?: InputMaybe<Scalars['String']>;
+  tenderizer_lte?: InputMaybe<Scalars['String']>;
+  tenderizer_in?: InputMaybe<Array<Scalars['String']>>;
+  tenderizer_not_in?: InputMaybe<Array<Scalars['String']>>;
+  tenderizer_contains?: InputMaybe<Scalars['String']>;
+  tenderizer_contains_nocase?: InputMaybe<Scalars['String']>;
+  tenderizer_not_contains?: InputMaybe<Scalars['String']>;
+  tenderizer_not_contains_nocase?: InputMaybe<Scalars['String']>;
+  tenderizer_starts_with?: InputMaybe<Scalars['String']>;
+  tenderizer_starts_with_nocase?: InputMaybe<Scalars['String']>;
+  tenderizer_not_starts_with?: InputMaybe<Scalars['String']>;
+  tenderizer_not_starts_with_nocase?: InputMaybe<Scalars['String']>;
+  tenderizer_ends_with?: InputMaybe<Scalars['String']>;
+  tenderizer_ends_with_nocase?: InputMaybe<Scalars['String']>;
+  tenderizer_not_ends_with?: InputMaybe<Scalars['String']>;
+  tenderizer_not_ends_with_nocase?: InputMaybe<Scalars['String']>;
+  tenderizer_?: InputMaybe<Tenderizer_filter>;
+  tvl?: InputMaybe<Scalars['BigDecimal']>;
+  tvl_not?: InputMaybe<Scalars['BigDecimal']>;
+  tvl_gt?: InputMaybe<Scalars['BigDecimal']>;
+  tvl_lt?: InputMaybe<Scalars['BigDecimal']>;
+  tvl_gte?: InputMaybe<Scalars['BigDecimal']>;
+  tvl_lte?: InputMaybe<Scalars['BigDecimal']>;
+  tvl_in?: InputMaybe<Array<Scalars['BigDecimal']>>;
+  tvl_not_in?: InputMaybe<Array<Scalars['BigDecimal']>>;
+  rewards?: InputMaybe<Scalars['BigDecimal']>;
+  rewards_not?: InputMaybe<Scalars['BigDecimal']>;
+  rewards_gt?: InputMaybe<Scalars['BigDecimal']>;
+  rewards_lt?: InputMaybe<Scalars['BigDecimal']>;
+  rewards_gte?: InputMaybe<Scalars['BigDecimal']>;
+  rewards_lte?: InputMaybe<Scalars['BigDecimal']>;
+  rewards_in?: InputMaybe<Array<Scalars['BigDecimal']>>;
+  rewards_not_in?: InputMaybe<Array<Scalars['BigDecimal']>>;
+  shares?: InputMaybe<Scalars['BigDecimal']>;
+  shares_not?: InputMaybe<Scalars['BigDecimal']>;
+  shares_gt?: InputMaybe<Scalars['BigDecimal']>;
+  shares_lt?: InputMaybe<Scalars['BigDecimal']>;
+  shares_gte?: InputMaybe<Scalars['BigDecimal']>;
+  shares_lte?: InputMaybe<Scalars['BigDecimal']>;
+  shares_in?: InputMaybe<Array<Scalars['BigDecimal']>>;
+  shares_not_in?: InputMaybe<Array<Scalars['BigDecimal']>>;
+  /** Filter for the block changed event. */
+  _change_block?: InputMaybe<BlockChangedFilter>;
+};
+
+export type TenderizerDay_orderBy =
+  | 'id'
+  | 'date'
+  | 'tenderizer'
+  | 'tvl'
+  | 'rewards'
+  | 'shares';
 
 export type Tenderizer_filter = {
   id?: InputMaybe<Scalars['ID']>;
@@ -654,6 +787,7 @@ export type Tenderizer_filter = {
   shares_in?: InputMaybe<Array<Scalars['BigDecimal']>>;
   shares_not_in?: InputMaybe<Array<Scalars['BigDecimal']>>;
   stakes_?: InputMaybe<Stake_filter>;
+  tenderizerDays_?: InputMaybe<TenderizerDay_filter>;
   /** Filter for the block changed event. */
   _change_block?: InputMaybe<BlockChangedFilter>;
 };
@@ -666,7 +800,8 @@ export type Tenderizer_orderBy =
   | 'asset'
   | 'tvl'
   | 'shares'
-  | 'stakes';
+  | 'stakes'
+  | 'tenderizerDays';
 
 export type Unlock = {
   id: Scalars['ID'];
@@ -763,6 +898,7 @@ export type Unlock_orderBy =
 export type User = {
   id: Scalars['ID'];
   stakes?: Maybe<Array<Stake>>;
+  unlocks?: Maybe<Array<Unlock>>;
 };
 
 
@@ -772,6 +908,15 @@ export type UserstakesArgs = {
   orderBy?: InputMaybe<Stake_orderBy>;
   orderDirection?: InputMaybe<OrderDirection>;
   where?: InputMaybe<Stake_filter>;
+};
+
+
+export type UserunlocksArgs = {
+  skip?: InputMaybe<Scalars['Int']>;
+  first?: InputMaybe<Scalars['Int']>;
+  orderBy?: InputMaybe<Unlock_orderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  where?: InputMaybe<Unlock_filter>;
 };
 
 export type User_filter = {
@@ -784,13 +929,15 @@ export type User_filter = {
   id_in?: InputMaybe<Array<Scalars['ID']>>;
   id_not_in?: InputMaybe<Array<Scalars['ID']>>;
   stakes_?: InputMaybe<Stake_filter>;
+  unlocks_?: InputMaybe<Unlock_filter>;
   /** Filter for the block changed event. */
   _change_block?: InputMaybe<BlockChangedFilter>;
 };
 
 export type User_orderBy =
   | 'id'
-  | 'stakes';
+  | 'stakes'
+  | 'unlocks';
 
 export type _Block_ = {
   /** The hash of the block */
@@ -932,6 +1079,9 @@ export type ResolversTypes = ResolversObject<{
   String: ResolverTypeWrapper<Scalars['String']>;
   Subscription: ResolverTypeWrapper<{}>;
   Tenderizer: ResolverTypeWrapper<Tenderizer>;
+  TenderizerDay: ResolverTypeWrapper<TenderizerDay>;
+  TenderizerDay_filter: TenderizerDay_filter;
+  TenderizerDay_orderBy: TenderizerDay_orderBy;
   Tenderizer_filter: Tenderizer_filter;
   Tenderizer_orderBy: Tenderizer_orderBy;
   Unlock: ResolverTypeWrapper<Unlock>;
@@ -966,6 +1116,8 @@ export type ResolversParentTypes = ResolversObject<{
   String: Scalars['String'];
   Subscription: {};
   Tenderizer: Tenderizer;
+  TenderizerDay: TenderizerDay;
+  TenderizerDay_filter: TenderizerDay_filter;
   Tenderizer_filter: Tenderizer_filter;
   Unlock: Unlock;
   Unlock_filter: Unlock_filter;
@@ -1033,6 +1185,8 @@ export type QueryResolvers<ContextType = MeshContext, ParentType extends Resolve
   unlocks?: Resolver<Array<ResolversTypes['Unlock']>, ParentType, ContextType, RequireFields<QueryunlocksArgs, 'skip' | 'first' | 'subgraphError'>>;
   assetDay?: Resolver<Maybe<ResolversTypes['AssetDay']>, ParentType, ContextType, RequireFields<QueryassetDayArgs, 'id' | 'subgraphError'>>;
   assetDays?: Resolver<Array<ResolversTypes['AssetDay']>, ParentType, ContextType, RequireFields<QueryassetDaysArgs, 'skip' | 'first' | 'subgraphError'>>;
+  tenderizerDay?: Resolver<Maybe<ResolversTypes['TenderizerDay']>, ParentType, ContextType, RequireFields<QuerytenderizerDayArgs, 'id' | 'subgraphError'>>;
+  tenderizerDays?: Resolver<Array<ResolversTypes['TenderizerDay']>, ParentType, ContextType, RequireFields<QuerytenderizerDaysArgs, 'skip' | 'first' | 'subgraphError'>>;
   _meta?: Resolver<Maybe<ResolversTypes['_Meta_']>, ParentType, ContextType, Partial<Query_metaArgs>>;
 }>;
 
@@ -1058,6 +1212,8 @@ export type SubscriptionResolvers<ContextType = MeshContext, ParentType extends 
   unlocks?: SubscriptionResolver<Array<ResolversTypes['Unlock']>, "unlocks", ParentType, ContextType, RequireFields<SubscriptionunlocksArgs, 'skip' | 'first' | 'subgraphError'>>;
   assetDay?: SubscriptionResolver<Maybe<ResolversTypes['AssetDay']>, "assetDay", ParentType, ContextType, RequireFields<SubscriptionassetDayArgs, 'id' | 'subgraphError'>>;
   assetDays?: SubscriptionResolver<Array<ResolversTypes['AssetDay']>, "assetDays", ParentType, ContextType, RequireFields<SubscriptionassetDaysArgs, 'skip' | 'first' | 'subgraphError'>>;
+  tenderizerDay?: SubscriptionResolver<Maybe<ResolversTypes['TenderizerDay']>, "tenderizerDay", ParentType, ContextType, RequireFields<SubscriptiontenderizerDayArgs, 'id' | 'subgraphError'>>;
+  tenderizerDays?: SubscriptionResolver<Array<ResolversTypes['TenderizerDay']>, "tenderizerDays", ParentType, ContextType, RequireFields<SubscriptiontenderizerDaysArgs, 'skip' | 'first' | 'subgraphError'>>;
   _meta?: SubscriptionResolver<Maybe<ResolversTypes['_Meta_']>, "_meta", ParentType, ContextType, Partial<Subscription_metaArgs>>;
 }>;
 
@@ -1070,6 +1226,17 @@ export type TenderizerResolvers<ContextType = MeshContext, ParentType extends Re
   tvl?: Resolver<ResolversTypes['BigDecimal'], ParentType, ContextType>;
   shares?: Resolver<ResolversTypes['BigDecimal'], ParentType, ContextType>;
   stakes?: Resolver<Array<ResolversTypes['Stake']>, ParentType, ContextType, RequireFields<TenderizerstakesArgs, 'skip' | 'first'>>;
+  tenderizerDays?: Resolver<Array<ResolversTypes['TenderizerDay']>, ParentType, ContextType, RequireFields<TenderizertenderizerDaysArgs, 'skip' | 'first'>>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type TenderizerDayResolvers<ContextType = MeshContext, ParentType extends ResolversParentTypes['TenderizerDay'] = ResolversParentTypes['TenderizerDay']> = ResolversObject<{
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  date?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  tenderizer?: Resolver<ResolversTypes['Tenderizer'], ParentType, ContextType>;
+  tvl?: Resolver<ResolversTypes['BigDecimal'], ParentType, ContextType>;
+  rewards?: Resolver<ResolversTypes['BigDecimal'], ParentType, ContextType>;
+  shares?: Resolver<ResolversTypes['BigDecimal'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -1086,6 +1253,7 @@ export type UnlockResolvers<ContextType = MeshContext, ParentType extends Resolv
 export type UserResolvers<ContextType = MeshContext, ParentType extends ResolversParentTypes['User'] = ResolversParentTypes['User']> = ResolversObject<{
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   stakes?: Resolver<Maybe<Array<ResolversTypes['Stake']>>, ParentType, ContextType, RequireFields<UserstakesArgs, 'skip' | 'first'>>;
+  unlocks?: Resolver<Maybe<Array<ResolversTypes['Unlock']>>, ParentType, ContextType, RequireFields<UserunlocksArgs, 'skip' | 'first'>>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -1113,6 +1281,7 @@ export type Resolvers<ContextType = MeshContext> = ResolversObject<{
   Stake?: StakeResolvers<ContextType>;
   Subscription?: SubscriptionResolvers<ContextType>;
   Tenderizer?: TenderizerResolvers<ContextType>;
+  TenderizerDay?: TenderizerDayResolvers<ContextType>;
   Unlock?: UnlockResolvers<ContextType>;
   User?: UserResolvers<ContextType>;
   _Block_?: _Block_Resolvers<ContextType>;

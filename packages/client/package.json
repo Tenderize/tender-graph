@@ -2,7 +2,7 @@
     "name": "@tender-graph/client",
     "version": "v0.0.1-alpha",
     "description": "Tenderize Subgraph Client",
-    "main": "index.ts",
+    "main": ".graphclient/index.ts",
     "author": "Tenderize Labs Ltd",
     "license": "MIT",
     "dependencies": {

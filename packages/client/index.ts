@@ -1,3 +1,5 @@
 import { getBuiltGraphClient } from "./.graphclient";
 
-export const TenderGraph = getBuiltGraphClient();
+const TenderGraph = getBuiltGraphClient();
+
+export default TenderGraph

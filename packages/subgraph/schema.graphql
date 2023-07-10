@@ -2,17 +2,14 @@
 
 type Asset @entity {
   id: ID! # token address
-
   tvl: BigDecimal! # total value locked
   tenderizerCount: Int! # number of tenderizers for this asset
-
   # time series
   assetDays: [AssetDay!]! @derivedFrom(field: "asset")
 }
 
 type Tenderizer @entity {
   id: ID! # Tenderizer address
-
   # mirrored from the smart contract
   symbol: String!
   name: String!
@@ -21,7 +18,6 @@ type Tenderizer @entity {
 
   tvl: BigDecimal! # total value locked
   shares: BigDecimal! # total shares
-
   stakes: [Stake!]! @derivedFrom(field: "tenderizer")
 
   # time series
@@ -57,22 +53,22 @@ type Unlock @entity {
 # This is done by dividing the timestamp by 86400 and flooring it
 
 type AssetDay @entity {
-    id: ID! # asset address + date
-    date: Int!
+  id: ID! # asset address + date
+  date: Int!
 
-    asset: Asset!
+  asset: Asset!
 
-    tvl: BigDecimal!
-    rewards: BigDecimal!
+  tvl: BigDecimal!
+  rewards: BigDecimal!
 }
 
 type TenderizerDay @entity {
-    id: ID! # tenderizer address + date
-    date: Int!
+  id: ID! # tenderizer address + date
+  date: Int!
 
-    tenderizer: Tenderizer!
+  tenderizer: Tenderizer!
 
-    tvl: BigDecimal!
-    rewards: BigDecimal!
-    shares: BigDecimal!
+  tvl: BigDecimal!
+  rewards: BigDecimal!
+  shares: BigDecimal!
 }

@@ -1,5 +1,7 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 // @ts-nocheck
-import { buildASTSchema } from 'graphql';
+var graphql_1 = require("graphql");
 var schemaAST = {
     "kind": "Document",
     "definitions": [
@@ -12193,7 +12195,7 @@ var schemaAST = {
         }
     ]
 };
-export default buildASTSchema(schemaAST, {
+exports.default = (0, graphql_1.buildASTSchema)(schemaAST, {
     assumeValid: true,
     assumeValidSDL: true
 });

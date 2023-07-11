@@ -2,12 +2,23 @@
     "name": "@tender-graph/client",
     "version": "0.0.1",
     "description": "Tenderize Subgraph Client",
-    "main": "index.ts",
     "author": "Tenderize Labs Ltd",
     "license": "MIT",
     "dependencies": {
         "ts-node": "^10.9.1"
     },
+    "exports": {
+        ".": {
+            "types": "./.graphclient/index.d.ts",
+            "default": "./.graphclient/index.ts"
+        },
+        "./package.json": "./package.json"
+    },
+    "main": ".graphclient/index.ts",
+    "types": ".graphclient/index.d.ts",
+    "files": [
+        ".graphclient"
+    ],
     "devDependencies": {
         "@graphprotocol/client-cli": "^3.0.0",
         "@types/node": "^20.3.3",
@@ -19,6 +30,7 @@
         "prettier": "^2.8.8"
     },
     "scripts": {
+        "build": "graphclient build --fileType ts --throwOnInvalidConfig && rm -f .graphclient/package.json && tsc",
         "codegen": "graphclient build",
         "dev": "graphclient serve-dev",
         "prettier:check": "prettier --check \"**/*.{ts,md,yaml,gql}\"",

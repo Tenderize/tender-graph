@@ -1,4 +1,4 @@
-import { getBuiltGraphSDK } from './.graphclient'
+import { getBuiltGraphSDK } from './.graphclient/'
 
 const TenderGraph = getBuiltGraphSDK()
 

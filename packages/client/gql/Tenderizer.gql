@@ -4,7 +4,9 @@ query GetTenderizers($asset: String, $first: Int = 1000, $skip: Int = 0) {
     symbol
     name
     validator
-    asset
+    asset {
+      id
+    }
     tvl
     shares
     tenderizerDays {
@@ -23,7 +25,9 @@ query GetTenderizer($id: ID!) {
     symbol
     name
     validator
-    asset
+    asset {
+      id
+    }
     tvl
     shares
     tenderizerDays {

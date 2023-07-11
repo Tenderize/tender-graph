@@ -3,15 +3,24 @@ query GetUser($id: ID!) {
     id
     stakes {
       id
-      asset
-      tenderizer
+      tenderizer {
+        id
+        asset {
+          id
+        }
+        validator
+        symbol
+        name
+      }
       shares
     }
     unlocks {
       id
       tenderizer {
         id
-        asset
+        asset {
+          id
+        }
         validator
         symbol
         name

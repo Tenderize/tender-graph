@@ -1,1 +1,1 @@
-export default "./.graphclient"
+export default "./.graphclient";

@@ -1,12 +1,27 @@
 // @ts-nocheck
 import { GraphQLResolveInfo, SelectionSetNode, FieldNode, GraphQLScalarType, GraphQLScalarTypeConfig } from 'graphql';
-import { findAndParseConfig } from '@graphql-mesh/cli';
+import { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/core';
+import { gql } from '@graphql-mesh/utils';
+
+import type { GetMeshOptions } from '@graphql-mesh/runtime';
+import type { YamlConfig } from '@graphql-mesh/types';
+import { PubSub } from '@graphql-mesh/utils';
+import { DefaultLogger } from '@graphql-mesh/utils';
+import MeshCache from "@graphql-mesh/cache-localforage";
+import { fetch as fetchFn } from '@whatwg-node/fetch';
+
+import { MeshResolvedSource } from '@graphql-mesh/runtime';
+import { MeshTransform, MeshPlugin } from '@graphql-mesh/types';
+import GraphqlHandler from "@graphql-mesh/graphql"
+import BareMerger from "@graphql-mesh/merger-bare";
+import { printWithCache } from '@graphql-mesh/utils';
 import { createMeshHTTPHandler, MeshHTTPHandler } from '@graphql-mesh/http';
 import { getMesh, ExecuteMeshFn, SubscribeMeshFn, MeshContext as BaseMeshContext, MeshInstance } from '@graphql-mesh/runtime';
 import { MeshStore, FsStoreStorageAdapter } from '@graphql-mesh/store';
 import { path as pathModule } from '@graphql-mesh/cross-helpers';
 import { ImportFn } from '@graphql-mesh/types';
 import type { TenderizeTenderizeLocalhostTypes } from './sources/tenderize/tenderize-localhost/types';
+import * as importedModule$0 from "./sources/tenderize/tenderize-localhost/introspectionSchema";
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
@@ -1302,6 +1317,9 @@ const baseDir = pathModule.join(typeof __dirname === 'string' ? __dirname : '/',
 const importFn: ImportFn = <T>(moduleId: string) => {
   const relativeModuleId = (pathModule.isAbsolute(moduleId) ? pathModule.relative(baseDir, moduleId) : moduleId).split('\\').join('/').replace(baseDir + '/', '');
   switch(relativeModuleId) {
+    case ".graphclient/sources/tenderize/tenderize-localhost/introspectionSchema":
+      return Promise.resolve(importedModule$0) as T;
+    
     default:
       return Promise.reject(new Error(`Cannot find module '${relativeModuleId}'.`));
   }
@@ -1316,15 +1334,88 @@ const rootStore = new MeshStore('.graphclient', new FsStoreStorageAdapter({
   validate: false
 });
 
-export function getMeshOptions() {
-  console.warn('WARNING: These artifacts are built for development mode. Please run "graphclient build" to build production artifacts');
-  return findAndParseConfig({
-    dir: baseDir,
-    artifactsDir: ".graphclient",
-    configName: "graphclient",
-    additionalPackagePrefixes: ["@graphprotocol/client-"],
-    initialLoggerPrefix: "GraphClient",
-  });
+export const rawServeConfig: YamlConfig.Config['serve'] = undefined as any
+export async function getMeshOptions(): Promise<GetMeshOptions> {
+const pubsub = new PubSub();
+const sourcesStore = rootStore.child('sources');
+const logger = new DefaultLogger("GraphClient");
+const cache = new (MeshCache as any)({
+      ...({} as any),
+      importFn,
+      store: rootStore.child('cache'),
+      pubsub,
+      logger,
+    } as any)
+
+const sources: MeshResolvedSource[] = [];
+const transforms: MeshTransform[] = [];
+const additionalEnvelopPlugins: MeshPlugin<any>[] = [];
+const tenderizeTenderizeLocalhostTransforms = [];
+const additionalTypeDefs = [] as any[];
+const tenderizeTenderizeLocalhostHandler = new GraphqlHandler({
+              name: "tenderize/tenderize-localhost",
+              config: {"endpoint":"http://127.0.0.1:8000/subgraphs/name/tenderize/tenderize-localhost"},
+              baseDir,
+              cache,
+              pubsub,
+              store: sourcesStore.child("tenderize/tenderize-localhost"),
+              logger: logger.child("tenderize/tenderize-localhost"),
+              importFn,
+            });
+sources[0] = {
+          name: 'tenderize/tenderize-localhost',
+          handler: tenderizeTenderizeLocalhostHandler,
+          transforms: tenderizeTenderizeLocalhostTransforms
+        }
+const additionalResolvers = [] as any[]
+const merger = new(BareMerger as any)({
+        cache,
+        pubsub,
+        logger: logger.child('bareMerger'),
+        store: rootStore.child('bareMerger')
+      })
+
+  return {
+    sources,
+    transforms,
+    additionalTypeDefs,
+    additionalResolvers,
+    cache,
+    pubsub,
+    merger,
+    logger,
+    additionalEnvelopPlugins,
+    get documents() {
+      return [
+      {
+        document: GetAssetDocument,
+        get rawSDL() {
+          return printWithCache(GetAssetDocument);
+        },
+        location: 'GetAssetDocument.graphql'
+      },{
+        document: GetTenderizersDocument,
+        get rawSDL() {
+          return printWithCache(GetTenderizersDocument);
+        },
+        location: 'GetTenderizersDocument.graphql'
+      },{
+        document: GetTenderizerDocument,
+        get rawSDL() {
+          return printWithCache(GetTenderizerDocument);
+        },
+        location: 'GetTenderizerDocument.graphql'
+      },{
+        document: GetUserDocument,
+        get rawSDL() {
+          return printWithCache(GetUserDocument);
+        },
+        location: 'GetUserDocument.graphql'
+      }
+    ];
+    },
+    fetchFn,
+  };
 }
 
 export function createBuiltMeshHTTPHandler<TServerContext = {}>(): MeshHTTPHandler<TServerContext> {
@@ -1334,6 +1425,7 @@ export function createBuiltMeshHTTPHandler<TServerContext = {}>(): MeshHTTPHandl
     rawServeConfig: undefined,
   })
 }
+
 
 let meshInstance$: Promise<MeshInstance> | undefined;
 
@@ -1353,3 +1445,178 @@ export function getBuiltGraphClient(): Promise<MeshInstance> {
 export const execute: ExecuteMeshFn = (...args) => getBuiltGraphClient().then(({ execute }) => execute(...args));
 
 export const subscribe: SubscribeMeshFn = (...args) => getBuiltGraphClient().then(({ subscribe }) => subscribe(...args));
+export function getBuiltGraphSDK<TGlobalContext = any, TOperationContext = any>(globalContext?: TGlobalContext) {
+  const sdkRequester$ = getBuiltGraphClient().then(({ sdkRequesterFactory }) => sdkRequesterFactory(globalContext));
+  return getSdk<TOperationContext, TGlobalContext>((...args) => sdkRequester$.then(sdkRequester => sdkRequester(...args)));
+}
+export type GetAssetQueryVariables = Exact<{
+  id: Scalars['ID'];
+}>;
+
+
+export type GetAssetQuery = { asset?: Maybe<(
+    Pick<Asset, 'id' | 'tvl'>
+    & { assetDays: Array<Pick<AssetDay, 'id' | 'date' | 'tvl' | 'rewards'>> }
+  )> };
+
+export type GetTenderizersQueryVariables = Exact<{
+  asset?: InputMaybe<Scalars['String']>;
+  first?: InputMaybe<Scalars['Int']>;
+  skip?: InputMaybe<Scalars['Int']>;
+}>;
+
+
+export type GetTenderizersQuery = { tenderizers: Array<(
+    Pick<Tenderizer, 'id' | 'symbol' | 'name' | 'validator' | 'tvl' | 'shares'>
+    & { asset: Pick<Asset, 'id'>, tenderizerDays: Array<Pick<TenderizerDay, 'id' | 'date' | 'tvl' | 'rewards' | 'shares'>> }
+  )> };
+
+export type GetTenderizerQueryVariables = Exact<{
+  id: Scalars['ID'];
+}>;
+
+
+export type GetTenderizerQuery = { tenderizer?: Maybe<(
+    Pick<Tenderizer, 'id' | 'symbol' | 'name' | 'validator' | 'tvl' | 'shares'>
+    & { asset: Pick<Asset, 'id'>, tenderizerDays: Array<Pick<TenderizerDay, 'id' | 'date' | 'tvl' | 'rewards' | 'shares'>> }
+  )> };
+
+export type GetUserQueryVariables = Exact<{
+  id: Scalars['ID'];
+}>;
+
+
+export type GetUserQuery = { user?: Maybe<(
+    Pick<User, 'id'>
+    & { stakes?: Maybe<Array<(
+      Pick<Stake, 'id' | 'shares'>
+      & { tenderizer: (
+        Pick<Tenderizer, 'id' | 'validator' | 'symbol' | 'name'>
+        & { asset: Pick<Asset, 'id'> }
+      ) }
+    )>>, unlocks?: Maybe<Array<(
+      Pick<Unlock, 'id' | 'amount' | 'maturity' | 'redeemed'>
+      & { tenderizer: (
+        Pick<Tenderizer, 'id' | 'validator' | 'symbol' | 'name'>
+        & { asset: Pick<Asset, 'id'> }
+      ) }
+    )>> }
+  )> };
+
+
+export const GetAssetDocument = gql`
+    query GetAsset($id: ID!) {
+  asset(id: $id) {
+    id
+    tvl
+    assetDays {
+      id
+      date
+      tvl
+      rewards
+    }
+  }
+}
+    ` as unknown as DocumentNode<GetAssetQuery, GetAssetQueryVariables>;
+export const GetTenderizersDocument = gql`
+    query GetTenderizers($asset: String, $first: Int = 1000, $skip: Int = 0) {
+  tenderizers(first: $first, skip: $skip, where: {asset: $asset}) {
+    id
+    symbol
+    name
+    validator
+    asset {
+      id
+    }
+    tvl
+    shares
+    tenderizerDays {
+      id
+      date
+      tvl
+      rewards
+      shares
+    }
+  }
+}
+    ` as unknown as DocumentNode<GetTenderizersQuery, GetTenderizersQueryVariables>;
+export const GetTenderizerDocument = gql`
+    query GetTenderizer($id: ID!) {
+  tenderizer(id: $id) {
+    id
+    symbol
+    name
+    validator
+    asset {
+      id
+    }
+    tvl
+    shares
+    tenderizerDays {
+      id
+      date
+      tvl
+      rewards
+      shares
+    }
+  }
+}
+    ` as unknown as DocumentNode<GetTenderizerQuery, GetTenderizerQueryVariables>;
+export const GetUserDocument = gql`
+    query GetUser($id: ID!) {
+  user(id: $id) {
+    id
+    stakes {
+      id
+      tenderizer {
+        id
+        asset {
+          id
+        }
+        validator
+        symbol
+        name
+      }
+      shares
+    }
+    unlocks {
+      id
+      tenderizer {
+        id
+        asset {
+          id
+        }
+        validator
+        symbol
+        name
+      }
+      amount
+      maturity
+      redeemed
+    }
+  }
+}
+    ` as unknown as DocumentNode<GetUserQuery, GetUserQueryVariables>;
+
+
+
+
+
+export type Requester<C = {}, E = unknown> = <R, V>(doc: DocumentNode, vars?: V, options?: C) => Promise<R> | AsyncIterable<R>
+export function getSdk<C, E>(requester: Requester<C, E>) {
+  return {
+    GetAsset(variables: GetAssetQueryVariables, options?: C): Promise<GetAssetQuery> {
+      return requester<GetAssetQuery, GetAssetQueryVariables>(GetAssetDocument, variables, options) as Promise<GetAssetQuery>;
+    },
+    GetTenderizers(variables?: GetTenderizersQueryVariables, options?: C): Promise<GetTenderizersQuery> {
+      return requester<GetTenderizersQuery, GetTenderizersQueryVariables>(GetTenderizersDocument, variables, options) as Promise<GetTenderizersQuery>;
+    },
+    GetTenderizer(variables: GetTenderizerQueryVariables, options?: C): Promise<GetTenderizerQuery> {
+      return requester<GetTenderizerQuery, GetTenderizerQueryVariables>(GetTenderizerDocument, variables, options) as Promise<GetTenderizerQuery>;
+    },
+    GetUser(variables: GetUserQueryVariables, options?: C): Promise<GetUserQuery> {
+      return requester<GetUserQuery, GetUserQueryVariables>(GetUserDocument, variables, options) as Promise<GetUserQuery>;
+    }
+  };
+}
+export type Sdk = ReturnType<typeof getSdk>;

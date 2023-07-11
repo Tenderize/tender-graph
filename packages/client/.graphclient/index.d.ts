@@ -1178,4 +1178,3 @@ export declare function getSdk<C, E>(requester: Requester<C, E>): {
     GetUser(variables: GetUserQueryVariables, options?: C): Promise<GetUserQuery>;
 };
 export type Sdk = ReturnType<typeof getSdk>;
-//# sourceMappingURL=index.d.ts.map

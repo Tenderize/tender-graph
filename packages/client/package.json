@@ -4,6 +4,7 @@
     "description": "Tenderize Subgraph Client",
     "author": "Tenderize Labs Ltd",
     "license": "MIT",
+    "type": "module",
     "dependencies": {
         "ts-node": "^10.9.1"
     },
@@ -12,7 +13,7 @@
             "types": "./.graphclient/index.d.ts",
             "default": "./.graphclient/index.js"
         },
-        "./package.json": "./package.json"
+        "./package.json": "./.graphclient/package.json"
     },
     "main": ".graphclient/index.js",
     "types": ".graphclient/index.d.ts",
@@ -31,7 +32,7 @@
         "typescript": "^5.1.6"
     },
     "scripts": {
-        "build": "graphclient build --fileType ts --throwOnInvalidConfig && ts-node -P tsconfig.json",
+        "build": "graphclient build --fileType js --throwOnInvalidConfig",
         "codegen": "graphclient build",
         "dev": "graphclient serve-dev",
         "prettier:check": "prettier --check \"**/*.{ts,md,yaml,gql}\"",

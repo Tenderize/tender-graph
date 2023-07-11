@@ -1098,18 +1098,18 @@ export declare const subscribe: SubscribeMeshFn;
 export declare function getBuiltGraphSDK<TGlobalContext = any, TOperationContext = any>(globalContext?: TGlobalContext): {
     GetAsset(variables: Exact<{
         id: string;
-    }>, options?: TOperationContext | undefined): Promise<GetAssetQuery>;
+    }>, options?: TOperationContext): Promise<GetAssetQuery>;
     GetTenderizers(variables?: Exact<{
-        asset?: InputMaybe<string> | undefined;
-        first?: InputMaybe<number> | undefined;
-        skip?: InputMaybe<number> | undefined;
-    }> | undefined, options?: TOperationContext | undefined): Promise<GetTenderizersQuery>;
+        asset?: string;
+        first?: number;
+        skip?: number;
+    }>, options?: TOperationContext): Promise<GetTenderizersQuery>;
     GetTenderizer(variables: Exact<{
         id: string;
-    }>, options?: TOperationContext | undefined): Promise<GetTenderizerQuery>;
+    }>, options?: TOperationContext): Promise<GetTenderizerQuery>;
     GetUser(variables: Exact<{
         id: string;
-    }>, options?: TOperationContext | undefined): Promise<GetUserQuery>;
+    }>, options?: TOperationContext): Promise<GetUserQuery>;
 };
 export type GetAssetQueryVariables = Exact<{
     id: Scalars['ID'];
@@ -1160,9 +1160,9 @@ export declare const GetAssetDocument: DocumentNode<GetAssetQuery, Exact<{
     id: Scalars['ID'];
 }>>;
 export declare const GetTenderizersDocument: DocumentNode<GetTenderizersQuery, Exact<{
-    asset?: InputMaybe<string> | undefined;
-    first?: InputMaybe<number> | undefined;
-    skip?: InputMaybe<number> | undefined;
+    asset?: InputMaybe<Scalars['String']>;
+    first?: InputMaybe<Scalars['Int']>;
+    skip?: InputMaybe<Scalars['Int']>;
 }>>;
 export declare const GetTenderizerDocument: DocumentNode<GetTenderizerQuery, Exact<{
     id: Scalars['ID'];
@@ -1178,4 +1178,3 @@ export declare function getSdk<C, E>(requester: Requester<C, E>): {
     GetUser(variables: GetUserQueryVariables, options?: C): Promise<GetUserQuery>;
 };
 export type Sdk = ReturnType<typeof getSdk>;
-//# sourceMappingURL=index.d.ts.map

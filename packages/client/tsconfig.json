@@ -1,10 +1,8 @@
 {
-    "exclude": [
-        "node_modules"
-    ],
     "compilerOptions": {
-        "target": "es2016",
-        "module": "commonjs",
+        //"target": "es2016",
+        "module": "esnext",
+        "moduleResolution": "nodenext",
         "forceConsistentCasingInFileNames": true,
         "esModuleInterop": true,
         "strict": true,

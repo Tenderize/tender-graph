@@ -1,12 +1,16 @@
 {
-  "name": "@tender-graph/monorepo",
+  "name": "@tenderize/monorepo",
   "version": "0.0.1",
   "packageManager": "yarn@3.6.1",
   "private": true,
   "workspaces": {
     "nohoist": [
       "**/@graphprotocol/graph-ts",
-      "**/@graphprotocol/graph-ts/**"
+      "**/@graphprotocol/graph-ts/**",
+      "**/wagmi",
+      "**/wagmi/**",
+      "**/@wagmi",
+      "**/@wagmi/**"
     ],
     "packages": [
       "packages/*"

@@ -1,6 +1,6 @@
 specVersion: 0.0.4
-description: Liquid staking yield aggregator for web3 protocols
-repository: https://github.com/Tenderize/tender-app/packages/subgraph
+description: Tenderize V2 Subgraph
+repository: https://github.com/Tenderize/tenderize/monorepo
 schema:
   file: ./schema.graphql
 dataSources:

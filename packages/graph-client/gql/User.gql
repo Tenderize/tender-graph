@@ -31,3 +31,30 @@ query GetUser($id: ID!) {
     }
   }
 }
+
+query GetBalances($user: String!, $asset: String) {
+  stakes(where: { user: $user, asset: $asset }) {
+    id
+    shares
+    tenderizer {
+      id
+      tvl
+      shares
+      validator
+      symbol
+      name
+    }
+  }
+  unlocks(where: { user: $user, asset: $asset, redeemed: false }) {
+    id
+    amount
+    maturity
+    redeemed
+    tenderizer {
+      id
+      validator
+      symbol
+      name
+    }
+  }
+}

@@ -18,10 +18,14 @@ type Tenderizer @entity {
 
   tvl: BigDecimal! # total value locked
   shares: BigDecimal! # total shares
-  stakes: [Stake!]! @derivedFrom(field: "tenderizer")
 
+  apr: BigDecimal!
+
+  # balances
+  stakes: [Stake!]! @derivedFrom(field: "tenderizer")
   # time series
   tenderizerDays: [TenderizerDay!]! @derivedFrom(field: "tenderizer")
+  lastUpdateDay: BigInt! # last day the tenderizer was updated
 }
 
 type User @entity {
@@ -41,6 +45,7 @@ type Stake @entity {
 type Unlock @entity {
   id: ID! # ID of the unlock
   user: User!
+  asset: Asset!
   tenderizer: Tenderizer!
   amount: BigDecimal!
   maturity: BigInt!

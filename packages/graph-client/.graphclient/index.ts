@@ -1,14 +1,24 @@
 // @ts-nocheck
+import { GraphQLResolveInfo, SelectionSetNode, FieldNode, GraphQLScalarType, GraphQLScalarTypeConfig } from 'graphql';
+import { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/core';
+import { gql } from '@graphql-mesh/utils';
 
-import { InContextSdkMethod } from '@graphql-mesh/types';
-import { MeshContext } from '@graphql-mesh/runtime';
-
-export namespace TenderizeTenderizeLocalhostTypes {
-  export type Maybe<T> = T | null;
+import { findAndParseConfig } from '@graphql-mesh/cli';
+import { createMeshHTTPHandler, MeshHTTPHandler } from '@graphql-mesh/http';
+import { getMesh, ExecuteMeshFn, SubscribeMeshFn, MeshContext as BaseMeshContext, MeshInstance } from '@graphql-mesh/runtime';
+import { MeshStore, FsStoreStorageAdapter } from '@graphql-mesh/store';
+import { path as pathModule } from '@graphql-mesh/cross-helpers';
+import { ImportFn } from '@graphql-mesh/types';
+import type { TenderizeTenderizeLocalhostTypes } from './sources/tenderize/tenderize-localhost/types';
+export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
 export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: Maybe<T[SubKey]> };
 export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Maybe<T[SubKey]> };
+export type RequireFields<T, K extends keyof T> = Omit<T, K> & { [P in K]-?: NonNullable<T[P]> };
+
+
+
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
   ID: string;
@@ -568,8 +578,10 @@ export type Tenderizer = {
   asset: Asset;
   tvl: Scalars['BigDecimal'];
   shares: Scalars['BigDecimal'];
+  apr: Scalars['BigDecimal'];
   stakes: Array<Stake>;
   tenderizerDays: Array<TenderizerDay>;
+  lastUpdateDay: Scalars['BigInt'];
 };
 
 
@@ -779,8 +791,24 @@ export type Tenderizer_filter = {
   shares_lte?: InputMaybe<Scalars['BigDecimal']>;
   shares_in?: InputMaybe<Array<Scalars['BigDecimal']>>;
   shares_not_in?: InputMaybe<Array<Scalars['BigDecimal']>>;
+  apr?: InputMaybe<Scalars['BigDecimal']>;
+  apr_not?: InputMaybe<Scalars['BigDecimal']>;
+  apr_gt?: InputMaybe<Scalars['BigDecimal']>;
+  apr_lt?: InputMaybe<Scalars['BigDecimal']>;
+  apr_gte?: InputMaybe<Scalars['BigDecimal']>;
+  apr_lte?: InputMaybe<Scalars['BigDecimal']>;
+  apr_in?: InputMaybe<Array<Scalars['BigDecimal']>>;
+  apr_not_in?: InputMaybe<Array<Scalars['BigDecimal']>>;
   stakes_?: InputMaybe<Stake_filter>;
   tenderizerDays_?: InputMaybe<TenderizerDay_filter>;
+  lastUpdateDay?: InputMaybe<Scalars['BigInt']>;
+  lastUpdateDay_not?: InputMaybe<Scalars['BigInt']>;
+  lastUpdateDay_gt?: InputMaybe<Scalars['BigInt']>;
+  lastUpdateDay_lt?: InputMaybe<Scalars['BigInt']>;
+  lastUpdateDay_gte?: InputMaybe<Scalars['BigInt']>;
+  lastUpdateDay_lte?: InputMaybe<Scalars['BigInt']>;
+  lastUpdateDay_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  lastUpdateDay_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
   /** Filter for the block changed event. */
   _change_block?: InputMaybe<BlockChangedFilter>;
 };
@@ -793,12 +821,15 @@ export type Tenderizer_orderBy =
   | 'asset'
   | 'tvl'
   | 'shares'
+  | 'apr'
   | 'stakes'
-  | 'tenderizerDays';
+  | 'tenderizerDays'
+  | 'lastUpdateDay';
 
 export type Unlock = {
   id: Scalars['ID'];
   user: User;
+  asset: Asset;
   tenderizer: Tenderizer;
   amount: Scalars['BigDecimal'];
   maturity: Scalars['BigInt'];
@@ -835,6 +866,27 @@ export type Unlock_filter = {
   user_not_ends_with?: InputMaybe<Scalars['String']>;
   user_not_ends_with_nocase?: InputMaybe<Scalars['String']>;
   user_?: InputMaybe<User_filter>;
+  asset?: InputMaybe<Scalars['String']>;
+  asset_not?: InputMaybe<Scalars['String']>;
+  asset_gt?: InputMaybe<Scalars['String']>;
+  asset_lt?: InputMaybe<Scalars['String']>;
+  asset_gte?: InputMaybe<Scalars['String']>;
+  asset_lte?: InputMaybe<Scalars['String']>;
+  asset_in?: InputMaybe<Array<Scalars['String']>>;
+  asset_not_in?: InputMaybe<Array<Scalars['String']>>;
+  asset_contains?: InputMaybe<Scalars['String']>;
+  asset_contains_nocase?: InputMaybe<Scalars['String']>;
+  asset_not_contains?: InputMaybe<Scalars['String']>;
+  asset_not_contains_nocase?: InputMaybe<Scalars['String']>;
+  asset_starts_with?: InputMaybe<Scalars['String']>;
+  asset_starts_with_nocase?: InputMaybe<Scalars['String']>;
+  asset_not_starts_with?: InputMaybe<Scalars['String']>;
+  asset_not_starts_with_nocase?: InputMaybe<Scalars['String']>;
+  asset_ends_with?: InputMaybe<Scalars['String']>;
+  asset_ends_with_nocase?: InputMaybe<Scalars['String']>;
+  asset_not_ends_with?: InputMaybe<Scalars['String']>;
+  asset_not_ends_with_nocase?: InputMaybe<Scalars['String']>;
+  asset_?: InputMaybe<Asset_filter>;
   tenderizer?: InputMaybe<Scalars['String']>;
   tenderizer_not?: InputMaybe<Scalars['String']>;
   tenderizer_gt?: InputMaybe<Scalars['String']>;
@@ -883,6 +935,7 @@ export type Unlock_filter = {
 export type Unlock_orderBy =
   | 'id'
   | 'user'
+  | 'asset'
   | 'tenderizer'
   | 'amount'
   | 'maturity'
@@ -963,78 +1016,604 @@ export type _SubgraphErrorPolicy_ =
   /** If the subgraph has indexing errors, data will be omitted. The default. */
   | 'deny';
 
-  export type QuerySdk = {
-      /** null **/
-  asset: InContextSdkMethod<Query['asset'], QueryassetArgs, MeshContext>,
-  /** null **/
-  assets: InContextSdkMethod<Query['assets'], QueryassetsArgs, MeshContext>,
-  /** null **/
-  tenderizer: InContextSdkMethod<Query['tenderizer'], QuerytenderizerArgs, MeshContext>,
-  /** null **/
-  tenderizers: InContextSdkMethod<Query['tenderizers'], QuerytenderizersArgs, MeshContext>,
-  /** null **/
-  user: InContextSdkMethod<Query['user'], QueryuserArgs, MeshContext>,
-  /** null **/
-  users: InContextSdkMethod<Query['users'], QueryusersArgs, MeshContext>,
-  /** null **/
-  stake: InContextSdkMethod<Query['stake'], QuerystakeArgs, MeshContext>,
-  /** null **/
-  stakes: InContextSdkMethod<Query['stakes'], QuerystakesArgs, MeshContext>,
-  /** null **/
-  unlock: InContextSdkMethod<Query['unlock'], QueryunlockArgs, MeshContext>,
-  /** null **/
-  unlocks: InContextSdkMethod<Query['unlocks'], QueryunlocksArgs, MeshContext>,
-  /** null **/
-  assetDay: InContextSdkMethod<Query['assetDay'], QueryassetDayArgs, MeshContext>,
-  /** null **/
-  assetDays: InContextSdkMethod<Query['assetDays'], QueryassetDaysArgs, MeshContext>,
-  /** null **/
-  tenderizerDay: InContextSdkMethod<Query['tenderizerDay'], QuerytenderizerDayArgs, MeshContext>,
-  /** null **/
-  tenderizerDays: InContextSdkMethod<Query['tenderizerDays'], QuerytenderizerDaysArgs, MeshContext>,
-  /** Access to subgraph metadata **/
-  _meta: InContextSdkMethod<Query['_meta'], Query_metaArgs, MeshContext>
-  };
+export type WithIndex<TObject> = TObject & Record<string, any>;
+export type ResolversObject<TObject> = WithIndex<TObject>;
 
-  export type MutationSdk = {
-    
-  };
+export type ResolverTypeWrapper<T> = Promise<T> | T;
 
-  export type SubscriptionSdk = {
-      /** null **/
-  asset: InContextSdkMethod<Subscription['asset'], SubscriptionassetArgs, MeshContext>,
-  /** null **/
-  assets: InContextSdkMethod<Subscription['assets'], SubscriptionassetsArgs, MeshContext>,
-  /** null **/
-  tenderizer: InContextSdkMethod<Subscription['tenderizer'], SubscriptiontenderizerArgs, MeshContext>,
-  /** null **/
-  tenderizers: InContextSdkMethod<Subscription['tenderizers'], SubscriptiontenderizersArgs, MeshContext>,
-  /** null **/
-  user: InContextSdkMethod<Subscription['user'], SubscriptionuserArgs, MeshContext>,
-  /** null **/
-  users: InContextSdkMethod<Subscription['users'], SubscriptionusersArgs, MeshContext>,
-  /** null **/
-  stake: InContextSdkMethod<Subscription['stake'], SubscriptionstakeArgs, MeshContext>,
-  /** null **/
-  stakes: InContextSdkMethod<Subscription['stakes'], SubscriptionstakesArgs, MeshContext>,
-  /** null **/
-  unlock: InContextSdkMethod<Subscription['unlock'], SubscriptionunlockArgs, MeshContext>,
-  /** null **/
-  unlocks: InContextSdkMethod<Subscription['unlocks'], SubscriptionunlocksArgs, MeshContext>,
-  /** null **/
-  assetDay: InContextSdkMethod<Subscription['assetDay'], SubscriptionassetDayArgs, MeshContext>,
-  /** null **/
-  assetDays: InContextSdkMethod<Subscription['assetDays'], SubscriptionassetDaysArgs, MeshContext>,
-  /** null **/
-  tenderizerDay: InContextSdkMethod<Subscription['tenderizerDay'], SubscriptiontenderizerDayArgs, MeshContext>,
-  /** null **/
-  tenderizerDays: InContextSdkMethod<Subscription['tenderizerDays'], SubscriptiontenderizerDaysArgs, MeshContext>,
-  /** Access to subgraph metadata **/
-  _meta: InContextSdkMethod<Subscription['_meta'], Subscription_metaArgs, MeshContext>
-  };
 
-  export type Context = {
-      ["tenderize/tenderize-localhost"]: { Query: QuerySdk, Mutation: MutationSdk, Subscription: SubscriptionSdk },
-      
-    };
+export type ResolverWithResolve<TResult, TParent, TContext, TArgs> = {
+  resolve: ResolverFn<TResult, TParent, TContext, TArgs>;
+};
+
+export type LegacyStitchingResolver<TResult, TParent, TContext, TArgs> = {
+  fragment: string;
+  resolve: ResolverFn<TResult, TParent, TContext, TArgs>;
+};
+
+export type NewStitchingResolver<TResult, TParent, TContext, TArgs> = {
+  selectionSet: string | ((fieldNode: FieldNode) => SelectionSetNode);
+  resolve: ResolverFn<TResult, TParent, TContext, TArgs>;
+};
+export type StitchingResolver<TResult, TParent, TContext, TArgs> = LegacyStitchingResolver<TResult, TParent, TContext, TArgs> | NewStitchingResolver<TResult, TParent, TContext, TArgs>;
+export type Resolver<TResult, TParent = {}, TContext = {}, TArgs = {}> =
+  | ResolverFn<TResult, TParent, TContext, TArgs>
+  | ResolverWithResolve<TResult, TParent, TContext, TArgs>
+  | StitchingResolver<TResult, TParent, TContext, TArgs>;
+
+export type ResolverFn<TResult, TParent, TContext, TArgs> = (
+  parent: TParent,
+  args: TArgs,
+  context: TContext,
+  info: GraphQLResolveInfo
+) => Promise<TResult> | TResult;
+
+export type SubscriptionSubscribeFn<TResult, TParent, TContext, TArgs> = (
+  parent: TParent,
+  args: TArgs,
+  context: TContext,
+  info: GraphQLResolveInfo
+) => AsyncIterable<TResult> | Promise<AsyncIterable<TResult>>;
+
+export type SubscriptionResolveFn<TResult, TParent, TContext, TArgs> = (
+  parent: TParent,
+  args: TArgs,
+  context: TContext,
+  info: GraphQLResolveInfo
+) => TResult | Promise<TResult>;
+
+export interface SubscriptionSubscriberObject<TResult, TKey extends string, TParent, TContext, TArgs> {
+  subscribe: SubscriptionSubscribeFn<{ [key in TKey]: TResult }, TParent, TContext, TArgs>;
+  resolve?: SubscriptionResolveFn<TResult, { [key in TKey]: TResult }, TContext, TArgs>;
 }
+
+export interface SubscriptionResolverObject<TResult, TParent, TContext, TArgs> {
+  subscribe: SubscriptionSubscribeFn<any, TParent, TContext, TArgs>;
+  resolve: SubscriptionResolveFn<TResult, any, TContext, TArgs>;
+}
+
+export type SubscriptionObject<TResult, TKey extends string, TParent, TContext, TArgs> =
+  | SubscriptionSubscriberObject<TResult, TKey, TParent, TContext, TArgs>
+  | SubscriptionResolverObject<TResult, TParent, TContext, TArgs>;
+
+export type SubscriptionResolver<TResult, TKey extends string, TParent = {}, TContext = {}, TArgs = {}> =
+  | ((...args: any[]) => SubscriptionObject<TResult, TKey, TParent, TContext, TArgs>)
+  | SubscriptionObject<TResult, TKey, TParent, TContext, TArgs>;
+
+export type TypeResolveFn<TTypes, TParent = {}, TContext = {}> = (
+  parent: TParent,
+  context: TContext,
+  info: GraphQLResolveInfo
+) => Maybe<TTypes> | Promise<Maybe<TTypes>>;
+
+export type IsTypeOfResolverFn<T = {}, TContext = {}> = (obj: T, context: TContext, info: GraphQLResolveInfo) => boolean | Promise<boolean>;
+
+export type NextResolverFn<T> = () => Promise<T>;
+
+export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs = {}> = (
+  next: NextResolverFn<TResult>,
+  parent: TParent,
+  args: TArgs,
+  context: TContext,
+  info: GraphQLResolveInfo
+) => TResult | Promise<TResult>;
+
+
+
+/** Mapping between all available schema types and the resolvers types */
+export type ResolversTypes = ResolversObject<{
+  Asset: ResolverTypeWrapper<Asset>;
+  AssetDay: ResolverTypeWrapper<AssetDay>;
+  AssetDay_filter: AssetDay_filter;
+  AssetDay_orderBy: AssetDay_orderBy;
+  Asset_filter: Asset_filter;
+  Asset_orderBy: Asset_orderBy;
+  BigDecimal: ResolverTypeWrapper<Scalars['BigDecimal']>;
+  BigInt: ResolverTypeWrapper<Scalars['BigInt']>;
+  BlockChangedFilter: BlockChangedFilter;
+  Block_height: Block_height;
+  Boolean: ResolverTypeWrapper<Scalars['Boolean']>;
+  Bytes: ResolverTypeWrapper<Scalars['Bytes']>;
+  Float: ResolverTypeWrapper<Scalars['Float']>;
+  ID: ResolverTypeWrapper<Scalars['ID']>;
+  Int: ResolverTypeWrapper<Scalars['Int']>;
+  OrderDirection: OrderDirection;
+  Query: ResolverTypeWrapper<{}>;
+  Stake: ResolverTypeWrapper<Stake>;
+  Stake_filter: Stake_filter;
+  Stake_orderBy: Stake_orderBy;
+  String: ResolverTypeWrapper<Scalars['String']>;
+  Subscription: ResolverTypeWrapper<{}>;
+  Tenderizer: ResolverTypeWrapper<Tenderizer>;
+  TenderizerDay: ResolverTypeWrapper<TenderizerDay>;
+  TenderizerDay_filter: TenderizerDay_filter;
+  TenderizerDay_orderBy: TenderizerDay_orderBy;
+  Tenderizer_filter: Tenderizer_filter;
+  Tenderizer_orderBy: Tenderizer_orderBy;
+  Unlock: ResolverTypeWrapper<Unlock>;
+  Unlock_filter: Unlock_filter;
+  Unlock_orderBy: Unlock_orderBy;
+  User: ResolverTypeWrapper<User>;
+  User_filter: User_filter;
+  User_orderBy: User_orderBy;
+  _Block_: ResolverTypeWrapper<_Block_>;
+  _Meta_: ResolverTypeWrapper<_Meta_>;
+  _SubgraphErrorPolicy_: _SubgraphErrorPolicy_;
+}>;
+
+/** Mapping between all available schema types and the resolvers parents */
+export type ResolversParentTypes = ResolversObject<{
+  Asset: Asset;
+  AssetDay: AssetDay;
+  AssetDay_filter: AssetDay_filter;
+  Asset_filter: Asset_filter;
+  BigDecimal: Scalars['BigDecimal'];
+  BigInt: Scalars['BigInt'];
+  BlockChangedFilter: BlockChangedFilter;
+  Block_height: Block_height;
+  Boolean: Scalars['Boolean'];
+  Bytes: Scalars['Bytes'];
+  Float: Scalars['Float'];
+  ID: Scalars['ID'];
+  Int: Scalars['Int'];
+  Query: {};
+  Stake: Stake;
+  Stake_filter: Stake_filter;
+  String: Scalars['String'];
+  Subscription: {};
+  Tenderizer: Tenderizer;
+  TenderizerDay: TenderizerDay;
+  TenderizerDay_filter: TenderizerDay_filter;
+  Tenderizer_filter: Tenderizer_filter;
+  Unlock: Unlock;
+  Unlock_filter: Unlock_filter;
+  User: User;
+  User_filter: User_filter;
+  _Block_: _Block_;
+  _Meta_: _Meta_;
+}>;
+
+export type entityDirectiveArgs = { };
+
+export type entityDirectiveResolver<Result, Parent, ContextType = MeshContext, Args = entityDirectiveArgs> = DirectiveResolverFn<Result, Parent, ContextType, Args>;
+
+export type subgraphIdDirectiveArgs = {
+  id: Scalars['String'];
+};
+
+export type subgraphIdDirectiveResolver<Result, Parent, ContextType = MeshContext, Args = subgraphIdDirectiveArgs> = DirectiveResolverFn<Result, Parent, ContextType, Args>;
+
+export type derivedFromDirectiveArgs = {
+  field: Scalars['String'];
+};
+
+export type derivedFromDirectiveResolver<Result, Parent, ContextType = MeshContext, Args = derivedFromDirectiveArgs> = DirectiveResolverFn<Result, Parent, ContextType, Args>;
+
+export type AssetResolvers<ContextType = MeshContext, ParentType extends ResolversParentTypes['Asset'] = ResolversParentTypes['Asset']> = ResolversObject<{
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  tvl?: Resolver<ResolversTypes['BigDecimal'], ParentType, ContextType>;
+  tenderizerCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  assetDays?: Resolver<Array<ResolversTypes['AssetDay']>, ParentType, ContextType, RequireFields<AssetassetDaysArgs, 'skip' | 'first'>>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type AssetDayResolvers<ContextType = MeshContext, ParentType extends ResolversParentTypes['AssetDay'] = ResolversParentTypes['AssetDay']> = ResolversObject<{
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  date?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  asset?: Resolver<ResolversTypes['Asset'], ParentType, ContextType>;
+  tvl?: Resolver<ResolversTypes['BigDecimal'], ParentType, ContextType>;
+  rewards?: Resolver<ResolversTypes['BigDecimal'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export interface BigDecimalScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['BigDecimal'], any> {
+  name: 'BigDecimal';
+}
+
+export interface BigIntScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['BigInt'], any> {
+  name: 'BigInt';
+}
+
+export interface BytesScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['Bytes'], any> {
+  name: 'Bytes';
+}
+
+export type QueryResolvers<ContextType = MeshContext, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = ResolversObject<{
+  asset?: Resolver<Maybe<ResolversTypes['Asset']>, ParentType, ContextType, RequireFields<QueryassetArgs, 'id' | 'subgraphError'>>;
+  assets?: Resolver<Array<ResolversTypes['Asset']>, ParentType, ContextType, RequireFields<QueryassetsArgs, 'skip' | 'first' | 'subgraphError'>>;
+  tenderizer?: Resolver<Maybe<ResolversTypes['Tenderizer']>, ParentType, ContextType, RequireFields<QuerytenderizerArgs, 'id' | 'subgraphError'>>;
+  tenderizers?: Resolver<Array<ResolversTypes['Tenderizer']>, ParentType, ContextType, RequireFields<QuerytenderizersArgs, 'skip' | 'first' | 'subgraphError'>>;
+  user?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<QueryuserArgs, 'id' | 'subgraphError'>>;
+  users?: Resolver<Array<ResolversTypes['User']>, ParentType, ContextType, RequireFields<QueryusersArgs, 'skip' | 'first' | 'subgraphError'>>;
+  stake?: Resolver<Maybe<ResolversTypes['Stake']>, ParentType, ContextType, RequireFields<QuerystakeArgs, 'id' | 'subgraphError'>>;
+  stakes?: Resolver<Array<ResolversTypes['Stake']>, ParentType, ContextType, RequireFields<QuerystakesArgs, 'skip' | 'first' | 'subgraphError'>>;
+  unlock?: Resolver<Maybe<ResolversTypes['Unlock']>, ParentType, ContextType, RequireFields<QueryunlockArgs, 'id' | 'subgraphError'>>;
+  unlocks?: Resolver<Array<ResolversTypes['Unlock']>, ParentType, ContextType, RequireFields<QueryunlocksArgs, 'skip' | 'first' | 'subgraphError'>>;
+  assetDay?: Resolver<Maybe<ResolversTypes['AssetDay']>, ParentType, ContextType, RequireFields<QueryassetDayArgs, 'id' | 'subgraphError'>>;
+  assetDays?: Resolver<Array<ResolversTypes['AssetDay']>, ParentType, ContextType, RequireFields<QueryassetDaysArgs, 'skip' | 'first' | 'subgraphError'>>;
+  tenderizerDay?: Resolver<Maybe<ResolversTypes['TenderizerDay']>, ParentType, ContextType, RequireFields<QuerytenderizerDayArgs, 'id' | 'subgraphError'>>;
+  tenderizerDays?: Resolver<Array<ResolversTypes['TenderizerDay']>, ParentType, ContextType, RequireFields<QuerytenderizerDaysArgs, 'skip' | 'first' | 'subgraphError'>>;
+  _meta?: Resolver<Maybe<ResolversTypes['_Meta_']>, ParentType, ContextType, Partial<Query_metaArgs>>;
+}>;
+
+export type StakeResolvers<ContextType = MeshContext, ParentType extends ResolversParentTypes['Stake'] = ResolversParentTypes['Stake']> = ResolversObject<{
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  user?: Resolver<ResolversTypes['User'], ParentType, ContextType>;
+  asset?: Resolver<ResolversTypes['Asset'], ParentType, ContextType>;
+  tenderizer?: Resolver<ResolversTypes['Tenderizer'], ParentType, ContextType>;
+  shares?: Resolver<ResolversTypes['BigDecimal'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type SubscriptionResolvers<ContextType = MeshContext, ParentType extends ResolversParentTypes['Subscription'] = ResolversParentTypes['Subscription']> = ResolversObject<{
+  asset?: SubscriptionResolver<Maybe<ResolversTypes['Asset']>, "asset", ParentType, ContextType, RequireFields<SubscriptionassetArgs, 'id' | 'subgraphError'>>;
+  assets?: SubscriptionResolver<Array<ResolversTypes['Asset']>, "assets", ParentType, ContextType, RequireFields<SubscriptionassetsArgs, 'skip' | 'first' | 'subgraphError'>>;
+  tenderizer?: SubscriptionResolver<Maybe<ResolversTypes['Tenderizer']>, "tenderizer", ParentType, ContextType, RequireFields<SubscriptiontenderizerArgs, 'id' | 'subgraphError'>>;
+  tenderizers?: SubscriptionResolver<Array<ResolversTypes['Tenderizer']>, "tenderizers", ParentType, ContextType, RequireFields<SubscriptiontenderizersArgs, 'skip' | 'first' | 'subgraphError'>>;
+  user?: SubscriptionResolver<Maybe<ResolversTypes['User']>, "user", ParentType, ContextType, RequireFields<SubscriptionuserArgs, 'id' | 'subgraphError'>>;
+  users?: SubscriptionResolver<Array<ResolversTypes['User']>, "users", ParentType, ContextType, RequireFields<SubscriptionusersArgs, 'skip' | 'first' | 'subgraphError'>>;
+  stake?: SubscriptionResolver<Maybe<ResolversTypes['Stake']>, "stake", ParentType, ContextType, RequireFields<SubscriptionstakeArgs, 'id' | 'subgraphError'>>;
+  stakes?: SubscriptionResolver<Array<ResolversTypes['Stake']>, "stakes", ParentType, ContextType, RequireFields<SubscriptionstakesArgs, 'skip' | 'first' | 'subgraphError'>>;
+  unlock?: SubscriptionResolver<Maybe<ResolversTypes['Unlock']>, "unlock", ParentType, ContextType, RequireFields<SubscriptionunlockArgs, 'id' | 'subgraphError'>>;
+  unlocks?: SubscriptionResolver<Array<ResolversTypes['Unlock']>, "unlocks", ParentType, ContextType, RequireFields<SubscriptionunlocksArgs, 'skip' | 'first' | 'subgraphError'>>;
+  assetDay?: SubscriptionResolver<Maybe<ResolversTypes['AssetDay']>, "assetDay", ParentType, ContextType, RequireFields<SubscriptionassetDayArgs, 'id' | 'subgraphError'>>;
+  assetDays?: SubscriptionResolver<Array<ResolversTypes['AssetDay']>, "assetDays", ParentType, ContextType, RequireFields<SubscriptionassetDaysArgs, 'skip' | 'first' | 'subgraphError'>>;
+  tenderizerDay?: SubscriptionResolver<Maybe<ResolversTypes['TenderizerDay']>, "tenderizerDay", ParentType, ContextType, RequireFields<SubscriptiontenderizerDayArgs, 'id' | 'subgraphError'>>;
+  tenderizerDays?: SubscriptionResolver<Array<ResolversTypes['TenderizerDay']>, "tenderizerDays", ParentType, ContextType, RequireFields<SubscriptiontenderizerDaysArgs, 'skip' | 'first' | 'subgraphError'>>;
+  _meta?: SubscriptionResolver<Maybe<ResolversTypes['_Meta_']>, "_meta", ParentType, ContextType, Partial<Subscription_metaArgs>>;
+}>;
+
+export type TenderizerResolvers<ContextType = MeshContext, ParentType extends ResolversParentTypes['Tenderizer'] = ResolversParentTypes['Tenderizer']> = ResolversObject<{
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  symbol?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  validator?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  asset?: Resolver<ResolversTypes['Asset'], ParentType, ContextType>;
+  tvl?: Resolver<ResolversTypes['BigDecimal'], ParentType, ContextType>;
+  shares?: Resolver<ResolversTypes['BigDecimal'], ParentType, ContextType>;
+  apr?: Resolver<ResolversTypes['BigDecimal'], ParentType, ContextType>;
+  stakes?: Resolver<Array<ResolversTypes['Stake']>, ParentType, ContextType, RequireFields<TenderizerstakesArgs, 'skip' | 'first'>>;
+  tenderizerDays?: Resolver<Array<ResolversTypes['TenderizerDay']>, ParentType, ContextType, RequireFields<TenderizertenderizerDaysArgs, 'skip' | 'first'>>;
+  lastUpdateDay?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type TenderizerDayResolvers<ContextType = MeshContext, ParentType extends ResolversParentTypes['TenderizerDay'] = ResolversParentTypes['TenderizerDay']> = ResolversObject<{
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  date?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  tenderizer?: Resolver<ResolversTypes['Tenderizer'], ParentType, ContextType>;
+  tvl?: Resolver<ResolversTypes['BigDecimal'], ParentType, ContextType>;
+  rewards?: Resolver<ResolversTypes['BigDecimal'], ParentType, ContextType>;
+  shares?: Resolver<ResolversTypes['BigDecimal'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type UnlockResolvers<ContextType = MeshContext, ParentType extends ResolversParentTypes['Unlock'] = ResolversParentTypes['Unlock']> = ResolversObject<{
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  user?: Resolver<ResolversTypes['User'], ParentType, ContextType>;
+  asset?: Resolver<ResolversTypes['Asset'], ParentType, ContextType>;
+  tenderizer?: Resolver<ResolversTypes['Tenderizer'], ParentType, ContextType>;
+  amount?: Resolver<ResolversTypes['BigDecimal'], ParentType, ContextType>;
+  maturity?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
+  redeemed?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type UserResolvers<ContextType = MeshContext, ParentType extends ResolversParentTypes['User'] = ResolversParentTypes['User']> = ResolversObject<{
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  stakes?: Resolver<Maybe<Array<ResolversTypes['Stake']>>, ParentType, ContextType, RequireFields<UserstakesArgs, 'skip' | 'first'>>;
+  unlocks?: Resolver<Maybe<Array<ResolversTypes['Unlock']>>, ParentType, ContextType, RequireFields<UserunlocksArgs, 'skip' | 'first'>>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type _Block_Resolvers<ContextType = MeshContext, ParentType extends ResolversParentTypes['_Block_'] = ResolversParentTypes['_Block_']> = ResolversObject<{
+  hash?: Resolver<Maybe<ResolversTypes['Bytes']>, ParentType, ContextType>;
+  number?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  timestamp?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type _Meta_Resolvers<ContextType = MeshContext, ParentType extends ResolversParentTypes['_Meta_'] = ResolversParentTypes['_Meta_']> = ResolversObject<{
+  block?: Resolver<ResolversTypes['_Block_'], ParentType, ContextType>;
+  deployment?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  hasIndexingErrors?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type Resolvers<ContextType = MeshContext> = ResolversObject<{
+  Asset?: AssetResolvers<ContextType>;
+  AssetDay?: AssetDayResolvers<ContextType>;
+  BigDecimal?: GraphQLScalarType;
+  BigInt?: GraphQLScalarType;
+  Bytes?: GraphQLScalarType;
+  Query?: QueryResolvers<ContextType>;
+  Stake?: StakeResolvers<ContextType>;
+  Subscription?: SubscriptionResolvers<ContextType>;
+  Tenderizer?: TenderizerResolvers<ContextType>;
+  TenderizerDay?: TenderizerDayResolvers<ContextType>;
+  Unlock?: UnlockResolvers<ContextType>;
+  User?: UserResolvers<ContextType>;
+  _Block_?: _Block_Resolvers<ContextType>;
+  _Meta_?: _Meta_Resolvers<ContextType>;
+}>;
+
+export type DirectiveResolvers<ContextType = MeshContext> = ResolversObject<{
+  entity?: entityDirectiveResolver<any, any, ContextType>;
+  subgraphId?: subgraphIdDirectiveResolver<any, any, ContextType>;
+  derivedFrom?: derivedFromDirectiveResolver<any, any, ContextType>;
+}>;
+
+export type MeshContext = TenderizeTenderizeLocalhostTypes.Context & BaseMeshContext;
+
+
+const baseDir = pathModule.join(typeof __dirname === 'string' ? __dirname : '/', '..');
+
+const importFn: ImportFn = <T>(moduleId: string) => {
+  const relativeModuleId = (pathModule.isAbsolute(moduleId) ? pathModule.relative(baseDir, moduleId) : moduleId).split('\\').join('/').replace(baseDir + '/', '');
+  switch(relativeModuleId) {
+    default:
+      return Promise.reject(new Error(`Cannot find module '${relativeModuleId}'.`));
+  }
+};
+
+const rootStore = new MeshStore('.graphclient', new FsStoreStorageAdapter({
+  cwd: baseDir,
+  importFn,
+  fileType: "ts",
+}), {
+  readonly: true,
+  validate: false
+});
+
+export function getMeshOptions() {
+  console.warn('WARNING: These artifacts are built for development mode. Please run "graphclient build" to build production artifacts');
+  return findAndParseConfig({
+    dir: baseDir,
+    artifactsDir: ".graphclient",
+    configName: "graphclient",
+    additionalPackagePrefixes: ["@graphprotocol/client-"],
+    initialLoggerPrefix: "GraphClient",
+  });
+}
+
+export function createBuiltMeshHTTPHandler<TServerContext = {}>(): MeshHTTPHandler<TServerContext> {
+  return createMeshHTTPHandler<TServerContext>({
+    baseDir,
+    getBuiltMesh: getBuiltGraphClient,
+    rawServeConfig: undefined,
+  })
+}
+
+let meshInstance$: Promise<MeshInstance> | undefined;
+
+export function getBuiltGraphClient(): Promise<MeshInstance> {
+  if (meshInstance$ == null) {
+    meshInstance$ = getMeshOptions().then(meshOptions => getMesh(meshOptions)).then(mesh => {
+      const id = mesh.pubsub.subscribe('destroy', () => {
+        meshInstance$ = undefined;
+        mesh.pubsub.unsubscribe(id);
+      });
+      return mesh;
+    });
+  }
+  return meshInstance$;
+}
+
+export const execute: ExecuteMeshFn = (...args) => getBuiltGraphClient().then(({ execute }) => execute(...args));
+
+export const subscribe: SubscribeMeshFn = (...args) => getBuiltGraphClient().then(({ subscribe }) => subscribe(...args));
+export function getBuiltGraphSDK<TGlobalContext = any, TOperationContext = any>(globalContext?: TGlobalContext) {
+  const sdkRequester$ = getBuiltGraphClient().then(({ sdkRequesterFactory }) => sdkRequesterFactory(globalContext));
+  return getSdk<TOperationContext, TGlobalContext>((...args) => sdkRequester$.then(sdkRequester => sdkRequester(...args)));
+}
+export type GetAssetQueryVariables = Exact<{
+  id: Scalars['ID'];
+}>;
+
+
+export type GetAssetQuery = { asset?: Maybe<(
+    Pick<Asset, 'id' | 'tvl'>
+    & { assetDays: Array<Pick<AssetDay, 'id' | 'date' | 'tvl' | 'rewards'>> }
+  )> };
+
+export type GetTenderizersQueryVariables = Exact<{
+  asset?: InputMaybe<Scalars['String']>;
+  first?: InputMaybe<Scalars['Int']>;
+  skip?: InputMaybe<Scalars['Int']>;
+}>;
+
+
+export type GetTenderizersQuery = { tenderizers: Array<(
+    Pick<Tenderizer, 'id' | 'symbol' | 'name' | 'validator' | 'tvl' | 'apr'>
+    & { asset: Pick<Asset, 'id'> }
+  )> };
+
+export type GetTenderizerQueryVariables = Exact<{
+  id: Scalars['ID'];
+}>;
+
+
+export type GetTenderizerQuery = { tenderizer?: Maybe<(
+    Pick<Tenderizer, 'id' | 'symbol' | 'name' | 'validator' | 'tvl' | 'apr' | 'shares'>
+    & { asset: Pick<Asset, 'id'>, tenderizerDays: Array<Pick<TenderizerDay, 'id' | 'date' | 'tvl' | 'rewards' | 'shares'>> }
+  )> };
+
+export type GetUserQueryVariables = Exact<{
+  id: Scalars['ID'];
+}>;
+
+
+export type GetUserQuery = { user?: Maybe<(
+    Pick<User, 'id'>
+    & { stakes?: Maybe<Array<(
+      Pick<Stake, 'id' | 'shares'>
+      & { tenderizer: (
+        Pick<Tenderizer, 'id' | 'validator' | 'symbol' | 'name'>
+        & { asset: Pick<Asset, 'id'> }
+      ) }
+    )>>, unlocks?: Maybe<Array<(
+      Pick<Unlock, 'id' | 'amount' | 'maturity' | 'redeemed'>
+      & { tenderizer: (
+        Pick<Tenderizer, 'id' | 'validator' | 'symbol' | 'name'>
+        & { asset: Pick<Asset, 'id'> }
+      ) }
+    )>> }
+  )> };
+
+export type GetBalancesQueryVariables = Exact<{
+  user: Scalars['String'];
+  asset?: InputMaybe<Scalars['String']>;
+}>;
+
+
+export type GetBalancesQuery = { stakes: Array<(
+    Pick<Stake, 'id' | 'shares'>
+    & { tenderizer: Pick<Tenderizer, 'id' | 'tvl' | 'shares' | 'validator' | 'symbol' | 'name'> }
+  )>, unlocks: Array<(
+    Pick<Unlock, 'id' | 'amount' | 'maturity' | 'redeemed'>
+    & { tenderizer: Pick<Tenderizer, 'id' | 'validator' | 'symbol' | 'name'> }
+  )> };
+
+
+export const GetAssetDocument = gql`
+    query GetAsset($id: ID!) {
+  asset(id: $id) {
+    id
+    tvl
+    assetDays {
+      id
+      date
+      tvl
+      rewards
+    }
+  }
+}
+    ` as unknown as DocumentNode<GetAssetQuery, GetAssetQueryVariables>;
+export const GetTenderizersDocument = gql`
+    query GetTenderizers($asset: String, $first: Int = 1000, $skip: Int = 0) {
+  tenderizers(first: $first, skip: $skip, where: {asset: $asset}) {
+    id
+    symbol
+    name
+    validator
+    asset {
+      id
+    }
+    tvl
+    apr
+  }
+}
+    ` as unknown as DocumentNode<GetTenderizersQuery, GetTenderizersQueryVariables>;
+export const GetTenderizerDocument = gql`
+    query GetTenderizer($id: ID!) {
+  tenderizer(id: $id) {
+    id
+    symbol
+    name
+    validator
+    asset {
+      id
+    }
+    tvl
+    apr
+    shares
+    tenderizerDays {
+      id
+      date
+      tvl
+      rewards
+      shares
+    }
+  }
+}
+    ` as unknown as DocumentNode<GetTenderizerQuery, GetTenderizerQueryVariables>;
+export const GetUserDocument = gql`
+    query GetUser($id: ID!) {
+  user(id: $id) {
+    id
+    stakes {
+      id
+      tenderizer {
+        id
+        asset {
+          id
+        }
+        validator
+        symbol
+        name
+      }
+      shares
+    }
+    unlocks {
+      id
+      tenderizer {
+        id
+        asset {
+          id
+        }
+        validator
+        symbol
+        name
+      }
+      amount
+      maturity
+      redeemed
+    }
+  }
+}
+    ` as unknown as DocumentNode<GetUserQuery, GetUserQueryVariables>;
+export const GetBalancesDocument = gql`
+    query GetBalances($user: String!, $asset: String) {
+  stakes(where: {user: $user, asset: $asset}) {
+    id
+    shares
+    tenderizer {
+      id
+      tvl
+      shares
+      validator
+      symbol
+      name
+    }
+  }
+  unlocks(where: {user: $user, asset: $asset, redeemed: false}) {
+    id
+    amount
+    maturity
+    redeemed
+    tenderizer {
+      id
+      validator
+      symbol
+      name
+    }
+  }
+}
+    ` as unknown as DocumentNode<GetBalancesQuery, GetBalancesQueryVariables>;
+
+
+
+
+
+
+export type Requester<C = {}, E = unknown> = <R, V>(doc: DocumentNode, vars?: V, options?: C) => Promise<R> | AsyncIterable<R>
+export function getSdk<C, E>(requester: Requester<C, E>) {
+  return {
+    GetAsset(variables: GetAssetQueryVariables, options?: C): Promise<GetAssetQuery> {
+      return requester<GetAssetQuery, GetAssetQueryVariables>(GetAssetDocument, variables, options) as Promise<GetAssetQuery>;
+    },
+    GetTenderizers(variables?: GetTenderizersQueryVariables, options?: C): Promise<GetTenderizersQuery> {
+      return requester<GetTenderizersQuery, GetTenderizersQueryVariables>(GetTenderizersDocument, variables, options) as Promise<GetTenderizersQuery>;
+    },
+    GetTenderizer(variables: GetTenderizerQueryVariables, options?: C): Promise<GetTenderizerQuery> {
+      return requester<GetTenderizerQuery, GetTenderizerQueryVariables>(GetTenderizerDocument, variables, options) as Promise<GetTenderizerQuery>;
+    },
+    GetUser(variables: GetUserQueryVariables, options?: C): Promise<GetUserQuery> {
+      return requester<GetUserQuery, GetUserQueryVariables>(GetUserDocument, variables, options) as Promise<GetUserQuery>;
+    },
+    GetBalances(variables: GetBalancesQueryVariables, options?: C): Promise<GetBalancesQuery> {
+      return requester<GetBalancesQuery, GetBalancesQueryVariables>(GetBalancesDocument, variables, options) as Promise<GetBalancesQuery>;
+    }
+  };
+}
+export type Sdk = ReturnType<typeof getSdk>;

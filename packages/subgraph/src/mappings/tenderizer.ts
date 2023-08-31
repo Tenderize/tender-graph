@@ -1,4 +1,6 @@
-import { Asset, AssetDay, Tenderizer, Stake, Unlock } from '../types/schema'
+import { BigDecimal } from '@graphprotocol/graph-ts'
+
+import { Asset, AssetDay, Tenderizer, TenderizerDay, Stake, Unlock } from '../types/schema'
 import {
   Deposit,
   Unlock as UnlockEvent,
@@ -8,18 +10,19 @@ import {
   Rebase,
 } from '../types/templates/Tenderizer/Tenderizer'
 import { convertToDecimal, BD_ZERO } from './helpers'
-export function handleDeposit(event: Deposit): void {
-  let asset = Asset.load(event.address.toHex())
-  if (asset == null) return
-  asset.tvl = asset.tvl.plus(convertToDecimal(event.params.tTokenOut))
-  asset.save()
 
+export function handleDeposit(event: Deposit): void {
   let tenderizer = Tenderizer.load(event.address.toHex())
   if (tenderizer == null) return
   tenderizer.tvl = tenderizer.tvl.plus(convertToDecimal(event.params.tTokenOut))
   let shares = convertToDecimal(TenderizerContract.bind(event.address).convertToShares(event.params.tTokenOut))
   tenderizer.shares = tenderizer.shares.plus(shares)
   tenderizer.save()
+
+  let asset = Asset.load(tenderizer.asset)
+  if (asset == null) return
+  asset.tvl = asset.tvl.plus(convertToDecimal(event.params.tTokenOut))
+  asset.save()
 
   let stake = Stake.load(event.params.receiver.toHex().concat('-').concat(event.address.toHex()))
   if (stake == null) {
@@ -34,11 +37,6 @@ export function handleDeposit(event: Deposit): void {
 }
 
 export function handleUnlock(event: UnlockEvent): void {
-  let asset = Asset.load(event.address.toHex())
-  if (asset == null) return
-  asset.tvl = asset.tvl.minus(convertToDecimal(event.params.assets))
-  asset.save()
-
   let tenderizer = Tenderizer.load(event.address.toHex())
   if (tenderizer == null) return
   tenderizer.tvl = tenderizer.tvl.minus(convertToDecimal(event.params.assets))
@@ -46,9 +44,15 @@ export function handleUnlock(event: UnlockEvent): void {
   tenderizer.shares = tenderizer.shares.minus(shares)
   tenderizer.save()
 
+  let asset = Asset.load(tenderizer.asset)
+  if (asset == null) return
+  asset.tvl = asset.tvl.minus(convertToDecimal(event.params.assets))
+  asset.save()
+
   let stake = Stake.load(event.params.receiver.toHex().concat('-').concat(event.address.toHex()))
   if (stake == null) return
   stake.shares = stake.shares.minus(shares)
+  stake.save()
 
   // Encode id from event with tenderizer address
   // TODO: Turn into helper
@@ -56,6 +60,7 @@ export function handleUnlock(event: UnlockEvent): void {
   let unlockID = tenderizer.id.concat('0'.repeat(24 - id.length).concat(id))
   let unlock = new Unlock(unlockID)
   unlock.user = event.params.receiver.toHex()
+  unlock.asset = asset.id
   unlock.redeemed = false
   unlock.tenderizer = tenderizer.id
   unlock.amount = convertToDecimal(event.params.assets)
@@ -104,17 +109,17 @@ export function handleRebase(event: Rebase): void {
   let asset = Asset.load(tenderizer.asset)
   if (asset == null) return
 
-  tenderizer.tvl = convertToDecimal(event.params.newStake)
-
   let oldStake = convertToDecimal(event.params.oldStake)
   let newStake = convertToDecimal(event.params.newStake)
-  if (newStake.gt(oldStake)) {
-    asset.tvl = asset.tvl.plus(newStake.minus(oldStake))
-  } else if (newStake.lt(oldStake)) {
-    asset.tvl = asset.tvl.minus(oldStake.minus(newStake))
-  }
+  // if old stake equals zero, return to avoid division by zero
+  if (oldStake.equals(BD_ZERO)) return;
+  if (oldStake.equals(newStake)) return;
+
+  asset.tvl = asset.tvl.plus(newStake.minus(oldStake))
+  tenderizer.tvl = newStake
 
   let dayID = event.block.timestamp.toI32() / 86400
+
   let assetDay = AssetDay.load(asset.id.concat('-').concat(dayID.toString()))
 
   if (assetDay == null) {
@@ -126,6 +131,26 @@ export function handleRebase(event: Rebase): void {
   assetDay.tvl = asset.tvl
   assetDay.rewards = assetDay.rewards.plus(newStake.minus(oldStake))
 
+  let tenderizerDay = TenderizerDay.load(tenderizer.id.concat('-').concat(dayID.toString()))
+  if (tenderizerDay == null) {
+    tenderizerDay = new TenderizerDay(tenderizer.id.concat('-').concat(dayID.toString()))
+    tenderizerDay.date = dayID * 86400
+    tenderizerDay.tenderizer = tenderizer.id
+    tenderizerDay.rewards = BD_ZERO
+  }
+  tenderizerDay.tvl = tenderizer.tvl
+  tenderizerDay.rewards = tenderizerDay.rewards.plus(newStake.minus(oldStake))
+  tenderizerDay.shares = BD_ZERO
+
+  // Calculate APR for period
+  tenderizer.apr = BD_ZERO
+  let daysElapsed = dayID - tenderizer.lastUpdateDay.toI32()
+  tenderizer.apr = tenderizer.apr.plus(tenderizerDay.rewards
+    .div(oldStake)
+    .times(BigDecimal.fromString((365 / (daysElapsed ? daysElapsed : 1)).toString()))).div(BigDecimal.fromString('2'))
+
   asset.save()
   assetDay.save()
+  tenderizer.save()
+  tenderizerDay.save()
 }

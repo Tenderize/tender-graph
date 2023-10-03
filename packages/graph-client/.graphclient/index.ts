@@ -1448,7 +1448,7 @@ export type GetUserQuery = { user?: Maybe<(
     & { stakes?: Maybe<Array<(
       Pick<Stake, 'id' | 'shares'>
       & { tenderizer: (
-        Pick<Tenderizer, 'id' | 'validator' | 'symbol' | 'name'>
+        Pick<Tenderizer, 'id' | 'tvl' | 'shares' | 'validator' | 'symbol' | 'name'>
         & { asset: Pick<Asset, 'id'> }
       ) }
     )>>, unlocks?: Maybe<Array<(
@@ -1533,31 +1533,33 @@ export const GetUserDocument = gql`
     id
     stakes {
       id
+      shares
       tenderizer {
         id
-        asset {
-          id
-        }
+        tvl
+        shares
         validator
         symbol
         name
+        asset {
+          id
+        }
       }
-      shares
     }
     unlocks {
       id
-      tenderizer {
-        id
-        asset {
-          id
-        }
-        validator
-        symbol
-        name
-      }
       amount
       maturity
       redeemed
+      tenderizer {
+        id
+        validator
+        symbol
+        name
+        asset {
+          id
+        }
+      }
     }
   }
 }

@@ -2,34 +2,36 @@ query GetUser($id: ID!) {
   user(id: $id) {
     id
     stakes {
+    id
+    shares
+    tenderizer {
       id
-      tenderizer {
-        id
-        asset {
-          id
-        }
-        validator
-        symbol
-        name
-      }
+      tvl
       shares
-    }
-    unlocks {
-      id
-      tenderizer {
+      validator
+      symbol
+      name
+      asset {
         id
-        asset {
-          id
-        }
-        validator
-        symbol
-        name
       }
-      amount
-      maturity
-      redeemed
     }
   }
+    unlocks {
+    id
+    amount
+    maturity
+    redeemed
+    tenderizer {
+      id
+      validator
+      symbol
+      name
+      asset {
+        id
+      }
+    }
+  }
+}
 }
 
 query GetBalances($user: String!, $asset: String) {

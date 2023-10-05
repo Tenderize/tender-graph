@@ -19,6 +19,7 @@ export type Scalars = {
   BigDecimal: any;
   BigInt: any;
   Bytes: any;
+  Int8: any;
 };
 
 export type Asset = {
@@ -101,12 +102,17 @@ export type AssetDay_filter = {
   rewards_not_in?: InputMaybe<Array<Scalars['BigDecimal']>>;
   /** Filter for the block changed event. */
   _change_block?: InputMaybe<BlockChangedFilter>;
+  and?: InputMaybe<Array<InputMaybe<AssetDay_filter>>>;
+  or?: InputMaybe<Array<InputMaybe<AssetDay_filter>>>;
 };
 
 export type AssetDay_orderBy =
   | 'id'
   | 'date'
   | 'asset'
+  | 'asset__id'
+  | 'asset__tvl'
+  | 'asset__tenderizerCount'
   | 'tvl'
   | 'rewards';
 
@@ -138,6 +144,8 @@ export type Asset_filter = {
   assetDays_?: InputMaybe<AssetDay_filter>;
   /** Filter for the block changed event. */
   _change_block?: InputMaybe<BlockChangedFilter>;
+  and?: InputMaybe<Array<InputMaybe<Asset_filter>>>;
+  or?: InputMaybe<Array<InputMaybe<Asset_filter>>>;
 };
 
 export type Asset_orderBy =
@@ -401,13 +409,27 @@ export type Stake_filter = {
   shares_not_in?: InputMaybe<Array<Scalars['BigDecimal']>>;
   /** Filter for the block changed event. */
   _change_block?: InputMaybe<BlockChangedFilter>;
+  and?: InputMaybe<Array<InputMaybe<Stake_filter>>>;
+  or?: InputMaybe<Array<InputMaybe<Stake_filter>>>;
 };
 
 export type Stake_orderBy =
   | 'id'
   | 'user'
+  | 'user__id'
   | 'asset'
+  | 'asset__id'
+  | 'asset__tvl'
+  | 'asset__tenderizerCount'
   | 'tenderizer'
+  | 'tenderizer__id'
+  | 'tenderizer__symbol'
+  | 'tenderizer__name'
+  | 'tenderizer__validator'
+  | 'tenderizer__tvl'
+  | 'tenderizer__shares'
+  | 'tenderizer__apr'
+  | 'tenderizer__lastUpdateDay'
   | 'shares';
 
 export type Subscription = {
@@ -665,12 +687,22 @@ export type TenderizerDay_filter = {
   shares_not_in?: InputMaybe<Array<Scalars['BigDecimal']>>;
   /** Filter for the block changed event. */
   _change_block?: InputMaybe<BlockChangedFilter>;
+  and?: InputMaybe<Array<InputMaybe<TenderizerDay_filter>>>;
+  or?: InputMaybe<Array<InputMaybe<TenderizerDay_filter>>>;
 };
 
 export type TenderizerDay_orderBy =
   | 'id'
   | 'date'
   | 'tenderizer'
+  | 'tenderizer__id'
+  | 'tenderizer__symbol'
+  | 'tenderizer__name'
+  | 'tenderizer__validator'
+  | 'tenderizer__tvl'
+  | 'tenderizer__shares'
+  | 'tenderizer__apr'
+  | 'tenderizer__lastUpdateDay'
   | 'tvl'
   | 'rewards'
   | 'shares';
@@ -801,6 +833,8 @@ export type Tenderizer_filter = {
   lastUpdateDay_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
   /** Filter for the block changed event. */
   _change_block?: InputMaybe<BlockChangedFilter>;
+  and?: InputMaybe<Array<InputMaybe<Tenderizer_filter>>>;
+  or?: InputMaybe<Array<InputMaybe<Tenderizer_filter>>>;
 };
 
 export type Tenderizer_orderBy =
@@ -809,6 +843,9 @@ export type Tenderizer_orderBy =
   | 'name'
   | 'validator'
   | 'asset'
+  | 'asset__id'
+  | 'asset__tvl'
+  | 'asset__tenderizerCount'
   | 'tvl'
   | 'shares'
   | 'apr'
@@ -920,13 +957,27 @@ export type Unlock_filter = {
   redeemed_not_in?: InputMaybe<Array<Scalars['Boolean']>>;
   /** Filter for the block changed event. */
   _change_block?: InputMaybe<BlockChangedFilter>;
+  and?: InputMaybe<Array<InputMaybe<Unlock_filter>>>;
+  or?: InputMaybe<Array<InputMaybe<Unlock_filter>>>;
 };
 
 export type Unlock_orderBy =
   | 'id'
   | 'user'
+  | 'user__id'
   | 'asset'
+  | 'asset__id'
+  | 'asset__tvl'
+  | 'asset__tenderizerCount'
   | 'tenderizer'
+  | 'tenderizer__id'
+  | 'tenderizer__symbol'
+  | 'tenderizer__name'
+  | 'tenderizer__validator'
+  | 'tenderizer__tvl'
+  | 'tenderizer__shares'
+  | 'tenderizer__apr'
+  | 'tenderizer__lastUpdateDay'
   | 'amount'
   | 'maturity'
   | 'redeemed';
@@ -968,6 +1019,8 @@ export type User_filter = {
   unlocks_?: InputMaybe<Unlock_filter>;
   /** Filter for the block changed event. */
   _change_block?: InputMaybe<BlockChangedFilter>;
+  and?: InputMaybe<Array<InputMaybe<User_filter>>>;
+  or?: InputMaybe<Array<InputMaybe<User_filter>>>;
 };
 
 export type User_orderBy =

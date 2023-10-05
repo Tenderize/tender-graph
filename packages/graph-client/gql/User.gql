@@ -1,7 +1,5 @@
-query GetUser($id: ID!) {
-  user(id: $id) {
-    id
-    stakes {
+query GetUser($user: String!) {
+  stakes(where: { user: $user }) {
     id
     shares
     tenderizer {
@@ -16,7 +14,7 @@ query GetUser($id: ID!) {
       }
     }
   }
-    unlocks {
+  unlocks(where: { user: $user, redeemed: false }) {
     id
     amount
     maturity
@@ -31,7 +29,6 @@ query GetUser($id: ID!) {
       }
     }
   }
-}
 }
 
 query GetBalances($user: String!, $asset: String) {

@@ -3,13 +3,25 @@ import { GraphQLResolveInfo, SelectionSetNode, FieldNode, GraphQLScalarType, Gra
 import { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/core';
 import { gql } from '@graphql-mesh/utils';
 
-import { findAndParseConfig } from '@graphql-mesh/cli';
+import type { GetMeshOptions } from '@graphql-mesh/runtime';
+import type { YamlConfig } from '@graphql-mesh/types';
+import { PubSub } from '@graphql-mesh/utils';
+import { DefaultLogger } from '@graphql-mesh/utils';
+import MeshCache from "@graphql-mesh/cache-localforage";
+import { fetch as fetchFn } from '@whatwg-node/fetch';
+
+import { MeshResolvedSource } from '@graphql-mesh/runtime';
+import { MeshTransform, MeshPlugin } from '@graphql-mesh/types';
+import GraphqlHandler from "@graphql-mesh/graphql"
+import BareMerger from "@graphql-mesh/merger-bare";
+import { printWithCache } from '@graphql-mesh/utils';
 import { createMeshHTTPHandler, MeshHTTPHandler } from '@graphql-mesh/http';
 import { getMesh, ExecuteMeshFn, SubscribeMeshFn, MeshContext as BaseMeshContext, MeshInstance } from '@graphql-mesh/runtime';
 import { MeshStore, FsStoreStorageAdapter } from '@graphql-mesh/store';
 import { path as pathModule } from '@graphql-mesh/cross-helpers';
 import { ImportFn } from '@graphql-mesh/types';
 import type { TenderizeTenderizeLocalhostTypes } from './sources/tenderize/tenderize-localhost/types';
+import * as importedModule$0 from "./sources/tenderize/tenderize-localhost/introspectionSchema";
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
@@ -29,6 +41,7 @@ export type Scalars = {
   BigDecimal: any;
   BigInt: any;
   Bytes: any;
+  Int8: any;
 };
 
 export type Asset = {
@@ -111,12 +124,17 @@ export type AssetDay_filter = {
   rewards_not_in?: InputMaybe<Array<Scalars['BigDecimal']>>;
   /** Filter for the block changed event. */
   _change_block?: InputMaybe<BlockChangedFilter>;
+  and?: InputMaybe<Array<InputMaybe<AssetDay_filter>>>;
+  or?: InputMaybe<Array<InputMaybe<AssetDay_filter>>>;
 };
 
 export type AssetDay_orderBy =
   | 'id'
   | 'date'
   | 'asset'
+  | 'asset__id'
+  | 'asset__tvl'
+  | 'asset__tenderizerCount'
   | 'tvl'
   | 'rewards';
 
@@ -148,6 +166,8 @@ export type Asset_filter = {
   assetDays_?: InputMaybe<AssetDay_filter>;
   /** Filter for the block changed event. */
   _change_block?: InputMaybe<BlockChangedFilter>;
+  and?: InputMaybe<Array<InputMaybe<Asset_filter>>>;
+  or?: InputMaybe<Array<InputMaybe<Asset_filter>>>;
 };
 
 export type Asset_orderBy =
@@ -411,13 +431,27 @@ export type Stake_filter = {
   shares_not_in?: InputMaybe<Array<Scalars['BigDecimal']>>;
   /** Filter for the block changed event. */
   _change_block?: InputMaybe<BlockChangedFilter>;
+  and?: InputMaybe<Array<InputMaybe<Stake_filter>>>;
+  or?: InputMaybe<Array<InputMaybe<Stake_filter>>>;
 };
 
 export type Stake_orderBy =
   | 'id'
   | 'user'
+  | 'user__id'
   | 'asset'
+  | 'asset__id'
+  | 'asset__tvl'
+  | 'asset__tenderizerCount'
   | 'tenderizer'
+  | 'tenderizer__id'
+  | 'tenderizer__symbol'
+  | 'tenderizer__name'
+  | 'tenderizer__validator'
+  | 'tenderizer__tvl'
+  | 'tenderizer__shares'
+  | 'tenderizer__apr'
+  | 'tenderizer__lastUpdateDay'
   | 'shares';
 
 export type Subscription = {
@@ -675,12 +709,22 @@ export type TenderizerDay_filter = {
   shares_not_in?: InputMaybe<Array<Scalars['BigDecimal']>>;
   /** Filter for the block changed event. */
   _change_block?: InputMaybe<BlockChangedFilter>;
+  and?: InputMaybe<Array<InputMaybe<TenderizerDay_filter>>>;
+  or?: InputMaybe<Array<InputMaybe<TenderizerDay_filter>>>;
 };
 
 export type TenderizerDay_orderBy =
   | 'id'
   | 'date'
   | 'tenderizer'
+  | 'tenderizer__id'
+  | 'tenderizer__symbol'
+  | 'tenderizer__name'
+  | 'tenderizer__validator'
+  | 'tenderizer__tvl'
+  | 'tenderizer__shares'
+  | 'tenderizer__apr'
+  | 'tenderizer__lastUpdateDay'
   | 'tvl'
   | 'rewards'
   | 'shares';
@@ -811,6 +855,8 @@ export type Tenderizer_filter = {
   lastUpdateDay_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
   /** Filter for the block changed event. */
   _change_block?: InputMaybe<BlockChangedFilter>;
+  and?: InputMaybe<Array<InputMaybe<Tenderizer_filter>>>;
+  or?: InputMaybe<Array<InputMaybe<Tenderizer_filter>>>;
 };
 
 export type Tenderizer_orderBy =
@@ -819,6 +865,9 @@ export type Tenderizer_orderBy =
   | 'name'
   | 'validator'
   | 'asset'
+  | 'asset__id'
+  | 'asset__tvl'
+  | 'asset__tenderizerCount'
   | 'tvl'
   | 'shares'
   | 'apr'
@@ -930,13 +979,27 @@ export type Unlock_filter = {
   redeemed_not_in?: InputMaybe<Array<Scalars['Boolean']>>;
   /** Filter for the block changed event. */
   _change_block?: InputMaybe<BlockChangedFilter>;
+  and?: InputMaybe<Array<InputMaybe<Unlock_filter>>>;
+  or?: InputMaybe<Array<InputMaybe<Unlock_filter>>>;
 };
 
 export type Unlock_orderBy =
   | 'id'
   | 'user'
+  | 'user__id'
   | 'asset'
+  | 'asset__id'
+  | 'asset__tvl'
+  | 'asset__tenderizerCount'
   | 'tenderizer'
+  | 'tenderizer__id'
+  | 'tenderizer__symbol'
+  | 'tenderizer__name'
+  | 'tenderizer__validator'
+  | 'tenderizer__tvl'
+  | 'tenderizer__shares'
+  | 'tenderizer__apr'
+  | 'tenderizer__lastUpdateDay'
   | 'amount'
   | 'maturity'
   | 'redeemed';
@@ -978,6 +1041,8 @@ export type User_filter = {
   unlocks_?: InputMaybe<Unlock_filter>;
   /** Filter for the block changed event. */
   _change_block?: InputMaybe<BlockChangedFilter>;
+  and?: InputMaybe<Array<InputMaybe<User_filter>>>;
+  or?: InputMaybe<Array<InputMaybe<User_filter>>>;
 };
 
 export type User_orderBy =
@@ -1117,6 +1182,7 @@ export type ResolversTypes = ResolversObject<{
   Float: ResolverTypeWrapper<Scalars['Float']>;
   ID: ResolverTypeWrapper<Scalars['ID']>;
   Int: ResolverTypeWrapper<Scalars['Int']>;
+  Int8: ResolverTypeWrapper<Scalars['Int8']>;
   OrderDirection: OrderDirection;
   Query: ResolverTypeWrapper<{}>;
   Stake: ResolverTypeWrapper<Stake>;
@@ -1156,6 +1222,7 @@ export type ResolversParentTypes = ResolversObject<{
   Float: Scalars['Float'];
   ID: Scalars['ID'];
   Int: Scalars['Int'];
+  Int8: Scalars['Int8'];
   Query: {};
   Stake: Stake;
   Stake_filter: Stake_filter;
@@ -1216,6 +1283,10 @@ export interface BigIntScalarConfig extends GraphQLScalarTypeConfig<ResolversTyp
 
 export interface BytesScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['Bytes'], any> {
   name: 'Bytes';
+}
+
+export interface Int8ScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['Int8'], any> {
+  name: 'Int8';
 }
 
 export type QueryResolvers<ContextType = MeshContext, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = ResolversObject<{
@@ -1326,6 +1397,7 @@ export type Resolvers<ContextType = MeshContext> = ResolversObject<{
   BigDecimal?: GraphQLScalarType;
   BigInt?: GraphQLScalarType;
   Bytes?: GraphQLScalarType;
+  Int8?: GraphQLScalarType;
   Query?: QueryResolvers<ContextType>;
   Stake?: StakeResolvers<ContextType>;
   Subscription?: SubscriptionResolvers<ContextType>;
@@ -1351,6 +1423,9 @@ const baseDir = pathModule.join(typeof __dirname === 'string' ? __dirname : '/',
 const importFn: ImportFn = <T>(moduleId: string) => {
   const relativeModuleId = (pathModule.isAbsolute(moduleId) ? pathModule.relative(baseDir, moduleId) : moduleId).split('\\').join('/').replace(baseDir + '/', '');
   switch(relativeModuleId) {
+    case ".graphclient/sources/tenderize/tenderize-localhost/introspectionSchema":
+      return Promise.resolve(importedModule$0) as T;
+    
     default:
       return Promise.reject(new Error(`Cannot find module '${relativeModuleId}'.`));
   }
@@ -1365,15 +1440,94 @@ const rootStore = new MeshStore('.graphclient', new FsStoreStorageAdapter({
   validate: false
 });
 
-export function getMeshOptions() {
-  console.warn('WARNING: These artifacts are built for development mode. Please run "graphclient build" to build production artifacts');
-  return findAndParseConfig({
-    dir: baseDir,
-    artifactsDir: ".graphclient",
-    configName: "graphclient",
-    additionalPackagePrefixes: ["@graphprotocol/client-"],
-    initialLoggerPrefix: "GraphClient",
-  });
+export const rawServeConfig: YamlConfig.Config['serve'] = undefined as any
+export async function getMeshOptions(): Promise<GetMeshOptions> {
+const pubsub = new PubSub();
+const sourcesStore = rootStore.child('sources');
+const logger = new DefaultLogger("GraphClient");
+const cache = new (MeshCache as any)({
+      ...({} as any),
+      importFn,
+      store: rootStore.child('cache'),
+      pubsub,
+      logger,
+    } as any)
+
+const sources: MeshResolvedSource[] = [];
+const transforms: MeshTransform[] = [];
+const additionalEnvelopPlugins: MeshPlugin<any>[] = [];
+const tenderizeTenderizeLocalhostTransforms = [];
+const additionalTypeDefs = [] as any[];
+const tenderizeTenderizeLocalhostHandler = new GraphqlHandler({
+              name: "tenderize/tenderize-localhost",
+              config: {"endpoint":"http://127.0.0.1:8000/subgraphs/name/tenderize/tenderize-localhost"},
+              baseDir,
+              cache,
+              pubsub,
+              store: sourcesStore.child("tenderize/tenderize-localhost"),
+              logger: logger.child("tenderize/tenderize-localhost"),
+              importFn,
+            });
+sources[0] = {
+          name: 'tenderize/tenderize-localhost',
+          handler: tenderizeTenderizeLocalhostHandler,
+          transforms: tenderizeTenderizeLocalhostTransforms
+        }
+const additionalResolvers = [] as any[]
+const merger = new(BareMerger as any)({
+        cache,
+        pubsub,
+        logger: logger.child('bareMerger'),
+        store: rootStore.child('bareMerger')
+      })
+
+  return {
+    sources,
+    transforms,
+    additionalTypeDefs,
+    additionalResolvers,
+    cache,
+    pubsub,
+    merger,
+    logger,
+    additionalEnvelopPlugins,
+    get documents() {
+      return [
+      {
+        document: GetAssetDocument,
+        get rawSDL() {
+          return printWithCache(GetAssetDocument);
+        },
+        location: 'GetAssetDocument.graphql'
+      },{
+        document: GetTenderizersDocument,
+        get rawSDL() {
+          return printWithCache(GetTenderizersDocument);
+        },
+        location: 'GetTenderizersDocument.graphql'
+      },{
+        document: GetTenderizerDocument,
+        get rawSDL() {
+          return printWithCache(GetTenderizerDocument);
+        },
+        location: 'GetTenderizerDocument.graphql'
+      },{
+        document: GetUserDocument,
+        get rawSDL() {
+          return printWithCache(GetUserDocument);
+        },
+        location: 'GetUserDocument.graphql'
+      },{
+        document: GetBalancesDocument,
+        get rawSDL() {
+          return printWithCache(GetBalancesDocument);
+        },
+        location: 'GetBalancesDocument.graphql'
+      }
+    ];
+    },
+    fetchFn,
+  };
 }
 
 export function createBuiltMeshHTTPHandler<TServerContext = {}>(): MeshHTTPHandler<TServerContext> {
@@ -1383,6 +1537,7 @@ export function createBuiltMeshHTTPHandler<TServerContext = {}>(): MeshHTTPHandl
     rawServeConfig: undefined,
   })
 }
+
 
 let meshInstance$: Promise<MeshInstance> | undefined;
 
@@ -1439,25 +1594,22 @@ export type GetTenderizerQuery = { tenderizer?: Maybe<(
   )> };
 
 export type GetUserQueryVariables = Exact<{
-  id: Scalars['ID'];
+  user: Scalars['String'];
 }>;
 
 
-export type GetUserQuery = { user?: Maybe<(
-    Pick<User, 'id'>
-    & { stakes?: Maybe<Array<(
-      Pick<Stake, 'id' | 'shares'>
-      & { tenderizer: (
-        Pick<Tenderizer, 'id' | 'tvl' | 'shares' | 'validator' | 'symbol' | 'name'>
-        & { asset: Pick<Asset, 'id'> }
-      ) }
-    )>>, unlocks?: Maybe<Array<(
-      Pick<Unlock, 'id' | 'amount' | 'maturity' | 'redeemed'>
-      & { tenderizer: (
-        Pick<Tenderizer, 'id' | 'validator' | 'symbol' | 'name'>
-        & { asset: Pick<Asset, 'id'> }
-      ) }
-    )>> }
+export type GetUserQuery = { stakes: Array<(
+    Pick<Stake, 'id' | 'shares'>
+    & { tenderizer: (
+      Pick<Tenderizer, 'id' | 'tvl' | 'shares' | 'validator' | 'symbol' | 'name'>
+      & { asset: Pick<Asset, 'id'> }
+    ) }
+  )>, unlocks: Array<(
+    Pick<Unlock, 'id' | 'amount' | 'maturity' | 'redeemed'>
+    & { tenderizer: (
+      Pick<Tenderizer, 'id' | 'validator' | 'symbol' | 'name'>
+      & { asset: Pick<Asset, 'id'> }
+    ) }
   )> };
 
 export type GetBalancesQueryVariables = Exact<{
@@ -1528,37 +1680,34 @@ export const GetTenderizerDocument = gql`
 }
     ` as unknown as DocumentNode<GetTenderizerQuery, GetTenderizerQueryVariables>;
 export const GetUserDocument = gql`
-    query GetUser($id: ID!) {
-  user(id: $id) {
+    query GetUser($user: String!) {
+  stakes(where: {user: $user}) {
     id
-    stakes {
+    shares
+    tenderizer {
       id
+      tvl
       shares
-      tenderizer {
+      validator
+      symbol
+      name
+      asset {
         id
-        tvl
-        shares
-        validator
-        symbol
-        name
-        asset {
-          id
-        }
       }
     }
-    unlocks {
+  }
+  unlocks(where: {user: $user, redeemed: false}) {
+    id
+    amount
+    maturity
+    redeemed
+    tenderizer {
       id
-      amount
-      maturity
-      redeemed
-      tenderizer {
+      validator
+      symbol
+      name
+      asset {
         id
-        validator
-        symbol
-        name
-        asset {
-          id
-        }
       }
     }
   }

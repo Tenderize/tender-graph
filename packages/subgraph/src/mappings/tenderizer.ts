@@ -1,6 +1,6 @@
 import { BigDecimal } from '@graphprotocol/graph-ts'
 
-import { Asset, AssetDay, Tenderizer, TenderizerDay, Stake, Unlock } from '../types/schema'
+import { Asset, AssetDay, Tenderizer, TenderizerDay, Stake, Unlock, User } from '../types/schema'
 import {
   Deposit,
   Unlock as UnlockEvent,
@@ -24,16 +24,24 @@ export function handleDeposit(event: Deposit): void {
   asset.tvl = asset.tvl.plus(convertToDecimal(event.params.tTokenOut))
   asset.save()
 
-  let stake = Stake.load(event.params.receiver.toHex().concat('-').concat(event.address.toHex()))
+  const receiver = event.params.receiver.toHex()
+
+  let stake = Stake.load(receiver.concat('-').concat(event.address.toHex()))
   if (stake == null) {
     stake = new Stake(event.params.receiver.toHex().concat('-').concat(event.address.toHex()))
     stake.asset = asset.id
     stake.tenderizer = tenderizer.id
-    stake.user = event.params.receiver.toHex()
+    stake.user = receiver
     stake.shares = BD_ZERO
   }
   stake.shares = stake.shares.plus(shares)
   stake.save()
+
+  let user = User.load(receiver)
+  if (user == null) {
+    user = new User(receiver)
+    user.save()
+  }
 }
 
 export function handleUnlock(event: UnlockEvent): void {

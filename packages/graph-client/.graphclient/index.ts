@@ -1594,23 +1594,23 @@ export type GetTenderizerQuery = { tenderizer?: Maybe<(
   )> };
 
 export type GetUserQueryVariables = Exact<{
-  user: Scalars['String'];
+  user: Scalars['ID'];
 }>;
 
 
-export type GetUserQuery = { stakes: Array<(
-    Pick<Stake, 'id' | 'shares'>
-    & { tenderizer: (
-      Pick<Tenderizer, 'id' | 'tvl' | 'shares' | 'validator' | 'symbol' | 'name'>
-      & { asset: Pick<Asset, 'id'> }
-    ) }
-  )>, unlocks: Array<(
-    Pick<Unlock, 'id' | 'amount' | 'maturity' | 'redeemed'>
-    & { tenderizer: (
-      Pick<Tenderizer, 'id' | 'validator' | 'symbol' | 'name'>
-      & { asset: Pick<Asset, 'id'> }
-    ) }
-  )> };
+export type GetUserQuery = { user?: Maybe<{ stakes?: Maybe<Array<(
+      Pick<Stake, 'id' | 'shares'>
+      & { tenderizer: (
+        Pick<Tenderizer, 'id' | 'tvl' | 'shares' | 'validator' | 'symbol' | 'name'>
+        & { asset: Pick<Asset, 'id'> }
+      ) }
+    )>>, unlocks?: Maybe<Array<(
+      Pick<Unlock, 'id' | 'amount' | 'maturity' | 'redeemed'>
+      & { tenderizer: (
+        Pick<Tenderizer, 'id' | 'validator' | 'symbol' | 'name'>
+        & { asset: Pick<Asset, 'id'> }
+      ) }
+    )>> }> };
 
 export type GetBalancesQueryVariables = Exact<{
   user: Scalars['String'];
@@ -1680,34 +1680,36 @@ export const GetTenderizerDocument = gql`
 }
     ` as unknown as DocumentNode<GetTenderizerQuery, GetTenderizerQueryVariables>;
 export const GetUserDocument = gql`
-    query GetUser($user: String!) {
-  stakes(where: {user: $user}) {
-    id
-    shares
-    tenderizer {
+    query GetUser($user: ID!) {
+  user(id: $user) {
+    stakes {
       id
-      tvl
       shares
-      validator
-      symbol
-      name
-      asset {
+      tenderizer {
         id
+        tvl
+        shares
+        validator
+        symbol
+        name
+        asset {
+          id
+        }
       }
     }
-  }
-  unlocks(where: {user: $user, redeemed: false}) {
-    id
-    amount
-    maturity
-    redeemed
-    tenderizer {
+    unlocks(where: {redeemed: false}) {
       id
-      validator
-      symbol
-      name
-      asset {
+      amount
+      maturity
+      redeemed
+      tenderizer {
         id
+        validator
+        symbol
+        name
+        asset {
+          id
+        }
       }
     }
   }

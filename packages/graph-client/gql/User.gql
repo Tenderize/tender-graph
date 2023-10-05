@@ -1,31 +1,33 @@
-query GetUser($user: String!) {
-  stakes(where: { user: $user }) {
-    id
-    shares
-    tenderizer {
+query GetUser($user: ID!) {
+  user(id: $user) {
+    stakes {
       id
-      tvl
       shares
-      validator
-      symbol
-      name
-      asset {
+      tenderizer {
         id
+        tvl
+        shares
+        validator
+        symbol
+        name
+        asset {
+          id
+        }
       }
     }
-  }
-  unlocks(where: { user: $user, redeemed: false }) {
-    id
-    amount
-    maturity
-    redeemed
-    tenderizer {
+    unlocks(where: { redeemed: false }) {
       id
-      validator
-      symbol
-      name
-      asset {
+      amount
+      maturity
+      redeemed
+      tenderizer {
         id
+        validator
+        symbol
+        name
+        asset {
+          id
+        }
       }
     }
   }

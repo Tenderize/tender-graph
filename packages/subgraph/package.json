@@ -10,15 +10,16 @@
     "create:local": "graph create tenderize/tenderize-localhost --node http://127.0.0.1:8020",
     "deploy:local": "graph deploy tenderize/tenderize-localhost -l \"v0.0.1\" --ipfs http://127.0.0.1:5001 --node http://127.0.0.1:8020",
     "prepare": "node ./templatify.js",
-    "prepare:arbitrum-rinkeby": "NETWORK_NAME=arbitrum-rinkeby node ./templatify.js",
+    "prepare:arbitrum-goerli": "NETWORK_NAME=arbitrum-goerli node ./templatify.js",
     "prepare:arbitrum": "NETWORK_NAME=arbitrum-one node ./templatify.js",
     "prepare:mainnet": "NETWORK_NAME=mainnet node ./templatify.js",
     "prepare:localhost": "NETWORK_NAME=localhost node ./templatify.js",
-    "auth": "graph auth https://api.thegraph.com/ $GRAPH_ACCESS_TOKEN",
+    "auth": "graph auth --studio $GRAPH_ACCESS_TOKEN",
     "build": "graph build",
     "codegen": "graph codegen --output-dir src/types/",
     "prettier:check": "prettier --check \"**/*.{ts,md,yaml,graphql}\"",
-    "prettier:write": "prettier --write \"**/*.{ts,md,yaml,graphql}\""
+    "prettier:write": "prettier --write \"**/*.{ts,md,yaml,graphql}\"",
+    "deploy": "graph deploy --studio ${SUBGRAPH_NAME}"
   },
   "devDependencies": {
     "@graphprotocol/graph-cli": "^0.51.1",

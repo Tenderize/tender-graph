@@ -10,3 +10,6 @@ arbitrum-one:
 localhost:
   networkName: localhost
   startBlock: 0
+arbitrum-goerli:
+  networkName: arbitrum-goerli
+  startBlock: 48901518

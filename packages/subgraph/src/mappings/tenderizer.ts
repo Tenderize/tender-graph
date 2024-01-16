@@ -1,17 +1,17 @@
 import { BigDecimal } from '@graphprotocol/graph-ts'
 
-import { Asset, AssetDay, Tenderizer, TenderizerDay, Stake, Unlock, User } from '../types/schema'
+import { Asset, AssetDay, Tenderizer, TenderizerDay, Stake, Unlock, User, DepositEvent, UnlockEvent, WithdrawEvent, RebaseEvent, TokenTransferEvent } from '../types/schema'
 import {
-  Deposit,
-  Unlock as UnlockEvent,
-  Withdraw,
-  Transfer,
+  Deposit as EmitDeposit,
+  Unlock as EmitUnlock,
+  Withdraw as EmitWithdraw,
+  Transfer as EmitTransfer,
   Tenderizer as TenderizerContract,
-  Rebase,
+  Rebase as EmitRebase,
 } from '../types/templates/Tenderizer/Tenderizer'
 import { convertToDecimal, BD_ZERO } from './helpers'
 
-export function handleDeposit(event: Deposit): void {
+export function handleDeposit(event: EmitDeposit): void {
   let tenderizer = Tenderizer.load(event.address.toHex())
   if (tenderizer == null) return
   tenderizer.tvl = tenderizer.tvl.plus(convertToDecimal(event.params.tTokenOut))
@@ -42,9 +42,19 @@ export function handleDeposit(event: Deposit): void {
     user = new User(receiver)
     user.save()
   }
+
+  let depositEvent = new DepositEvent(event.transaction.hash.toHex())
+  depositEvent.timestamp = event.block.timestamp.toI32()
+  depositEvent.assetsIn = convertToDecimal(event.params.assetsIn)
+  depositEvent.tTokenOut = convertToDecimal(event.params.tTokenOut)
+  depositEvent.shares = shares
+  depositEvent.asset = asset.id
+  depositEvent.tenderizer = tenderizer.id
+  depositEvent.user = user.id
+  depositEvent.save()
 }
 
-export function handleUnlock(event: UnlockEvent): void {
+export function handleUnlock(event: EmitUnlock): void {
   let tenderizer = Tenderizer.load(event.address.toHex())
   if (tenderizer == null) return
   tenderizer.tvl = tenderizer.tvl.minus(convertToDecimal(event.params.assets))
@@ -64,28 +74,48 @@ export function handleUnlock(event: UnlockEvent): void {
 
   // Encode id from event with tenderizer address
   // TODO: Turn into helper
-  let id = event.params.unlockID.toString()
+  let id = event.params.unlockID.toHex().slice(2)
   let unlockID = tenderizer.id.concat('0'.repeat(24 - id.length).concat(id))
   let unlock = new Unlock(unlockID)
   unlock.user = event.params.receiver.toHex()
+  unlock.timestamp = event.block.timestamp.toI32()
   unlock.asset = asset.id
   unlock.redeemed = false
   unlock.tenderizer = tenderizer.id
   unlock.amount = convertToDecimal(event.params.assets)
-  unlock.maturity = TenderizerContract.bind(event.address).unlockMaturity(event.params.unlockID)
+  unlock.maturity = TenderizerContract.bind(event.address).unlockMaturity(event.params.unlockID).toI32()
   unlock.save()
+
+  let unlockEvent = new UnlockEvent(event.transaction.hash.toHex())
+  unlockEvent.timestamp = event.block.timestamp.toI32()
+  unlockEvent.amount = convertToDecimal(event.params.assets)
+  unlockEvent.shares = convertToDecimal(TenderizerContract.bind(event.address).convertToShares(event.params.assets))
+  unlockEvent.unlock = unlock.id
+  unlockEvent.asset = asset.id
+  unlockEvent.tenderizer = tenderizer.id
+  unlockEvent.user = event.params.receiver.toHex()
+  unlockEvent.save()
 }
 
-export function handleWithdraw(event: Withdraw): void {
+export function handleWithdraw(event: EmitWithdraw): void {
   let id = event.params.unlockID.toString()
   let unlockID = event.address.toHex().concat('0'.repeat(24 - id.length).concat(id))
   let unlock = Unlock.load(unlockID)
   if (unlock == null) return
   unlock.redeemed = true
   unlock.save()
+
+  let withdrawEvent = new WithdrawEvent(event.transaction.hash.toHex())
+  withdrawEvent.timestamp = event.block.timestamp.toI32()
+  withdrawEvent.assetsOut = convertToDecimal(event.params.assets)
+  withdrawEvent.unlock = unlock.id
+  withdrawEvent.asset = unlock.asset
+  withdrawEvent.tenderizer = unlock.tenderizer
+  withdrawEvent.user = unlock.user
+  withdrawEvent.save()
 }
 
-export function handleTransfer(event: Transfer): void {
+export function handleTransfer(event: EmitTransfer): void {
   let tenderizer = Tenderizer.load(event.address.toHex())
   if (tenderizer == null) return
 
@@ -108,9 +138,19 @@ export function handleTransfer(event: Transfer): void {
   }
   to.shares = to.shares.plus(shares)
   to.save()
+
+  let transferEvent = new TokenTransferEvent(event.transaction.hash.toHex())
+  transferEvent.timestamp = event.block.timestamp.toI32()
+  transferEvent.from = event.params.from.toHex()
+  transferEvent.to = event.params.to.toHex()
+  transferEvent.amount = convertToDecimal(event.params.value)
+  transferEvent.shares = shares
+  transferEvent.asset = tenderizer.asset
+  transferEvent.tenderizer = tenderizer.id
+  transferEvent.save()
 }
 
-export function handleRebase(event: Rebase): void {
+export function handleRebase(event: EmitRebase): void {
   let tenderizer = Tenderizer.load(event.address.toHex())
   if (tenderizer == null) return
 
@@ -161,4 +201,12 @@ export function handleRebase(event: Rebase): void {
   assetDay.save()
   tenderizer.save()
   tenderizerDay.save()
+
+  let rebaseEvent = new RebaseEvent(event.transaction.hash.toHex())
+  rebaseEvent.timestamp = event.block.timestamp.toI32()
+  rebaseEvent.oldStake = oldStake
+  rebaseEvent.newStake = newStake
+  rebaseEvent.asset = asset.id
+  rebaseEvent.tenderizer = tenderizer.id
+  rebaseEvent.save()
 }

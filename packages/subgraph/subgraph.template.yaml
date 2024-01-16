@@ -9,7 +9,7 @@ dataSources:
     network: '{{ networkName }}'
     source:
       startBlock: {{ startBlock}} # Define start block
-      address: '0x8A89ee359EF0C92e3A8c3af11d1D675d3DF16B2f' # Define deterministic Registry address here
+      address: '0x6232894e592F104FB561c1Fb59a52ea01ee7D867' # Define deterministic Registry address here
       abi: Registry
     mapping:
       kind: ethereum/events

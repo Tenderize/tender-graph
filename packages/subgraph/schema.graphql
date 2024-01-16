@@ -23,9 +23,17 @@ type Tenderizer @entity {
 
   # balances
   stakes: [Stake!]! @derivedFrom(field: "tenderizer")
+  
   # time series
   tenderizerDays: [TenderizerDay!]! @derivedFrom(field: "tenderizer")
   lastUpdateDay: BigInt! # last day the tenderizer was updated
+
+  # events
+  depositEvents: [DepositEvent!]! @derivedFrom(field: "tenderizer")
+  unlockEvents: [UnlockEvent!]! @derivedFrom(field: "tenderizer")
+  withdrawEvents: [WithdrawEvent!]! @derivedFrom(field: "tenderizer")
+  rebaseEvents: [RebaseEvent!]! @derivedFrom(field: "tenderizer")
+  tokenTransferEvents: [TokenTransferEvent!]! @derivedFrom(field: "tenderizer")
 }
 
 type User @entity {
@@ -48,7 +56,8 @@ type Unlock @entity {
   asset: Asset!
   tenderizer: Tenderizer!
   amount: BigDecimal!
-  maturity: BigInt!
+  timestamp: Int!
+  maturity: Int!
   redeemed: Boolean!
 }
 
@@ -76,4 +85,73 @@ type TenderizerDay @entity {
   tvl: BigDecimal!
   rewards: BigDecimal!
   shares: BigDecimal!
+}
+
+# Events
+
+type DepositEvent @entity {
+  id: ID! 
+  timestamp: Int!
+  
+  assetsIn: BigDecimal!
+  tTokenOut: BigDecimal!
+  shares: BigDecimal!
+
+  # Relational fields
+  user: User!
+  asset: Asset!
+  tenderizer: Tenderizer!
+}
+
+type UnlockEvent @entity {
+  id: ID! 
+  timestamp: Int!
+  
+  amount: BigDecimal!
+  shares: BigDecimal!
+  unlock: Unlock! # the unlock that was created
+
+  # Relational fields
+  user: User!
+  asset: Asset!
+  tenderizer: Tenderizer!
+}
+
+type WithdrawEvent @entity {
+  id: ID! 
+  timestamp: Int!
+  
+  assetsOut: BigDecimal!
+  unlock: Unlock! # the unlock that was consumed
+
+  # Relational fields
+  user: User!
+  asset: Asset!
+  tenderizer: Tenderizer!
+}
+
+type RebaseEvent @entity {
+  id: ID! 
+  timestamp: Int!
+  
+  oldStake: BigDecimal!
+  newStake: BigDecimal!
+
+  # Relational fields
+  asset: Asset!
+  tenderizer: Tenderizer!
+}
+
+type TokenTransferEvent @entity {
+  id: ID! 
+  timestamp: Int!
+  
+  amount: BigDecimal!
+  shares: BigDecimal!
+  from: User!
+  to: User!
+
+  # Relational fields
+  asset: Asset!
+  tenderizer: Tenderizer!
 }

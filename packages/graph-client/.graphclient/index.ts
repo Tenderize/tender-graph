@@ -3,25 +3,13 @@ import { GraphQLResolveInfo, SelectionSetNode, FieldNode, GraphQLScalarType, Gra
 import { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/core';
 import { gql } from '@graphql-mesh/utils';
 
-import type { GetMeshOptions } from '@graphql-mesh/runtime';
-import type { YamlConfig } from '@graphql-mesh/types';
-import { PubSub } from '@graphql-mesh/utils';
-import { DefaultLogger } from '@graphql-mesh/utils';
-import MeshCache from "@graphql-mesh/cache-localforage";
-import { fetch as fetchFn } from '@whatwg-node/fetch';
-
-import { MeshResolvedSource } from '@graphql-mesh/runtime';
-import { MeshTransform, MeshPlugin } from '@graphql-mesh/types';
-import GraphqlHandler from "@graphql-mesh/graphql"
-import BareMerger from "@graphql-mesh/merger-bare";
-import { printWithCache } from '@graphql-mesh/utils';
+import { findAndParseConfig } from '@graphql-mesh/cli';
 import { createMeshHTTPHandler, MeshHTTPHandler } from '@graphql-mesh/http';
 import { getMesh, ExecuteMeshFn, SubscribeMeshFn, MeshContext as BaseMeshContext, MeshInstance } from '@graphql-mesh/runtime';
 import { MeshStore, FsStoreStorageAdapter } from '@graphql-mesh/store';
 import { path as pathModule } from '@graphql-mesh/cross-helpers';
 import { ImportFn } from '@graphql-mesh/types';
-import type { TenderizeTenderizeLocalhostTypes } from './sources/tenderize/tenderize-localhost/types';
-import * as importedModule$0 from "./sources/tenderize/tenderize-localhost/introspectionSchema";
+import type { TenderizeTypes } from './sources/Tenderize/types';
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
@@ -42,6 +30,513 @@ export type Scalars = {
   BigInt: any;
   Bytes: any;
   Int8: any;
+};
+
+export type Query = {
+  asset?: Maybe<Asset>;
+  assets: Array<Asset>;
+  tenderizer?: Maybe<Tenderizer>;
+  tenderizers: Array<Tenderizer>;
+  user?: Maybe<User>;
+  users: Array<User>;
+  stake?: Maybe<Stake>;
+  stakes: Array<Stake>;
+  unlock?: Maybe<Unlock>;
+  unlocks: Array<Unlock>;
+  assetDay?: Maybe<AssetDay>;
+  assetDays: Array<AssetDay>;
+  tenderizerDay?: Maybe<TenderizerDay>;
+  tenderizerDays: Array<TenderizerDay>;
+  depositEvent?: Maybe<DepositEvent>;
+  depositEvents: Array<DepositEvent>;
+  unlockEvent?: Maybe<UnlockEvent>;
+  unlockEvents: Array<UnlockEvent>;
+  withdrawEvent?: Maybe<WithdrawEvent>;
+  withdrawEvents: Array<WithdrawEvent>;
+  rebaseEvent?: Maybe<RebaseEvent>;
+  rebaseEvents: Array<RebaseEvent>;
+  tokenTransferEvent?: Maybe<TokenTransferEvent>;
+  tokenTransferEvents: Array<TokenTransferEvent>;
+  /** Access to subgraph metadata */
+  _meta?: Maybe<_Meta_>;
+  getUserMultichain: User;
+};
+
+
+export type QueryassetArgs = {
+  id: Scalars['ID'];
+  block?: InputMaybe<Block_height>;
+  subgraphError?: _SubgraphErrorPolicy_;
+};
+
+
+export type QueryassetsArgs = {
+  skip?: InputMaybe<Scalars['Int']>;
+  first?: InputMaybe<Scalars['Int']>;
+  orderBy?: InputMaybe<Asset_orderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  where?: InputMaybe<Asset_filter>;
+  block?: InputMaybe<Block_height>;
+  subgraphError?: _SubgraphErrorPolicy_;
+};
+
+
+export type QuerytenderizerArgs = {
+  id: Scalars['ID'];
+  block?: InputMaybe<Block_height>;
+  subgraphError?: _SubgraphErrorPolicy_;
+};
+
+
+export type QuerytenderizersArgs = {
+  skip?: InputMaybe<Scalars['Int']>;
+  first?: InputMaybe<Scalars['Int']>;
+  orderBy?: InputMaybe<Tenderizer_orderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  where?: InputMaybe<Tenderizer_filter>;
+  block?: InputMaybe<Block_height>;
+  subgraphError?: _SubgraphErrorPolicy_;
+};
+
+
+export type QueryuserArgs = {
+  id: Scalars['ID'];
+  block?: InputMaybe<Block_height>;
+  subgraphError?: _SubgraphErrorPolicy_;
+};
+
+
+export type QueryusersArgs = {
+  skip?: InputMaybe<Scalars['Int']>;
+  first?: InputMaybe<Scalars['Int']>;
+  orderBy?: InputMaybe<User_orderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  where?: InputMaybe<User_filter>;
+  block?: InputMaybe<Block_height>;
+  subgraphError?: _SubgraphErrorPolicy_;
+};
+
+
+export type QuerystakeArgs = {
+  id: Scalars['ID'];
+  block?: InputMaybe<Block_height>;
+  subgraphError?: _SubgraphErrorPolicy_;
+};
+
+
+export type QuerystakesArgs = {
+  skip?: InputMaybe<Scalars['Int']>;
+  first?: InputMaybe<Scalars['Int']>;
+  orderBy?: InputMaybe<Stake_orderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  where?: InputMaybe<Stake_filter>;
+  block?: InputMaybe<Block_height>;
+  subgraphError?: _SubgraphErrorPolicy_;
+};
+
+
+export type QueryunlockArgs = {
+  id: Scalars['ID'];
+  block?: InputMaybe<Block_height>;
+  subgraphError?: _SubgraphErrorPolicy_;
+};
+
+
+export type QueryunlocksArgs = {
+  skip?: InputMaybe<Scalars['Int']>;
+  first?: InputMaybe<Scalars['Int']>;
+  orderBy?: InputMaybe<Unlock_orderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  where?: InputMaybe<Unlock_filter>;
+  block?: InputMaybe<Block_height>;
+  subgraphError?: _SubgraphErrorPolicy_;
+};
+
+
+export type QueryassetDayArgs = {
+  id: Scalars['ID'];
+  block?: InputMaybe<Block_height>;
+  subgraphError?: _SubgraphErrorPolicy_;
+};
+
+
+export type QueryassetDaysArgs = {
+  skip?: InputMaybe<Scalars['Int']>;
+  first?: InputMaybe<Scalars['Int']>;
+  orderBy?: InputMaybe<AssetDay_orderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  where?: InputMaybe<AssetDay_filter>;
+  block?: InputMaybe<Block_height>;
+  subgraphError?: _SubgraphErrorPolicy_;
+};
+
+
+export type QuerytenderizerDayArgs = {
+  id: Scalars['ID'];
+  block?: InputMaybe<Block_height>;
+  subgraphError?: _SubgraphErrorPolicy_;
+};
+
+
+export type QuerytenderizerDaysArgs = {
+  skip?: InputMaybe<Scalars['Int']>;
+  first?: InputMaybe<Scalars['Int']>;
+  orderBy?: InputMaybe<TenderizerDay_orderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  where?: InputMaybe<TenderizerDay_filter>;
+  block?: InputMaybe<Block_height>;
+  subgraphError?: _SubgraphErrorPolicy_;
+};
+
+
+export type QuerydepositEventArgs = {
+  id: Scalars['ID'];
+  block?: InputMaybe<Block_height>;
+  subgraphError?: _SubgraphErrorPolicy_;
+};
+
+
+export type QuerydepositEventsArgs = {
+  skip?: InputMaybe<Scalars['Int']>;
+  first?: InputMaybe<Scalars['Int']>;
+  orderBy?: InputMaybe<DepositEvent_orderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  where?: InputMaybe<DepositEvent_filter>;
+  block?: InputMaybe<Block_height>;
+  subgraphError?: _SubgraphErrorPolicy_;
+};
+
+
+export type QueryunlockEventArgs = {
+  id: Scalars['ID'];
+  block?: InputMaybe<Block_height>;
+  subgraphError?: _SubgraphErrorPolicy_;
+};
+
+
+export type QueryunlockEventsArgs = {
+  skip?: InputMaybe<Scalars['Int']>;
+  first?: InputMaybe<Scalars['Int']>;
+  orderBy?: InputMaybe<UnlockEvent_orderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  where?: InputMaybe<UnlockEvent_filter>;
+  block?: InputMaybe<Block_height>;
+  subgraphError?: _SubgraphErrorPolicy_;
+};
+
+
+export type QuerywithdrawEventArgs = {
+  id: Scalars['ID'];
+  block?: InputMaybe<Block_height>;
+  subgraphError?: _SubgraphErrorPolicy_;
+};
+
+
+export type QuerywithdrawEventsArgs = {
+  skip?: InputMaybe<Scalars['Int']>;
+  first?: InputMaybe<Scalars['Int']>;
+  orderBy?: InputMaybe<WithdrawEvent_orderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  where?: InputMaybe<WithdrawEvent_filter>;
+  block?: InputMaybe<Block_height>;
+  subgraphError?: _SubgraphErrorPolicy_;
+};
+
+
+export type QueryrebaseEventArgs = {
+  id: Scalars['ID'];
+  block?: InputMaybe<Block_height>;
+  subgraphError?: _SubgraphErrorPolicy_;
+};
+
+
+export type QueryrebaseEventsArgs = {
+  skip?: InputMaybe<Scalars['Int']>;
+  first?: InputMaybe<Scalars['Int']>;
+  orderBy?: InputMaybe<RebaseEvent_orderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  where?: InputMaybe<RebaseEvent_filter>;
+  block?: InputMaybe<Block_height>;
+  subgraphError?: _SubgraphErrorPolicy_;
+};
+
+
+export type QuerytokenTransferEventArgs = {
+  id: Scalars['ID'];
+  block?: InputMaybe<Block_height>;
+  subgraphError?: _SubgraphErrorPolicy_;
+};
+
+
+export type QuerytokenTransferEventsArgs = {
+  skip?: InputMaybe<Scalars['Int']>;
+  first?: InputMaybe<Scalars['Int']>;
+  orderBy?: InputMaybe<TokenTransferEvent_orderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  where?: InputMaybe<TokenTransferEvent_filter>;
+  block?: InputMaybe<Block_height>;
+  subgraphError?: _SubgraphErrorPolicy_;
+};
+
+
+export type Query_metaArgs = {
+  block?: InputMaybe<Block_height>;
+};
+
+
+export type QuerygetUserMultichainArgs = {
+  user: Scalars['ID'];
+  subgraphs: Array<Scalars['String']>;
+};
+
+export type Subscription = {
+  asset?: Maybe<Asset>;
+  assets: Array<Asset>;
+  tenderizer?: Maybe<Tenderizer>;
+  tenderizers: Array<Tenderizer>;
+  user?: Maybe<User>;
+  users: Array<User>;
+  stake?: Maybe<Stake>;
+  stakes: Array<Stake>;
+  unlock?: Maybe<Unlock>;
+  unlocks: Array<Unlock>;
+  assetDay?: Maybe<AssetDay>;
+  assetDays: Array<AssetDay>;
+  tenderizerDay?: Maybe<TenderizerDay>;
+  tenderizerDays: Array<TenderizerDay>;
+  depositEvent?: Maybe<DepositEvent>;
+  depositEvents: Array<DepositEvent>;
+  unlockEvent?: Maybe<UnlockEvent>;
+  unlockEvents: Array<UnlockEvent>;
+  withdrawEvent?: Maybe<WithdrawEvent>;
+  withdrawEvents: Array<WithdrawEvent>;
+  rebaseEvent?: Maybe<RebaseEvent>;
+  rebaseEvents: Array<RebaseEvent>;
+  tokenTransferEvent?: Maybe<TokenTransferEvent>;
+  tokenTransferEvents: Array<TokenTransferEvent>;
+  /** Access to subgraph metadata */
+  _meta?: Maybe<_Meta_>;
+};
+
+
+export type SubscriptionassetArgs = {
+  id: Scalars['ID'];
+  block?: InputMaybe<Block_height>;
+  subgraphError?: _SubgraphErrorPolicy_;
+};
+
+
+export type SubscriptionassetsArgs = {
+  skip?: InputMaybe<Scalars['Int']>;
+  first?: InputMaybe<Scalars['Int']>;
+  orderBy?: InputMaybe<Asset_orderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  where?: InputMaybe<Asset_filter>;
+  block?: InputMaybe<Block_height>;
+  subgraphError?: _SubgraphErrorPolicy_;
+};
+
+
+export type SubscriptiontenderizerArgs = {
+  id: Scalars['ID'];
+  block?: InputMaybe<Block_height>;
+  subgraphError?: _SubgraphErrorPolicy_;
+};
+
+
+export type SubscriptiontenderizersArgs = {
+  skip?: InputMaybe<Scalars['Int']>;
+  first?: InputMaybe<Scalars['Int']>;
+  orderBy?: InputMaybe<Tenderizer_orderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  where?: InputMaybe<Tenderizer_filter>;
+  block?: InputMaybe<Block_height>;
+  subgraphError?: _SubgraphErrorPolicy_;
+};
+
+
+export type SubscriptionuserArgs = {
+  id: Scalars['ID'];
+  block?: InputMaybe<Block_height>;
+  subgraphError?: _SubgraphErrorPolicy_;
+};
+
+
+export type SubscriptionusersArgs = {
+  skip?: InputMaybe<Scalars['Int']>;
+  first?: InputMaybe<Scalars['Int']>;
+  orderBy?: InputMaybe<User_orderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  where?: InputMaybe<User_filter>;
+  block?: InputMaybe<Block_height>;
+  subgraphError?: _SubgraphErrorPolicy_;
+};
+
+
+export type SubscriptionstakeArgs = {
+  id: Scalars['ID'];
+  block?: InputMaybe<Block_height>;
+  subgraphError?: _SubgraphErrorPolicy_;
+};
+
+
+export type SubscriptionstakesArgs = {
+  skip?: InputMaybe<Scalars['Int']>;
+  first?: InputMaybe<Scalars['Int']>;
+  orderBy?: InputMaybe<Stake_orderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  where?: InputMaybe<Stake_filter>;
+  block?: InputMaybe<Block_height>;
+  subgraphError?: _SubgraphErrorPolicy_;
+};
+
+
+export type SubscriptionunlockArgs = {
+  id: Scalars['ID'];
+  block?: InputMaybe<Block_height>;
+  subgraphError?: _SubgraphErrorPolicy_;
+};
+
+
+export type SubscriptionunlocksArgs = {
+  skip?: InputMaybe<Scalars['Int']>;
+  first?: InputMaybe<Scalars['Int']>;
+  orderBy?: InputMaybe<Unlock_orderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  where?: InputMaybe<Unlock_filter>;
+  block?: InputMaybe<Block_height>;
+  subgraphError?: _SubgraphErrorPolicy_;
+};
+
+
+export type SubscriptionassetDayArgs = {
+  id: Scalars['ID'];
+  block?: InputMaybe<Block_height>;
+  subgraphError?: _SubgraphErrorPolicy_;
+};
+
+
+export type SubscriptionassetDaysArgs = {
+  skip?: InputMaybe<Scalars['Int']>;
+  first?: InputMaybe<Scalars['Int']>;
+  orderBy?: InputMaybe<AssetDay_orderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  where?: InputMaybe<AssetDay_filter>;
+  block?: InputMaybe<Block_height>;
+  subgraphError?: _SubgraphErrorPolicy_;
+};
+
+
+export type SubscriptiontenderizerDayArgs = {
+  id: Scalars['ID'];
+  block?: InputMaybe<Block_height>;
+  subgraphError?: _SubgraphErrorPolicy_;
+};
+
+
+export type SubscriptiontenderizerDaysArgs = {
+  skip?: InputMaybe<Scalars['Int']>;
+  first?: InputMaybe<Scalars['Int']>;
+  orderBy?: InputMaybe<TenderizerDay_orderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  where?: InputMaybe<TenderizerDay_filter>;
+  block?: InputMaybe<Block_height>;
+  subgraphError?: _SubgraphErrorPolicy_;
+};
+
+
+export type SubscriptiondepositEventArgs = {
+  id: Scalars['ID'];
+  block?: InputMaybe<Block_height>;
+  subgraphError?: _SubgraphErrorPolicy_;
+};
+
+
+export type SubscriptiondepositEventsArgs = {
+  skip?: InputMaybe<Scalars['Int']>;
+  first?: InputMaybe<Scalars['Int']>;
+  orderBy?: InputMaybe<DepositEvent_orderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  where?: InputMaybe<DepositEvent_filter>;
+  block?: InputMaybe<Block_height>;
+  subgraphError?: _SubgraphErrorPolicy_;
+};
+
+
+export type SubscriptionunlockEventArgs = {
+  id: Scalars['ID'];
+  block?: InputMaybe<Block_height>;
+  subgraphError?: _SubgraphErrorPolicy_;
+};
+
+
+export type SubscriptionunlockEventsArgs = {
+  skip?: InputMaybe<Scalars['Int']>;
+  first?: InputMaybe<Scalars['Int']>;
+  orderBy?: InputMaybe<UnlockEvent_orderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  where?: InputMaybe<UnlockEvent_filter>;
+  block?: InputMaybe<Block_height>;
+  subgraphError?: _SubgraphErrorPolicy_;
+};
+
+
+export type SubscriptionwithdrawEventArgs = {
+  id: Scalars['ID'];
+  block?: InputMaybe<Block_height>;
+  subgraphError?: _SubgraphErrorPolicy_;
+};
+
+
+export type SubscriptionwithdrawEventsArgs = {
+  skip?: InputMaybe<Scalars['Int']>;
+  first?: InputMaybe<Scalars['Int']>;
+  orderBy?: InputMaybe<WithdrawEvent_orderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  where?: InputMaybe<WithdrawEvent_filter>;
+  block?: InputMaybe<Block_height>;
+  subgraphError?: _SubgraphErrorPolicy_;
+};
+
+
+export type SubscriptionrebaseEventArgs = {
+  id: Scalars['ID'];
+  block?: InputMaybe<Block_height>;
+  subgraphError?: _SubgraphErrorPolicy_;
+};
+
+
+export type SubscriptionrebaseEventsArgs = {
+  skip?: InputMaybe<Scalars['Int']>;
+  first?: InputMaybe<Scalars['Int']>;
+  orderBy?: InputMaybe<RebaseEvent_orderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  where?: InputMaybe<RebaseEvent_filter>;
+  block?: InputMaybe<Block_height>;
+  subgraphError?: _SubgraphErrorPolicy_;
+};
+
+
+export type SubscriptiontokenTransferEventArgs = {
+  id: Scalars['ID'];
+  block?: InputMaybe<Block_height>;
+  subgraphError?: _SubgraphErrorPolicy_;
+};
+
+
+export type SubscriptiontokenTransferEventsArgs = {
+  skip?: InputMaybe<Scalars['Int']>;
+  first?: InputMaybe<Scalars['Int']>;
+  orderBy?: InputMaybe<TokenTransferEvent_orderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  where?: InputMaybe<TokenTransferEvent_filter>;
+  block?: InputMaybe<Block_height>;
+  subgraphError?: _SubgraphErrorPolicy_;
+};
+
+
+export type Subscription_metaArgs = {
+  block?: InputMaybe<Block_height>;
 };
 
 export type Asset = {
@@ -186,160 +681,262 @@ export type Block_height = {
   number_gte?: InputMaybe<Scalars['Int']>;
 };
 
+export type DepositEvent = {
+  id: Scalars['ID'];
+  timestamp: Scalars['Int'];
+  assetsIn: Scalars['BigDecimal'];
+  tTokenOut: Scalars['BigDecimal'];
+  shares: Scalars['BigDecimal'];
+  user: User;
+  asset: Asset;
+  tenderizer: Tenderizer;
+};
+
+export type DepositEvent_filter = {
+  id?: InputMaybe<Scalars['ID']>;
+  id_not?: InputMaybe<Scalars['ID']>;
+  id_gt?: InputMaybe<Scalars['ID']>;
+  id_lt?: InputMaybe<Scalars['ID']>;
+  id_gte?: InputMaybe<Scalars['ID']>;
+  id_lte?: InputMaybe<Scalars['ID']>;
+  id_in?: InputMaybe<Array<Scalars['ID']>>;
+  id_not_in?: InputMaybe<Array<Scalars['ID']>>;
+  timestamp?: InputMaybe<Scalars['Int']>;
+  timestamp_not?: InputMaybe<Scalars['Int']>;
+  timestamp_gt?: InputMaybe<Scalars['Int']>;
+  timestamp_lt?: InputMaybe<Scalars['Int']>;
+  timestamp_gte?: InputMaybe<Scalars['Int']>;
+  timestamp_lte?: InputMaybe<Scalars['Int']>;
+  timestamp_in?: InputMaybe<Array<Scalars['Int']>>;
+  timestamp_not_in?: InputMaybe<Array<Scalars['Int']>>;
+  assetsIn?: InputMaybe<Scalars['BigDecimal']>;
+  assetsIn_not?: InputMaybe<Scalars['BigDecimal']>;
+  assetsIn_gt?: InputMaybe<Scalars['BigDecimal']>;
+  assetsIn_lt?: InputMaybe<Scalars['BigDecimal']>;
+  assetsIn_gte?: InputMaybe<Scalars['BigDecimal']>;
+  assetsIn_lte?: InputMaybe<Scalars['BigDecimal']>;
+  assetsIn_in?: InputMaybe<Array<Scalars['BigDecimal']>>;
+  assetsIn_not_in?: InputMaybe<Array<Scalars['BigDecimal']>>;
+  tTokenOut?: InputMaybe<Scalars['BigDecimal']>;
+  tTokenOut_not?: InputMaybe<Scalars['BigDecimal']>;
+  tTokenOut_gt?: InputMaybe<Scalars['BigDecimal']>;
+  tTokenOut_lt?: InputMaybe<Scalars['BigDecimal']>;
+  tTokenOut_gte?: InputMaybe<Scalars['BigDecimal']>;
+  tTokenOut_lte?: InputMaybe<Scalars['BigDecimal']>;
+  tTokenOut_in?: InputMaybe<Array<Scalars['BigDecimal']>>;
+  tTokenOut_not_in?: InputMaybe<Array<Scalars['BigDecimal']>>;
+  shares?: InputMaybe<Scalars['BigDecimal']>;
+  shares_not?: InputMaybe<Scalars['BigDecimal']>;
+  shares_gt?: InputMaybe<Scalars['BigDecimal']>;
+  shares_lt?: InputMaybe<Scalars['BigDecimal']>;
+  shares_gte?: InputMaybe<Scalars['BigDecimal']>;
+  shares_lte?: InputMaybe<Scalars['BigDecimal']>;
+  shares_in?: InputMaybe<Array<Scalars['BigDecimal']>>;
+  shares_not_in?: InputMaybe<Array<Scalars['BigDecimal']>>;
+  user?: InputMaybe<Scalars['String']>;
+  user_not?: InputMaybe<Scalars['String']>;
+  user_gt?: InputMaybe<Scalars['String']>;
+  user_lt?: InputMaybe<Scalars['String']>;
+  user_gte?: InputMaybe<Scalars['String']>;
+  user_lte?: InputMaybe<Scalars['String']>;
+  user_in?: InputMaybe<Array<Scalars['String']>>;
+  user_not_in?: InputMaybe<Array<Scalars['String']>>;
+  user_contains?: InputMaybe<Scalars['String']>;
+  user_contains_nocase?: InputMaybe<Scalars['String']>;
+  user_not_contains?: InputMaybe<Scalars['String']>;
+  user_not_contains_nocase?: InputMaybe<Scalars['String']>;
+  user_starts_with?: InputMaybe<Scalars['String']>;
+  user_starts_with_nocase?: InputMaybe<Scalars['String']>;
+  user_not_starts_with?: InputMaybe<Scalars['String']>;
+  user_not_starts_with_nocase?: InputMaybe<Scalars['String']>;
+  user_ends_with?: InputMaybe<Scalars['String']>;
+  user_ends_with_nocase?: InputMaybe<Scalars['String']>;
+  user_not_ends_with?: InputMaybe<Scalars['String']>;
+  user_not_ends_with_nocase?: InputMaybe<Scalars['String']>;
+  user_?: InputMaybe<User_filter>;
+  asset?: InputMaybe<Scalars['String']>;
+  asset_not?: InputMaybe<Scalars['String']>;
+  asset_gt?: InputMaybe<Scalars['String']>;
+  asset_lt?: InputMaybe<Scalars['String']>;
+  asset_gte?: InputMaybe<Scalars['String']>;
+  asset_lte?: InputMaybe<Scalars['String']>;
+  asset_in?: InputMaybe<Array<Scalars['String']>>;
+  asset_not_in?: InputMaybe<Array<Scalars['String']>>;
+  asset_contains?: InputMaybe<Scalars['String']>;
+  asset_contains_nocase?: InputMaybe<Scalars['String']>;
+  asset_not_contains?: InputMaybe<Scalars['String']>;
+  asset_not_contains_nocase?: InputMaybe<Scalars['String']>;
+  asset_starts_with?: InputMaybe<Scalars['String']>;
+  asset_starts_with_nocase?: InputMaybe<Scalars['String']>;
+  asset_not_starts_with?: InputMaybe<Scalars['String']>;
+  asset_not_starts_with_nocase?: InputMaybe<Scalars['String']>;
+  asset_ends_with?: InputMaybe<Scalars['String']>;
+  asset_ends_with_nocase?: InputMaybe<Scalars['String']>;
+  asset_not_ends_with?: InputMaybe<Scalars['String']>;
+  asset_not_ends_with_nocase?: InputMaybe<Scalars['String']>;
+  asset_?: InputMaybe<Asset_filter>;
+  tenderizer?: InputMaybe<Scalars['String']>;
+  tenderizer_not?: InputMaybe<Scalars['String']>;
+  tenderizer_gt?: InputMaybe<Scalars['String']>;
+  tenderizer_lt?: InputMaybe<Scalars['String']>;
+  tenderizer_gte?: InputMaybe<Scalars['String']>;
+  tenderizer_lte?: InputMaybe<Scalars['String']>;
+  tenderizer_in?: InputMaybe<Array<Scalars['String']>>;
+  tenderizer_not_in?: InputMaybe<Array<Scalars['String']>>;
+  tenderizer_contains?: InputMaybe<Scalars['String']>;
+  tenderizer_contains_nocase?: InputMaybe<Scalars['String']>;
+  tenderizer_not_contains?: InputMaybe<Scalars['String']>;
+  tenderizer_not_contains_nocase?: InputMaybe<Scalars['String']>;
+  tenderizer_starts_with?: InputMaybe<Scalars['String']>;
+  tenderizer_starts_with_nocase?: InputMaybe<Scalars['String']>;
+  tenderizer_not_starts_with?: InputMaybe<Scalars['String']>;
+  tenderizer_not_starts_with_nocase?: InputMaybe<Scalars['String']>;
+  tenderizer_ends_with?: InputMaybe<Scalars['String']>;
+  tenderizer_ends_with_nocase?: InputMaybe<Scalars['String']>;
+  tenderizer_not_ends_with?: InputMaybe<Scalars['String']>;
+  tenderizer_not_ends_with_nocase?: InputMaybe<Scalars['String']>;
+  tenderizer_?: InputMaybe<Tenderizer_filter>;
+  /** Filter for the block changed event. */
+  _change_block?: InputMaybe<BlockChangedFilter>;
+  and?: InputMaybe<Array<InputMaybe<DepositEvent_filter>>>;
+  or?: InputMaybe<Array<InputMaybe<DepositEvent_filter>>>;
+};
+
+export type DepositEvent_orderBy =
+  | 'id'
+  | 'timestamp'
+  | 'assetsIn'
+  | 'tTokenOut'
+  | 'shares'
+  | 'user'
+  | 'user__id'
+  | 'asset'
+  | 'asset__id'
+  | 'asset__tvl'
+  | 'asset__tenderizerCount'
+  | 'tenderizer'
+  | 'tenderizer__id'
+  | 'tenderizer__symbol'
+  | 'tenderizer__name'
+  | 'tenderizer__validator'
+  | 'tenderizer__tvl'
+  | 'tenderizer__shares'
+  | 'tenderizer__apr'
+  | 'tenderizer__lastUpdateDay';
+
 /** Defines the order direction, either ascending or descending */
 export type OrderDirection =
   | 'asc'
   | 'desc';
 
-export type Query = {
-  asset?: Maybe<Asset>;
-  assets: Array<Asset>;
-  tenderizer?: Maybe<Tenderizer>;
-  tenderizers: Array<Tenderizer>;
-  user?: Maybe<User>;
-  users: Array<User>;
-  stake?: Maybe<Stake>;
-  stakes: Array<Stake>;
-  unlock?: Maybe<Unlock>;
-  unlocks: Array<Unlock>;
-  assetDay?: Maybe<AssetDay>;
-  assetDays: Array<AssetDay>;
-  tenderizerDay?: Maybe<TenderizerDay>;
-  tenderizerDays: Array<TenderizerDay>;
-  /** Access to subgraph metadata */
-  _meta?: Maybe<_Meta_>;
-};
-
-
-export type QueryassetArgs = {
+export type RebaseEvent = {
   id: Scalars['ID'];
-  block?: InputMaybe<Block_height>;
-  subgraphError?: _SubgraphErrorPolicy_;
+  timestamp: Scalars['Int'];
+  oldStake: Scalars['BigDecimal'];
+  newStake: Scalars['BigDecimal'];
+  asset: Asset;
+  tenderizer: Tenderizer;
 };
 
-
-export type QueryassetsArgs = {
-  skip?: InputMaybe<Scalars['Int']>;
-  first?: InputMaybe<Scalars['Int']>;
-  orderBy?: InputMaybe<Asset_orderBy>;
-  orderDirection?: InputMaybe<OrderDirection>;
-  where?: InputMaybe<Asset_filter>;
-  block?: InputMaybe<Block_height>;
-  subgraphError?: _SubgraphErrorPolicy_;
+export type RebaseEvent_filter = {
+  id?: InputMaybe<Scalars['ID']>;
+  id_not?: InputMaybe<Scalars['ID']>;
+  id_gt?: InputMaybe<Scalars['ID']>;
+  id_lt?: InputMaybe<Scalars['ID']>;
+  id_gte?: InputMaybe<Scalars['ID']>;
+  id_lte?: InputMaybe<Scalars['ID']>;
+  id_in?: InputMaybe<Array<Scalars['ID']>>;
+  id_not_in?: InputMaybe<Array<Scalars['ID']>>;
+  timestamp?: InputMaybe<Scalars['Int']>;
+  timestamp_not?: InputMaybe<Scalars['Int']>;
+  timestamp_gt?: InputMaybe<Scalars['Int']>;
+  timestamp_lt?: InputMaybe<Scalars['Int']>;
+  timestamp_gte?: InputMaybe<Scalars['Int']>;
+  timestamp_lte?: InputMaybe<Scalars['Int']>;
+  timestamp_in?: InputMaybe<Array<Scalars['Int']>>;
+  timestamp_not_in?: InputMaybe<Array<Scalars['Int']>>;
+  oldStake?: InputMaybe<Scalars['BigDecimal']>;
+  oldStake_not?: InputMaybe<Scalars['BigDecimal']>;
+  oldStake_gt?: InputMaybe<Scalars['BigDecimal']>;
+  oldStake_lt?: InputMaybe<Scalars['BigDecimal']>;
+  oldStake_gte?: InputMaybe<Scalars['BigDecimal']>;
+  oldStake_lte?: InputMaybe<Scalars['BigDecimal']>;
+  oldStake_in?: InputMaybe<Array<Scalars['BigDecimal']>>;
+  oldStake_not_in?: InputMaybe<Array<Scalars['BigDecimal']>>;
+  newStake?: InputMaybe<Scalars['BigDecimal']>;
+  newStake_not?: InputMaybe<Scalars['BigDecimal']>;
+  newStake_gt?: InputMaybe<Scalars['BigDecimal']>;
+  newStake_lt?: InputMaybe<Scalars['BigDecimal']>;
+  newStake_gte?: InputMaybe<Scalars['BigDecimal']>;
+  newStake_lte?: InputMaybe<Scalars['BigDecimal']>;
+  newStake_in?: InputMaybe<Array<Scalars['BigDecimal']>>;
+  newStake_not_in?: InputMaybe<Array<Scalars['BigDecimal']>>;
+  asset?: InputMaybe<Scalars['String']>;
+  asset_not?: InputMaybe<Scalars['String']>;
+  asset_gt?: InputMaybe<Scalars['String']>;
+  asset_lt?: InputMaybe<Scalars['String']>;
+  asset_gte?: InputMaybe<Scalars['String']>;
+  asset_lte?: InputMaybe<Scalars['String']>;
+  asset_in?: InputMaybe<Array<Scalars['String']>>;
+  asset_not_in?: InputMaybe<Array<Scalars['String']>>;
+  asset_contains?: InputMaybe<Scalars['String']>;
+  asset_contains_nocase?: InputMaybe<Scalars['String']>;
+  asset_not_contains?: InputMaybe<Scalars['String']>;
+  asset_not_contains_nocase?: InputMaybe<Scalars['String']>;
+  asset_starts_with?: InputMaybe<Scalars['String']>;
+  asset_starts_with_nocase?: InputMaybe<Scalars['String']>;
+  asset_not_starts_with?: InputMaybe<Scalars['String']>;
+  asset_not_starts_with_nocase?: InputMaybe<Scalars['String']>;
+  asset_ends_with?: InputMaybe<Scalars['String']>;
+  asset_ends_with_nocase?: InputMaybe<Scalars['String']>;
+  asset_not_ends_with?: InputMaybe<Scalars['String']>;
+  asset_not_ends_with_nocase?: InputMaybe<Scalars['String']>;
+  asset_?: InputMaybe<Asset_filter>;
+  tenderizer?: InputMaybe<Scalars['String']>;
+  tenderizer_not?: InputMaybe<Scalars['String']>;
+  tenderizer_gt?: InputMaybe<Scalars['String']>;
+  tenderizer_lt?: InputMaybe<Scalars['String']>;
+  tenderizer_gte?: InputMaybe<Scalars['String']>;
+  tenderizer_lte?: InputMaybe<Scalars['String']>;
+  tenderizer_in?: InputMaybe<Array<Scalars['String']>>;
+  tenderizer_not_in?: InputMaybe<Array<Scalars['String']>>;
+  tenderizer_contains?: InputMaybe<Scalars['String']>;
+  tenderizer_contains_nocase?: InputMaybe<Scalars['String']>;
+  tenderizer_not_contains?: InputMaybe<Scalars['String']>;
+  tenderizer_not_contains_nocase?: InputMaybe<Scalars['String']>;
+  tenderizer_starts_with?: InputMaybe<Scalars['String']>;
+  tenderizer_starts_with_nocase?: InputMaybe<Scalars['String']>;
+  tenderizer_not_starts_with?: InputMaybe<Scalars['String']>;
+  tenderizer_not_starts_with_nocase?: InputMaybe<Scalars['String']>;
+  tenderizer_ends_with?: InputMaybe<Scalars['String']>;
+  tenderizer_ends_with_nocase?: InputMaybe<Scalars['String']>;
+  tenderizer_not_ends_with?: InputMaybe<Scalars['String']>;
+  tenderizer_not_ends_with_nocase?: InputMaybe<Scalars['String']>;
+  tenderizer_?: InputMaybe<Tenderizer_filter>;
+  /** Filter for the block changed event. */
+  _change_block?: InputMaybe<BlockChangedFilter>;
+  and?: InputMaybe<Array<InputMaybe<RebaseEvent_filter>>>;
+  or?: InputMaybe<Array<InputMaybe<RebaseEvent_filter>>>;
 };
 
-
-export type QuerytenderizerArgs = {
-  id: Scalars['ID'];
-  block?: InputMaybe<Block_height>;
-  subgraphError?: _SubgraphErrorPolicy_;
-};
-
-
-export type QuerytenderizersArgs = {
-  skip?: InputMaybe<Scalars['Int']>;
-  first?: InputMaybe<Scalars['Int']>;
-  orderBy?: InputMaybe<Tenderizer_orderBy>;
-  orderDirection?: InputMaybe<OrderDirection>;
-  where?: InputMaybe<Tenderizer_filter>;
-  block?: InputMaybe<Block_height>;
-  subgraphError?: _SubgraphErrorPolicy_;
-};
-
-
-export type QueryuserArgs = {
-  id: Scalars['ID'];
-  block?: InputMaybe<Block_height>;
-  subgraphError?: _SubgraphErrorPolicy_;
-};
-
-
-export type QueryusersArgs = {
-  skip?: InputMaybe<Scalars['Int']>;
-  first?: InputMaybe<Scalars['Int']>;
-  orderBy?: InputMaybe<User_orderBy>;
-  orderDirection?: InputMaybe<OrderDirection>;
-  where?: InputMaybe<User_filter>;
-  block?: InputMaybe<Block_height>;
-  subgraphError?: _SubgraphErrorPolicy_;
-};
-
-
-export type QuerystakeArgs = {
-  id: Scalars['ID'];
-  block?: InputMaybe<Block_height>;
-  subgraphError?: _SubgraphErrorPolicy_;
-};
-
-
-export type QuerystakesArgs = {
-  skip?: InputMaybe<Scalars['Int']>;
-  first?: InputMaybe<Scalars['Int']>;
-  orderBy?: InputMaybe<Stake_orderBy>;
-  orderDirection?: InputMaybe<OrderDirection>;
-  where?: InputMaybe<Stake_filter>;
-  block?: InputMaybe<Block_height>;
-  subgraphError?: _SubgraphErrorPolicy_;
-};
-
-
-export type QueryunlockArgs = {
-  id: Scalars['ID'];
-  block?: InputMaybe<Block_height>;
-  subgraphError?: _SubgraphErrorPolicy_;
-};
-
-
-export type QueryunlocksArgs = {
-  skip?: InputMaybe<Scalars['Int']>;
-  first?: InputMaybe<Scalars['Int']>;
-  orderBy?: InputMaybe<Unlock_orderBy>;
-  orderDirection?: InputMaybe<OrderDirection>;
-  where?: InputMaybe<Unlock_filter>;
-  block?: InputMaybe<Block_height>;
-  subgraphError?: _SubgraphErrorPolicy_;
-};
-
-
-export type QueryassetDayArgs = {
-  id: Scalars['ID'];
-  block?: InputMaybe<Block_height>;
-  subgraphError?: _SubgraphErrorPolicy_;
-};
-
-
-export type QueryassetDaysArgs = {
-  skip?: InputMaybe<Scalars['Int']>;
-  first?: InputMaybe<Scalars['Int']>;
-  orderBy?: InputMaybe<AssetDay_orderBy>;
-  orderDirection?: InputMaybe<OrderDirection>;
-  where?: InputMaybe<AssetDay_filter>;
-  block?: InputMaybe<Block_height>;
-  subgraphError?: _SubgraphErrorPolicy_;
-};
-
-
-export type QuerytenderizerDayArgs = {
-  id: Scalars['ID'];
-  block?: InputMaybe<Block_height>;
-  subgraphError?: _SubgraphErrorPolicy_;
-};
-
-
-export type QuerytenderizerDaysArgs = {
-  skip?: InputMaybe<Scalars['Int']>;
-  first?: InputMaybe<Scalars['Int']>;
-  orderBy?: InputMaybe<TenderizerDay_orderBy>;
-  orderDirection?: InputMaybe<OrderDirection>;
-  where?: InputMaybe<TenderizerDay_filter>;
-  block?: InputMaybe<Block_height>;
-  subgraphError?: _SubgraphErrorPolicy_;
-};
-
-
-export type Query_metaArgs = {
-  block?: InputMaybe<Block_height>;
-};
+export type RebaseEvent_orderBy =
+  | 'id'
+  | 'timestamp'
+  | 'oldStake'
+  | 'newStake'
+  | 'asset'
+  | 'asset__id'
+  | 'asset__tvl'
+  | 'asset__tenderizerCount'
+  | 'tenderizer'
+  | 'tenderizer__id'
+  | 'tenderizer__symbol'
+  | 'tenderizer__name'
+  | 'tenderizer__validator'
+  | 'tenderizer__tvl'
+  | 'tenderizer__shares'
+  | 'tenderizer__apr'
+  | 'tenderizer__lastUpdateDay';
 
 export type Stake = {
   id: Scalars['ID'];
@@ -454,156 +1051,6 @@ export type Stake_orderBy =
   | 'tenderizer__lastUpdateDay'
   | 'shares';
 
-export type Subscription = {
-  asset?: Maybe<Asset>;
-  assets: Array<Asset>;
-  tenderizer?: Maybe<Tenderizer>;
-  tenderizers: Array<Tenderizer>;
-  user?: Maybe<User>;
-  users: Array<User>;
-  stake?: Maybe<Stake>;
-  stakes: Array<Stake>;
-  unlock?: Maybe<Unlock>;
-  unlocks: Array<Unlock>;
-  assetDay?: Maybe<AssetDay>;
-  assetDays: Array<AssetDay>;
-  tenderizerDay?: Maybe<TenderizerDay>;
-  tenderizerDays: Array<TenderizerDay>;
-  /** Access to subgraph metadata */
-  _meta?: Maybe<_Meta_>;
-};
-
-
-export type SubscriptionassetArgs = {
-  id: Scalars['ID'];
-  block?: InputMaybe<Block_height>;
-  subgraphError?: _SubgraphErrorPolicy_;
-};
-
-
-export type SubscriptionassetsArgs = {
-  skip?: InputMaybe<Scalars['Int']>;
-  first?: InputMaybe<Scalars['Int']>;
-  orderBy?: InputMaybe<Asset_orderBy>;
-  orderDirection?: InputMaybe<OrderDirection>;
-  where?: InputMaybe<Asset_filter>;
-  block?: InputMaybe<Block_height>;
-  subgraphError?: _SubgraphErrorPolicy_;
-};
-
-
-export type SubscriptiontenderizerArgs = {
-  id: Scalars['ID'];
-  block?: InputMaybe<Block_height>;
-  subgraphError?: _SubgraphErrorPolicy_;
-};
-
-
-export type SubscriptiontenderizersArgs = {
-  skip?: InputMaybe<Scalars['Int']>;
-  first?: InputMaybe<Scalars['Int']>;
-  orderBy?: InputMaybe<Tenderizer_orderBy>;
-  orderDirection?: InputMaybe<OrderDirection>;
-  where?: InputMaybe<Tenderizer_filter>;
-  block?: InputMaybe<Block_height>;
-  subgraphError?: _SubgraphErrorPolicy_;
-};
-
-
-export type SubscriptionuserArgs = {
-  id: Scalars['ID'];
-  block?: InputMaybe<Block_height>;
-  subgraphError?: _SubgraphErrorPolicy_;
-};
-
-
-export type SubscriptionusersArgs = {
-  skip?: InputMaybe<Scalars['Int']>;
-  first?: InputMaybe<Scalars['Int']>;
-  orderBy?: InputMaybe<User_orderBy>;
-  orderDirection?: InputMaybe<OrderDirection>;
-  where?: InputMaybe<User_filter>;
-  block?: InputMaybe<Block_height>;
-  subgraphError?: _SubgraphErrorPolicy_;
-};
-
-
-export type SubscriptionstakeArgs = {
-  id: Scalars['ID'];
-  block?: InputMaybe<Block_height>;
-  subgraphError?: _SubgraphErrorPolicy_;
-};
-
-
-export type SubscriptionstakesArgs = {
-  skip?: InputMaybe<Scalars['Int']>;
-  first?: InputMaybe<Scalars['Int']>;
-  orderBy?: InputMaybe<Stake_orderBy>;
-  orderDirection?: InputMaybe<OrderDirection>;
-  where?: InputMaybe<Stake_filter>;
-  block?: InputMaybe<Block_height>;
-  subgraphError?: _SubgraphErrorPolicy_;
-};
-
-
-export type SubscriptionunlockArgs = {
-  id: Scalars['ID'];
-  block?: InputMaybe<Block_height>;
-  subgraphError?: _SubgraphErrorPolicy_;
-};
-
-
-export type SubscriptionunlocksArgs = {
-  skip?: InputMaybe<Scalars['Int']>;
-  first?: InputMaybe<Scalars['Int']>;
-  orderBy?: InputMaybe<Unlock_orderBy>;
-  orderDirection?: InputMaybe<OrderDirection>;
-  where?: InputMaybe<Unlock_filter>;
-  block?: InputMaybe<Block_height>;
-  subgraphError?: _SubgraphErrorPolicy_;
-};
-
-
-export type SubscriptionassetDayArgs = {
-  id: Scalars['ID'];
-  block?: InputMaybe<Block_height>;
-  subgraphError?: _SubgraphErrorPolicy_;
-};
-
-
-export type SubscriptionassetDaysArgs = {
-  skip?: InputMaybe<Scalars['Int']>;
-  first?: InputMaybe<Scalars['Int']>;
-  orderBy?: InputMaybe<AssetDay_orderBy>;
-  orderDirection?: InputMaybe<OrderDirection>;
-  where?: InputMaybe<AssetDay_filter>;
-  block?: InputMaybe<Block_height>;
-  subgraphError?: _SubgraphErrorPolicy_;
-};
-
-
-export type SubscriptiontenderizerDayArgs = {
-  id: Scalars['ID'];
-  block?: InputMaybe<Block_height>;
-  subgraphError?: _SubgraphErrorPolicy_;
-};
-
-
-export type SubscriptiontenderizerDaysArgs = {
-  skip?: InputMaybe<Scalars['Int']>;
-  first?: InputMaybe<Scalars['Int']>;
-  orderBy?: InputMaybe<TenderizerDay_orderBy>;
-  orderDirection?: InputMaybe<OrderDirection>;
-  where?: InputMaybe<TenderizerDay_filter>;
-  block?: InputMaybe<Block_height>;
-  subgraphError?: _SubgraphErrorPolicy_;
-};
-
-
-export type Subscription_metaArgs = {
-  block?: InputMaybe<Block_height>;
-};
-
 export type Tenderizer = {
   id: Scalars['ID'];
   symbol: Scalars['String'];
@@ -616,6 +1063,11 @@ export type Tenderizer = {
   stakes: Array<Stake>;
   tenderizerDays: Array<TenderizerDay>;
   lastUpdateDay: Scalars['BigInt'];
+  depositEvents: Array<DepositEvent>;
+  unlockEvents: Array<UnlockEvent>;
+  withdrawEvents: Array<WithdrawEvent>;
+  rebaseEvents: Array<RebaseEvent>;
+  tokenTransferEvents: Array<TokenTransferEvent>;
 };
 
 
@@ -634,6 +1086,51 @@ export type TenderizertenderizerDaysArgs = {
   orderBy?: InputMaybe<TenderizerDay_orderBy>;
   orderDirection?: InputMaybe<OrderDirection>;
   where?: InputMaybe<TenderizerDay_filter>;
+};
+
+
+export type TenderizerdepositEventsArgs = {
+  skip?: InputMaybe<Scalars['Int']>;
+  first?: InputMaybe<Scalars['Int']>;
+  orderBy?: InputMaybe<DepositEvent_orderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  where?: InputMaybe<DepositEvent_filter>;
+};
+
+
+export type TenderizerunlockEventsArgs = {
+  skip?: InputMaybe<Scalars['Int']>;
+  first?: InputMaybe<Scalars['Int']>;
+  orderBy?: InputMaybe<UnlockEvent_orderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  where?: InputMaybe<UnlockEvent_filter>;
+};
+
+
+export type TenderizerwithdrawEventsArgs = {
+  skip?: InputMaybe<Scalars['Int']>;
+  first?: InputMaybe<Scalars['Int']>;
+  orderBy?: InputMaybe<WithdrawEvent_orderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  where?: InputMaybe<WithdrawEvent_filter>;
+};
+
+
+export type TenderizerrebaseEventsArgs = {
+  skip?: InputMaybe<Scalars['Int']>;
+  first?: InputMaybe<Scalars['Int']>;
+  orderBy?: InputMaybe<RebaseEvent_orderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  where?: InputMaybe<RebaseEvent_filter>;
+};
+
+
+export type TenderizertokenTransferEventsArgs = {
+  skip?: InputMaybe<Scalars['Int']>;
+  first?: InputMaybe<Scalars['Int']>;
+  orderBy?: InputMaybe<TokenTransferEvent_orderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  where?: InputMaybe<TokenTransferEvent_filter>;
 };
 
 export type TenderizerDay = {
@@ -853,6 +1350,11 @@ export type Tenderizer_filter = {
   lastUpdateDay_lte?: InputMaybe<Scalars['BigInt']>;
   lastUpdateDay_in?: InputMaybe<Array<Scalars['BigInt']>>;
   lastUpdateDay_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  depositEvents_?: InputMaybe<DepositEvent_filter>;
+  unlockEvents_?: InputMaybe<UnlockEvent_filter>;
+  withdrawEvents_?: InputMaybe<WithdrawEvent_filter>;
+  rebaseEvents_?: InputMaybe<RebaseEvent_filter>;
+  tokenTransferEvents_?: InputMaybe<TokenTransferEvent_filter>;
   /** Filter for the block changed event. */
   _change_block?: InputMaybe<BlockChangedFilter>;
   and?: InputMaybe<Array<InputMaybe<Tenderizer_filter>>>;
@@ -873,7 +1375,169 @@ export type Tenderizer_orderBy =
   | 'apr'
   | 'stakes'
   | 'tenderizerDays'
-  | 'lastUpdateDay';
+  | 'lastUpdateDay'
+  | 'depositEvents'
+  | 'unlockEvents'
+  | 'withdrawEvents'
+  | 'rebaseEvents'
+  | 'tokenTransferEvents';
+
+export type TokenTransferEvent = {
+  id: Scalars['ID'];
+  timestamp: Scalars['Int'];
+  amount: Scalars['BigDecimal'];
+  shares: Scalars['BigDecimal'];
+  from: User;
+  to: User;
+  asset: Asset;
+  tenderizer: Tenderizer;
+};
+
+export type TokenTransferEvent_filter = {
+  id?: InputMaybe<Scalars['ID']>;
+  id_not?: InputMaybe<Scalars['ID']>;
+  id_gt?: InputMaybe<Scalars['ID']>;
+  id_lt?: InputMaybe<Scalars['ID']>;
+  id_gte?: InputMaybe<Scalars['ID']>;
+  id_lte?: InputMaybe<Scalars['ID']>;
+  id_in?: InputMaybe<Array<Scalars['ID']>>;
+  id_not_in?: InputMaybe<Array<Scalars['ID']>>;
+  timestamp?: InputMaybe<Scalars['Int']>;
+  timestamp_not?: InputMaybe<Scalars['Int']>;
+  timestamp_gt?: InputMaybe<Scalars['Int']>;
+  timestamp_lt?: InputMaybe<Scalars['Int']>;
+  timestamp_gte?: InputMaybe<Scalars['Int']>;
+  timestamp_lte?: InputMaybe<Scalars['Int']>;
+  timestamp_in?: InputMaybe<Array<Scalars['Int']>>;
+  timestamp_not_in?: InputMaybe<Array<Scalars['Int']>>;
+  amount?: InputMaybe<Scalars['BigDecimal']>;
+  amount_not?: InputMaybe<Scalars['BigDecimal']>;
+  amount_gt?: InputMaybe<Scalars['BigDecimal']>;
+  amount_lt?: InputMaybe<Scalars['BigDecimal']>;
+  amount_gte?: InputMaybe<Scalars['BigDecimal']>;
+  amount_lte?: InputMaybe<Scalars['BigDecimal']>;
+  amount_in?: InputMaybe<Array<Scalars['BigDecimal']>>;
+  amount_not_in?: InputMaybe<Array<Scalars['BigDecimal']>>;
+  shares?: InputMaybe<Scalars['BigDecimal']>;
+  shares_not?: InputMaybe<Scalars['BigDecimal']>;
+  shares_gt?: InputMaybe<Scalars['BigDecimal']>;
+  shares_lt?: InputMaybe<Scalars['BigDecimal']>;
+  shares_gte?: InputMaybe<Scalars['BigDecimal']>;
+  shares_lte?: InputMaybe<Scalars['BigDecimal']>;
+  shares_in?: InputMaybe<Array<Scalars['BigDecimal']>>;
+  shares_not_in?: InputMaybe<Array<Scalars['BigDecimal']>>;
+  from?: InputMaybe<Scalars['String']>;
+  from_not?: InputMaybe<Scalars['String']>;
+  from_gt?: InputMaybe<Scalars['String']>;
+  from_lt?: InputMaybe<Scalars['String']>;
+  from_gte?: InputMaybe<Scalars['String']>;
+  from_lte?: InputMaybe<Scalars['String']>;
+  from_in?: InputMaybe<Array<Scalars['String']>>;
+  from_not_in?: InputMaybe<Array<Scalars['String']>>;
+  from_contains?: InputMaybe<Scalars['String']>;
+  from_contains_nocase?: InputMaybe<Scalars['String']>;
+  from_not_contains?: InputMaybe<Scalars['String']>;
+  from_not_contains_nocase?: InputMaybe<Scalars['String']>;
+  from_starts_with?: InputMaybe<Scalars['String']>;
+  from_starts_with_nocase?: InputMaybe<Scalars['String']>;
+  from_not_starts_with?: InputMaybe<Scalars['String']>;
+  from_not_starts_with_nocase?: InputMaybe<Scalars['String']>;
+  from_ends_with?: InputMaybe<Scalars['String']>;
+  from_ends_with_nocase?: InputMaybe<Scalars['String']>;
+  from_not_ends_with?: InputMaybe<Scalars['String']>;
+  from_not_ends_with_nocase?: InputMaybe<Scalars['String']>;
+  from_?: InputMaybe<User_filter>;
+  to?: InputMaybe<Scalars['String']>;
+  to_not?: InputMaybe<Scalars['String']>;
+  to_gt?: InputMaybe<Scalars['String']>;
+  to_lt?: InputMaybe<Scalars['String']>;
+  to_gte?: InputMaybe<Scalars['String']>;
+  to_lte?: InputMaybe<Scalars['String']>;
+  to_in?: InputMaybe<Array<Scalars['String']>>;
+  to_not_in?: InputMaybe<Array<Scalars['String']>>;
+  to_contains?: InputMaybe<Scalars['String']>;
+  to_contains_nocase?: InputMaybe<Scalars['String']>;
+  to_not_contains?: InputMaybe<Scalars['String']>;
+  to_not_contains_nocase?: InputMaybe<Scalars['String']>;
+  to_starts_with?: InputMaybe<Scalars['String']>;
+  to_starts_with_nocase?: InputMaybe<Scalars['String']>;
+  to_not_starts_with?: InputMaybe<Scalars['String']>;
+  to_not_starts_with_nocase?: InputMaybe<Scalars['String']>;
+  to_ends_with?: InputMaybe<Scalars['String']>;
+  to_ends_with_nocase?: InputMaybe<Scalars['String']>;
+  to_not_ends_with?: InputMaybe<Scalars['String']>;
+  to_not_ends_with_nocase?: InputMaybe<Scalars['String']>;
+  to_?: InputMaybe<User_filter>;
+  asset?: InputMaybe<Scalars['String']>;
+  asset_not?: InputMaybe<Scalars['String']>;
+  asset_gt?: InputMaybe<Scalars['String']>;
+  asset_lt?: InputMaybe<Scalars['String']>;
+  asset_gte?: InputMaybe<Scalars['String']>;
+  asset_lte?: InputMaybe<Scalars['String']>;
+  asset_in?: InputMaybe<Array<Scalars['String']>>;
+  asset_not_in?: InputMaybe<Array<Scalars['String']>>;
+  asset_contains?: InputMaybe<Scalars['String']>;
+  asset_contains_nocase?: InputMaybe<Scalars['String']>;
+  asset_not_contains?: InputMaybe<Scalars['String']>;
+  asset_not_contains_nocase?: InputMaybe<Scalars['String']>;
+  asset_starts_with?: InputMaybe<Scalars['String']>;
+  asset_starts_with_nocase?: InputMaybe<Scalars['String']>;
+  asset_not_starts_with?: InputMaybe<Scalars['String']>;
+  asset_not_starts_with_nocase?: InputMaybe<Scalars['String']>;
+  asset_ends_with?: InputMaybe<Scalars['String']>;
+  asset_ends_with_nocase?: InputMaybe<Scalars['String']>;
+  asset_not_ends_with?: InputMaybe<Scalars['String']>;
+  asset_not_ends_with_nocase?: InputMaybe<Scalars['String']>;
+  asset_?: InputMaybe<Asset_filter>;
+  tenderizer?: InputMaybe<Scalars['String']>;
+  tenderizer_not?: InputMaybe<Scalars['String']>;
+  tenderizer_gt?: InputMaybe<Scalars['String']>;
+  tenderizer_lt?: InputMaybe<Scalars['String']>;
+  tenderizer_gte?: InputMaybe<Scalars['String']>;
+  tenderizer_lte?: InputMaybe<Scalars['String']>;
+  tenderizer_in?: InputMaybe<Array<Scalars['String']>>;
+  tenderizer_not_in?: InputMaybe<Array<Scalars['String']>>;
+  tenderizer_contains?: InputMaybe<Scalars['String']>;
+  tenderizer_contains_nocase?: InputMaybe<Scalars['String']>;
+  tenderizer_not_contains?: InputMaybe<Scalars['String']>;
+  tenderizer_not_contains_nocase?: InputMaybe<Scalars['String']>;
+  tenderizer_starts_with?: InputMaybe<Scalars['String']>;
+  tenderizer_starts_with_nocase?: InputMaybe<Scalars['String']>;
+  tenderizer_not_starts_with?: InputMaybe<Scalars['String']>;
+  tenderizer_not_starts_with_nocase?: InputMaybe<Scalars['String']>;
+  tenderizer_ends_with?: InputMaybe<Scalars['String']>;
+  tenderizer_ends_with_nocase?: InputMaybe<Scalars['String']>;
+  tenderizer_not_ends_with?: InputMaybe<Scalars['String']>;
+  tenderizer_not_ends_with_nocase?: InputMaybe<Scalars['String']>;
+  tenderizer_?: InputMaybe<Tenderizer_filter>;
+  /** Filter for the block changed event. */
+  _change_block?: InputMaybe<BlockChangedFilter>;
+  and?: InputMaybe<Array<InputMaybe<TokenTransferEvent_filter>>>;
+  or?: InputMaybe<Array<InputMaybe<TokenTransferEvent_filter>>>;
+};
+
+export type TokenTransferEvent_orderBy =
+  | 'id'
+  | 'timestamp'
+  | 'amount'
+  | 'shares'
+  | 'from'
+  | 'from__id'
+  | 'to'
+  | 'to__id'
+  | 'asset'
+  | 'asset__id'
+  | 'asset__tvl'
+  | 'asset__tenderizerCount'
+  | 'tenderizer'
+  | 'tenderizer__id'
+  | 'tenderizer__symbol'
+  | 'tenderizer__name'
+  | 'tenderizer__validator'
+  | 'tenderizer__tvl'
+  | 'tenderizer__shares'
+  | 'tenderizer__apr'
+  | 'tenderizer__lastUpdateDay';
 
 export type Unlock = {
   id: Scalars['ID'];
@@ -881,9 +1545,171 @@ export type Unlock = {
   asset: Asset;
   tenderizer: Tenderizer;
   amount: Scalars['BigDecimal'];
-  maturity: Scalars['BigInt'];
+  timestamp: Scalars['Int'];
+  maturity: Scalars['Int'];
   redeemed: Scalars['Boolean'];
 };
+
+export type UnlockEvent = {
+  id: Scalars['ID'];
+  timestamp: Scalars['Int'];
+  amount: Scalars['BigDecimal'];
+  shares: Scalars['BigDecimal'];
+  unlock: Unlock;
+  user: User;
+  asset: Asset;
+  tenderizer: Tenderizer;
+};
+
+export type UnlockEvent_filter = {
+  id?: InputMaybe<Scalars['ID']>;
+  id_not?: InputMaybe<Scalars['ID']>;
+  id_gt?: InputMaybe<Scalars['ID']>;
+  id_lt?: InputMaybe<Scalars['ID']>;
+  id_gte?: InputMaybe<Scalars['ID']>;
+  id_lte?: InputMaybe<Scalars['ID']>;
+  id_in?: InputMaybe<Array<Scalars['ID']>>;
+  id_not_in?: InputMaybe<Array<Scalars['ID']>>;
+  timestamp?: InputMaybe<Scalars['Int']>;
+  timestamp_not?: InputMaybe<Scalars['Int']>;
+  timestamp_gt?: InputMaybe<Scalars['Int']>;
+  timestamp_lt?: InputMaybe<Scalars['Int']>;
+  timestamp_gte?: InputMaybe<Scalars['Int']>;
+  timestamp_lte?: InputMaybe<Scalars['Int']>;
+  timestamp_in?: InputMaybe<Array<Scalars['Int']>>;
+  timestamp_not_in?: InputMaybe<Array<Scalars['Int']>>;
+  amount?: InputMaybe<Scalars['BigDecimal']>;
+  amount_not?: InputMaybe<Scalars['BigDecimal']>;
+  amount_gt?: InputMaybe<Scalars['BigDecimal']>;
+  amount_lt?: InputMaybe<Scalars['BigDecimal']>;
+  amount_gte?: InputMaybe<Scalars['BigDecimal']>;
+  amount_lte?: InputMaybe<Scalars['BigDecimal']>;
+  amount_in?: InputMaybe<Array<Scalars['BigDecimal']>>;
+  amount_not_in?: InputMaybe<Array<Scalars['BigDecimal']>>;
+  shares?: InputMaybe<Scalars['BigDecimal']>;
+  shares_not?: InputMaybe<Scalars['BigDecimal']>;
+  shares_gt?: InputMaybe<Scalars['BigDecimal']>;
+  shares_lt?: InputMaybe<Scalars['BigDecimal']>;
+  shares_gte?: InputMaybe<Scalars['BigDecimal']>;
+  shares_lte?: InputMaybe<Scalars['BigDecimal']>;
+  shares_in?: InputMaybe<Array<Scalars['BigDecimal']>>;
+  shares_not_in?: InputMaybe<Array<Scalars['BigDecimal']>>;
+  unlock?: InputMaybe<Scalars['String']>;
+  unlock_not?: InputMaybe<Scalars['String']>;
+  unlock_gt?: InputMaybe<Scalars['String']>;
+  unlock_lt?: InputMaybe<Scalars['String']>;
+  unlock_gte?: InputMaybe<Scalars['String']>;
+  unlock_lte?: InputMaybe<Scalars['String']>;
+  unlock_in?: InputMaybe<Array<Scalars['String']>>;
+  unlock_not_in?: InputMaybe<Array<Scalars['String']>>;
+  unlock_contains?: InputMaybe<Scalars['String']>;
+  unlock_contains_nocase?: InputMaybe<Scalars['String']>;
+  unlock_not_contains?: InputMaybe<Scalars['String']>;
+  unlock_not_contains_nocase?: InputMaybe<Scalars['String']>;
+  unlock_starts_with?: InputMaybe<Scalars['String']>;
+  unlock_starts_with_nocase?: InputMaybe<Scalars['String']>;
+  unlock_not_starts_with?: InputMaybe<Scalars['String']>;
+  unlock_not_starts_with_nocase?: InputMaybe<Scalars['String']>;
+  unlock_ends_with?: InputMaybe<Scalars['String']>;
+  unlock_ends_with_nocase?: InputMaybe<Scalars['String']>;
+  unlock_not_ends_with?: InputMaybe<Scalars['String']>;
+  unlock_not_ends_with_nocase?: InputMaybe<Scalars['String']>;
+  unlock_?: InputMaybe<Unlock_filter>;
+  user?: InputMaybe<Scalars['String']>;
+  user_not?: InputMaybe<Scalars['String']>;
+  user_gt?: InputMaybe<Scalars['String']>;
+  user_lt?: InputMaybe<Scalars['String']>;
+  user_gte?: InputMaybe<Scalars['String']>;
+  user_lte?: InputMaybe<Scalars['String']>;
+  user_in?: InputMaybe<Array<Scalars['String']>>;
+  user_not_in?: InputMaybe<Array<Scalars['String']>>;
+  user_contains?: InputMaybe<Scalars['String']>;
+  user_contains_nocase?: InputMaybe<Scalars['String']>;
+  user_not_contains?: InputMaybe<Scalars['String']>;
+  user_not_contains_nocase?: InputMaybe<Scalars['String']>;
+  user_starts_with?: InputMaybe<Scalars['String']>;
+  user_starts_with_nocase?: InputMaybe<Scalars['String']>;
+  user_not_starts_with?: InputMaybe<Scalars['String']>;
+  user_not_starts_with_nocase?: InputMaybe<Scalars['String']>;
+  user_ends_with?: InputMaybe<Scalars['String']>;
+  user_ends_with_nocase?: InputMaybe<Scalars['String']>;
+  user_not_ends_with?: InputMaybe<Scalars['String']>;
+  user_not_ends_with_nocase?: InputMaybe<Scalars['String']>;
+  user_?: InputMaybe<User_filter>;
+  asset?: InputMaybe<Scalars['String']>;
+  asset_not?: InputMaybe<Scalars['String']>;
+  asset_gt?: InputMaybe<Scalars['String']>;
+  asset_lt?: InputMaybe<Scalars['String']>;
+  asset_gte?: InputMaybe<Scalars['String']>;
+  asset_lte?: InputMaybe<Scalars['String']>;
+  asset_in?: InputMaybe<Array<Scalars['String']>>;
+  asset_not_in?: InputMaybe<Array<Scalars['String']>>;
+  asset_contains?: InputMaybe<Scalars['String']>;
+  asset_contains_nocase?: InputMaybe<Scalars['String']>;
+  asset_not_contains?: InputMaybe<Scalars['String']>;
+  asset_not_contains_nocase?: InputMaybe<Scalars['String']>;
+  asset_starts_with?: InputMaybe<Scalars['String']>;
+  asset_starts_with_nocase?: InputMaybe<Scalars['String']>;
+  asset_not_starts_with?: InputMaybe<Scalars['String']>;
+  asset_not_starts_with_nocase?: InputMaybe<Scalars['String']>;
+  asset_ends_with?: InputMaybe<Scalars['String']>;
+  asset_ends_with_nocase?: InputMaybe<Scalars['String']>;
+  asset_not_ends_with?: InputMaybe<Scalars['String']>;
+  asset_not_ends_with_nocase?: InputMaybe<Scalars['String']>;
+  asset_?: InputMaybe<Asset_filter>;
+  tenderizer?: InputMaybe<Scalars['String']>;
+  tenderizer_not?: InputMaybe<Scalars['String']>;
+  tenderizer_gt?: InputMaybe<Scalars['String']>;
+  tenderizer_lt?: InputMaybe<Scalars['String']>;
+  tenderizer_gte?: InputMaybe<Scalars['String']>;
+  tenderizer_lte?: InputMaybe<Scalars['String']>;
+  tenderizer_in?: InputMaybe<Array<Scalars['String']>>;
+  tenderizer_not_in?: InputMaybe<Array<Scalars['String']>>;
+  tenderizer_contains?: InputMaybe<Scalars['String']>;
+  tenderizer_contains_nocase?: InputMaybe<Scalars['String']>;
+  tenderizer_not_contains?: InputMaybe<Scalars['String']>;
+  tenderizer_not_contains_nocase?: InputMaybe<Scalars['String']>;
+  tenderizer_starts_with?: InputMaybe<Scalars['String']>;
+  tenderizer_starts_with_nocase?: InputMaybe<Scalars['String']>;
+  tenderizer_not_starts_with?: InputMaybe<Scalars['String']>;
+  tenderizer_not_starts_with_nocase?: InputMaybe<Scalars['String']>;
+  tenderizer_ends_with?: InputMaybe<Scalars['String']>;
+  tenderizer_ends_with_nocase?: InputMaybe<Scalars['String']>;
+  tenderizer_not_ends_with?: InputMaybe<Scalars['String']>;
+  tenderizer_not_ends_with_nocase?: InputMaybe<Scalars['String']>;
+  tenderizer_?: InputMaybe<Tenderizer_filter>;
+  /** Filter for the block changed event. */
+  _change_block?: InputMaybe<BlockChangedFilter>;
+  and?: InputMaybe<Array<InputMaybe<UnlockEvent_filter>>>;
+  or?: InputMaybe<Array<InputMaybe<UnlockEvent_filter>>>;
+};
+
+export type UnlockEvent_orderBy =
+  | 'id'
+  | 'timestamp'
+  | 'amount'
+  | 'shares'
+  | 'unlock'
+  | 'unlock__id'
+  | 'unlock__amount'
+  | 'unlock__timestamp'
+  | 'unlock__maturity'
+  | 'unlock__redeemed'
+  | 'user'
+  | 'user__id'
+  | 'asset'
+  | 'asset__id'
+  | 'asset__tvl'
+  | 'asset__tenderizerCount'
+  | 'tenderizer'
+  | 'tenderizer__id'
+  | 'tenderizer__symbol'
+  | 'tenderizer__name'
+  | 'tenderizer__validator'
+  | 'tenderizer__tvl'
+  | 'tenderizer__shares'
+  | 'tenderizer__apr'
+  | 'tenderizer__lastUpdateDay';
 
 export type Unlock_filter = {
   id?: InputMaybe<Scalars['ID']>;
@@ -965,14 +1791,22 @@ export type Unlock_filter = {
   amount_lte?: InputMaybe<Scalars['BigDecimal']>;
   amount_in?: InputMaybe<Array<Scalars['BigDecimal']>>;
   amount_not_in?: InputMaybe<Array<Scalars['BigDecimal']>>;
-  maturity?: InputMaybe<Scalars['BigInt']>;
-  maturity_not?: InputMaybe<Scalars['BigInt']>;
-  maturity_gt?: InputMaybe<Scalars['BigInt']>;
-  maturity_lt?: InputMaybe<Scalars['BigInt']>;
-  maturity_gte?: InputMaybe<Scalars['BigInt']>;
-  maturity_lte?: InputMaybe<Scalars['BigInt']>;
-  maturity_in?: InputMaybe<Array<Scalars['BigInt']>>;
-  maturity_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  timestamp?: InputMaybe<Scalars['Int']>;
+  timestamp_not?: InputMaybe<Scalars['Int']>;
+  timestamp_gt?: InputMaybe<Scalars['Int']>;
+  timestamp_lt?: InputMaybe<Scalars['Int']>;
+  timestamp_gte?: InputMaybe<Scalars['Int']>;
+  timestamp_lte?: InputMaybe<Scalars['Int']>;
+  timestamp_in?: InputMaybe<Array<Scalars['Int']>>;
+  timestamp_not_in?: InputMaybe<Array<Scalars['Int']>>;
+  maturity?: InputMaybe<Scalars['Int']>;
+  maturity_not?: InputMaybe<Scalars['Int']>;
+  maturity_gt?: InputMaybe<Scalars['Int']>;
+  maturity_lt?: InputMaybe<Scalars['Int']>;
+  maturity_gte?: InputMaybe<Scalars['Int']>;
+  maturity_lte?: InputMaybe<Scalars['Int']>;
+  maturity_in?: InputMaybe<Array<Scalars['Int']>>;
+  maturity_not_in?: InputMaybe<Array<Scalars['Int']>>;
   redeemed?: InputMaybe<Scalars['Boolean']>;
   redeemed_not?: InputMaybe<Scalars['Boolean']>;
   redeemed_in?: InputMaybe<Array<Scalars['Boolean']>>;
@@ -1001,6 +1835,7 @@ export type Unlock_orderBy =
   | 'tenderizer__apr'
   | 'tenderizer__lastUpdateDay'
   | 'amount'
+  | 'timestamp'
   | 'maturity'
   | 'redeemed';
 
@@ -1049,6 +1884,157 @@ export type User_orderBy =
   | 'id'
   | 'stakes'
   | 'unlocks';
+
+export type WithdrawEvent = {
+  id: Scalars['ID'];
+  timestamp: Scalars['Int'];
+  assetsOut: Scalars['BigDecimal'];
+  unlock: Unlock;
+  user: User;
+  asset: Asset;
+  tenderizer: Tenderizer;
+};
+
+export type WithdrawEvent_filter = {
+  id?: InputMaybe<Scalars['ID']>;
+  id_not?: InputMaybe<Scalars['ID']>;
+  id_gt?: InputMaybe<Scalars['ID']>;
+  id_lt?: InputMaybe<Scalars['ID']>;
+  id_gte?: InputMaybe<Scalars['ID']>;
+  id_lte?: InputMaybe<Scalars['ID']>;
+  id_in?: InputMaybe<Array<Scalars['ID']>>;
+  id_not_in?: InputMaybe<Array<Scalars['ID']>>;
+  timestamp?: InputMaybe<Scalars['Int']>;
+  timestamp_not?: InputMaybe<Scalars['Int']>;
+  timestamp_gt?: InputMaybe<Scalars['Int']>;
+  timestamp_lt?: InputMaybe<Scalars['Int']>;
+  timestamp_gte?: InputMaybe<Scalars['Int']>;
+  timestamp_lte?: InputMaybe<Scalars['Int']>;
+  timestamp_in?: InputMaybe<Array<Scalars['Int']>>;
+  timestamp_not_in?: InputMaybe<Array<Scalars['Int']>>;
+  assetsOut?: InputMaybe<Scalars['BigDecimal']>;
+  assetsOut_not?: InputMaybe<Scalars['BigDecimal']>;
+  assetsOut_gt?: InputMaybe<Scalars['BigDecimal']>;
+  assetsOut_lt?: InputMaybe<Scalars['BigDecimal']>;
+  assetsOut_gte?: InputMaybe<Scalars['BigDecimal']>;
+  assetsOut_lte?: InputMaybe<Scalars['BigDecimal']>;
+  assetsOut_in?: InputMaybe<Array<Scalars['BigDecimal']>>;
+  assetsOut_not_in?: InputMaybe<Array<Scalars['BigDecimal']>>;
+  unlock?: InputMaybe<Scalars['String']>;
+  unlock_not?: InputMaybe<Scalars['String']>;
+  unlock_gt?: InputMaybe<Scalars['String']>;
+  unlock_lt?: InputMaybe<Scalars['String']>;
+  unlock_gte?: InputMaybe<Scalars['String']>;
+  unlock_lte?: InputMaybe<Scalars['String']>;
+  unlock_in?: InputMaybe<Array<Scalars['String']>>;
+  unlock_not_in?: InputMaybe<Array<Scalars['String']>>;
+  unlock_contains?: InputMaybe<Scalars['String']>;
+  unlock_contains_nocase?: InputMaybe<Scalars['String']>;
+  unlock_not_contains?: InputMaybe<Scalars['String']>;
+  unlock_not_contains_nocase?: InputMaybe<Scalars['String']>;
+  unlock_starts_with?: InputMaybe<Scalars['String']>;
+  unlock_starts_with_nocase?: InputMaybe<Scalars['String']>;
+  unlock_not_starts_with?: InputMaybe<Scalars['String']>;
+  unlock_not_starts_with_nocase?: InputMaybe<Scalars['String']>;
+  unlock_ends_with?: InputMaybe<Scalars['String']>;
+  unlock_ends_with_nocase?: InputMaybe<Scalars['String']>;
+  unlock_not_ends_with?: InputMaybe<Scalars['String']>;
+  unlock_not_ends_with_nocase?: InputMaybe<Scalars['String']>;
+  unlock_?: InputMaybe<Unlock_filter>;
+  user?: InputMaybe<Scalars['String']>;
+  user_not?: InputMaybe<Scalars['String']>;
+  user_gt?: InputMaybe<Scalars['String']>;
+  user_lt?: InputMaybe<Scalars['String']>;
+  user_gte?: InputMaybe<Scalars['String']>;
+  user_lte?: InputMaybe<Scalars['String']>;
+  user_in?: InputMaybe<Array<Scalars['String']>>;
+  user_not_in?: InputMaybe<Array<Scalars['String']>>;
+  user_contains?: InputMaybe<Scalars['String']>;
+  user_contains_nocase?: InputMaybe<Scalars['String']>;
+  user_not_contains?: InputMaybe<Scalars['String']>;
+  user_not_contains_nocase?: InputMaybe<Scalars['String']>;
+  user_starts_with?: InputMaybe<Scalars['String']>;
+  user_starts_with_nocase?: InputMaybe<Scalars['String']>;
+  user_not_starts_with?: InputMaybe<Scalars['String']>;
+  user_not_starts_with_nocase?: InputMaybe<Scalars['String']>;
+  user_ends_with?: InputMaybe<Scalars['String']>;
+  user_ends_with_nocase?: InputMaybe<Scalars['String']>;
+  user_not_ends_with?: InputMaybe<Scalars['String']>;
+  user_not_ends_with_nocase?: InputMaybe<Scalars['String']>;
+  user_?: InputMaybe<User_filter>;
+  asset?: InputMaybe<Scalars['String']>;
+  asset_not?: InputMaybe<Scalars['String']>;
+  asset_gt?: InputMaybe<Scalars['String']>;
+  asset_lt?: InputMaybe<Scalars['String']>;
+  asset_gte?: InputMaybe<Scalars['String']>;
+  asset_lte?: InputMaybe<Scalars['String']>;
+  asset_in?: InputMaybe<Array<Scalars['String']>>;
+  asset_not_in?: InputMaybe<Array<Scalars['String']>>;
+  asset_contains?: InputMaybe<Scalars['String']>;
+  asset_contains_nocase?: InputMaybe<Scalars['String']>;
+  asset_not_contains?: InputMaybe<Scalars['String']>;
+  asset_not_contains_nocase?: InputMaybe<Scalars['String']>;
+  asset_starts_with?: InputMaybe<Scalars['String']>;
+  asset_starts_with_nocase?: InputMaybe<Scalars['String']>;
+  asset_not_starts_with?: InputMaybe<Scalars['String']>;
+  asset_not_starts_with_nocase?: InputMaybe<Scalars['String']>;
+  asset_ends_with?: InputMaybe<Scalars['String']>;
+  asset_ends_with_nocase?: InputMaybe<Scalars['String']>;
+  asset_not_ends_with?: InputMaybe<Scalars['String']>;
+  asset_not_ends_with_nocase?: InputMaybe<Scalars['String']>;
+  asset_?: InputMaybe<Asset_filter>;
+  tenderizer?: InputMaybe<Scalars['String']>;
+  tenderizer_not?: InputMaybe<Scalars['String']>;
+  tenderizer_gt?: InputMaybe<Scalars['String']>;
+  tenderizer_lt?: InputMaybe<Scalars['String']>;
+  tenderizer_gte?: InputMaybe<Scalars['String']>;
+  tenderizer_lte?: InputMaybe<Scalars['String']>;
+  tenderizer_in?: InputMaybe<Array<Scalars['String']>>;
+  tenderizer_not_in?: InputMaybe<Array<Scalars['String']>>;
+  tenderizer_contains?: InputMaybe<Scalars['String']>;
+  tenderizer_contains_nocase?: InputMaybe<Scalars['String']>;
+  tenderizer_not_contains?: InputMaybe<Scalars['String']>;
+  tenderizer_not_contains_nocase?: InputMaybe<Scalars['String']>;
+  tenderizer_starts_with?: InputMaybe<Scalars['String']>;
+  tenderizer_starts_with_nocase?: InputMaybe<Scalars['String']>;
+  tenderizer_not_starts_with?: InputMaybe<Scalars['String']>;
+  tenderizer_not_starts_with_nocase?: InputMaybe<Scalars['String']>;
+  tenderizer_ends_with?: InputMaybe<Scalars['String']>;
+  tenderizer_ends_with_nocase?: InputMaybe<Scalars['String']>;
+  tenderizer_not_ends_with?: InputMaybe<Scalars['String']>;
+  tenderizer_not_ends_with_nocase?: InputMaybe<Scalars['String']>;
+  tenderizer_?: InputMaybe<Tenderizer_filter>;
+  /** Filter for the block changed event. */
+  _change_block?: InputMaybe<BlockChangedFilter>;
+  and?: InputMaybe<Array<InputMaybe<WithdrawEvent_filter>>>;
+  or?: InputMaybe<Array<InputMaybe<WithdrawEvent_filter>>>;
+};
+
+export type WithdrawEvent_orderBy =
+  | 'id'
+  | 'timestamp'
+  | 'assetsOut'
+  | 'unlock'
+  | 'unlock__id'
+  | 'unlock__amount'
+  | 'unlock__timestamp'
+  | 'unlock__maturity'
+  | 'unlock__redeemed'
+  | 'user'
+  | 'user__id'
+  | 'asset'
+  | 'asset__id'
+  | 'asset__tvl'
+  | 'asset__tenderizerCount'
+  | 'tenderizer'
+  | 'tenderizer__id'
+  | 'tenderizer__symbol'
+  | 'tenderizer__name'
+  | 'tenderizer__validator'
+  | 'tenderizer__tvl'
+  | 'tenderizer__shares'
+  | 'tenderizer__apr'
+  | 'tenderizer__lastUpdateDay';
 
 export type _Block_ = {
   /** The hash of the block */
@@ -1167,6 +2153,8 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
 
 /** Mapping between all available schema types and the resolvers types */
 export type ResolversTypes = ResolversObject<{
+  Query: ResolverTypeWrapper<{}>;
+  Subscription: ResolverTypeWrapper<{}>;
   Asset: ResolverTypeWrapper<Asset>;
   AssetDay: ResolverTypeWrapper<AssetDay>;
   AssetDay_filter: AssetDay_filter;
@@ -1179,29 +2167,42 @@ export type ResolversTypes = ResolversObject<{
   Block_height: Block_height;
   Boolean: ResolverTypeWrapper<Scalars['Boolean']>;
   Bytes: ResolverTypeWrapper<Scalars['Bytes']>;
+  DepositEvent: ResolverTypeWrapper<DepositEvent>;
+  DepositEvent_filter: DepositEvent_filter;
+  DepositEvent_orderBy: DepositEvent_orderBy;
   Float: ResolverTypeWrapper<Scalars['Float']>;
   ID: ResolverTypeWrapper<Scalars['ID']>;
   Int: ResolverTypeWrapper<Scalars['Int']>;
   Int8: ResolverTypeWrapper<Scalars['Int8']>;
   OrderDirection: OrderDirection;
-  Query: ResolverTypeWrapper<{}>;
+  RebaseEvent: ResolverTypeWrapper<RebaseEvent>;
+  RebaseEvent_filter: RebaseEvent_filter;
+  RebaseEvent_orderBy: RebaseEvent_orderBy;
   Stake: ResolverTypeWrapper<Stake>;
   Stake_filter: Stake_filter;
   Stake_orderBy: Stake_orderBy;
   String: ResolverTypeWrapper<Scalars['String']>;
-  Subscription: ResolverTypeWrapper<{}>;
   Tenderizer: ResolverTypeWrapper<Tenderizer>;
   TenderizerDay: ResolverTypeWrapper<TenderizerDay>;
   TenderizerDay_filter: TenderizerDay_filter;
   TenderizerDay_orderBy: TenderizerDay_orderBy;
   Tenderizer_filter: Tenderizer_filter;
   Tenderizer_orderBy: Tenderizer_orderBy;
+  TokenTransferEvent: ResolverTypeWrapper<TokenTransferEvent>;
+  TokenTransferEvent_filter: TokenTransferEvent_filter;
+  TokenTransferEvent_orderBy: TokenTransferEvent_orderBy;
   Unlock: ResolverTypeWrapper<Unlock>;
+  UnlockEvent: ResolverTypeWrapper<UnlockEvent>;
+  UnlockEvent_filter: UnlockEvent_filter;
+  UnlockEvent_orderBy: UnlockEvent_orderBy;
   Unlock_filter: Unlock_filter;
   Unlock_orderBy: Unlock_orderBy;
   User: ResolverTypeWrapper<User>;
   User_filter: User_filter;
   User_orderBy: User_orderBy;
+  WithdrawEvent: ResolverTypeWrapper<WithdrawEvent>;
+  WithdrawEvent_filter: WithdrawEvent_filter;
+  WithdrawEvent_orderBy: WithdrawEvent_orderBy;
   _Block_: ResolverTypeWrapper<_Block_>;
   _Meta_: ResolverTypeWrapper<_Meta_>;
   _SubgraphErrorPolicy_: _SubgraphErrorPolicy_;
@@ -1209,6 +2210,8 @@ export type ResolversTypes = ResolversObject<{
 
 /** Mapping between all available schema types and the resolvers parents */
 export type ResolversParentTypes = ResolversObject<{
+  Query: {};
+  Subscription: {};
   Asset: Asset;
   AssetDay: AssetDay;
   AssetDay_filter: AssetDay_filter;
@@ -1219,44 +2222,109 @@ export type ResolversParentTypes = ResolversObject<{
   Block_height: Block_height;
   Boolean: Scalars['Boolean'];
   Bytes: Scalars['Bytes'];
+  DepositEvent: DepositEvent;
+  DepositEvent_filter: DepositEvent_filter;
   Float: Scalars['Float'];
   ID: Scalars['ID'];
   Int: Scalars['Int'];
   Int8: Scalars['Int8'];
-  Query: {};
+  RebaseEvent: RebaseEvent;
+  RebaseEvent_filter: RebaseEvent_filter;
   Stake: Stake;
   Stake_filter: Stake_filter;
   String: Scalars['String'];
-  Subscription: {};
   Tenderizer: Tenderizer;
   TenderizerDay: TenderizerDay;
   TenderizerDay_filter: TenderizerDay_filter;
   Tenderizer_filter: Tenderizer_filter;
+  TokenTransferEvent: TokenTransferEvent;
+  TokenTransferEvent_filter: TokenTransferEvent_filter;
   Unlock: Unlock;
+  UnlockEvent: UnlockEvent;
+  UnlockEvent_filter: UnlockEvent_filter;
   Unlock_filter: Unlock_filter;
   User: User;
   User_filter: User_filter;
+  WithdrawEvent: WithdrawEvent;
+  WithdrawEvent_filter: WithdrawEvent_filter;
   _Block_: _Block_;
   _Meta_: _Meta_;
 }>;
 
 export type entityDirectiveArgs = { };
 
-export type entityDirectiveResolver<Result, Parent, ContextType = MeshContext, Args = entityDirectiveArgs> = DirectiveResolverFn<Result, Parent, ContextType, Args>;
+export type entityDirectiveResolver<Result, Parent, ContextType = MeshContext & { subgraph: string }, Args = entityDirectiveArgs> = DirectiveResolverFn<Result, Parent, ContextType, Args>;
 
 export type subgraphIdDirectiveArgs = {
   id: Scalars['String'];
 };
 
-export type subgraphIdDirectiveResolver<Result, Parent, ContextType = MeshContext, Args = subgraphIdDirectiveArgs> = DirectiveResolverFn<Result, Parent, ContextType, Args>;
+export type subgraphIdDirectiveResolver<Result, Parent, ContextType = MeshContext & { subgraph: string }, Args = subgraphIdDirectiveArgs> = DirectiveResolverFn<Result, Parent, ContextType, Args>;
 
 export type derivedFromDirectiveArgs = {
   field: Scalars['String'];
 };
 
-export type derivedFromDirectiveResolver<Result, Parent, ContextType = MeshContext, Args = derivedFromDirectiveArgs> = DirectiveResolverFn<Result, Parent, ContextType, Args>;
+export type derivedFromDirectiveResolver<Result, Parent, ContextType = MeshContext & { subgraph: string }, Args = derivedFromDirectiveArgs> = DirectiveResolverFn<Result, Parent, ContextType, Args>;
 
-export type AssetResolvers<ContextType = MeshContext, ParentType extends ResolversParentTypes['Asset'] = ResolversParentTypes['Asset']> = ResolversObject<{
+export type QueryResolvers<ContextType = MeshContext & { subgraph: string }, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = ResolversObject<{
+  asset?: Resolver<Maybe<ResolversTypes['Asset']>, ParentType, ContextType, RequireFields<QueryassetArgs, 'id' | 'subgraphError'>>;
+  assets?: Resolver<Array<ResolversTypes['Asset']>, ParentType, ContextType, RequireFields<QueryassetsArgs, 'skip' | 'first' | 'subgraphError'>>;
+  tenderizer?: Resolver<Maybe<ResolversTypes['Tenderizer']>, ParentType, ContextType, RequireFields<QuerytenderizerArgs, 'id' | 'subgraphError'>>;
+  tenderizers?: Resolver<Array<ResolversTypes['Tenderizer']>, ParentType, ContextType, RequireFields<QuerytenderizersArgs, 'skip' | 'first' | 'subgraphError'>>;
+  user?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<QueryuserArgs, 'id' | 'subgraphError'>>;
+  users?: Resolver<Array<ResolversTypes['User']>, ParentType, ContextType, RequireFields<QueryusersArgs, 'skip' | 'first' | 'subgraphError'>>;
+  stake?: Resolver<Maybe<ResolversTypes['Stake']>, ParentType, ContextType, RequireFields<QuerystakeArgs, 'id' | 'subgraphError'>>;
+  stakes?: Resolver<Array<ResolversTypes['Stake']>, ParentType, ContextType, RequireFields<QuerystakesArgs, 'skip' | 'first' | 'subgraphError'>>;
+  unlock?: Resolver<Maybe<ResolversTypes['Unlock']>, ParentType, ContextType, RequireFields<QueryunlockArgs, 'id' | 'subgraphError'>>;
+  unlocks?: Resolver<Array<ResolversTypes['Unlock']>, ParentType, ContextType, RequireFields<QueryunlocksArgs, 'skip' | 'first' | 'subgraphError'>>;
+  assetDay?: Resolver<Maybe<ResolversTypes['AssetDay']>, ParentType, ContextType, RequireFields<QueryassetDayArgs, 'id' | 'subgraphError'>>;
+  assetDays?: Resolver<Array<ResolversTypes['AssetDay']>, ParentType, ContextType, RequireFields<QueryassetDaysArgs, 'skip' | 'first' | 'subgraphError'>>;
+  tenderizerDay?: Resolver<Maybe<ResolversTypes['TenderizerDay']>, ParentType, ContextType, RequireFields<QuerytenderizerDayArgs, 'id' | 'subgraphError'>>;
+  tenderizerDays?: Resolver<Array<ResolversTypes['TenderizerDay']>, ParentType, ContextType, RequireFields<QuerytenderizerDaysArgs, 'skip' | 'first' | 'subgraphError'>>;
+  depositEvent?: Resolver<Maybe<ResolversTypes['DepositEvent']>, ParentType, ContextType, RequireFields<QuerydepositEventArgs, 'id' | 'subgraphError'>>;
+  depositEvents?: Resolver<Array<ResolversTypes['DepositEvent']>, ParentType, ContextType, RequireFields<QuerydepositEventsArgs, 'skip' | 'first' | 'subgraphError'>>;
+  unlockEvent?: Resolver<Maybe<ResolversTypes['UnlockEvent']>, ParentType, ContextType, RequireFields<QueryunlockEventArgs, 'id' | 'subgraphError'>>;
+  unlockEvents?: Resolver<Array<ResolversTypes['UnlockEvent']>, ParentType, ContextType, RequireFields<QueryunlockEventsArgs, 'skip' | 'first' | 'subgraphError'>>;
+  withdrawEvent?: Resolver<Maybe<ResolversTypes['WithdrawEvent']>, ParentType, ContextType, RequireFields<QuerywithdrawEventArgs, 'id' | 'subgraphError'>>;
+  withdrawEvents?: Resolver<Array<ResolversTypes['WithdrawEvent']>, ParentType, ContextType, RequireFields<QuerywithdrawEventsArgs, 'skip' | 'first' | 'subgraphError'>>;
+  rebaseEvent?: Resolver<Maybe<ResolversTypes['RebaseEvent']>, ParentType, ContextType, RequireFields<QueryrebaseEventArgs, 'id' | 'subgraphError'>>;
+  rebaseEvents?: Resolver<Array<ResolversTypes['RebaseEvent']>, ParentType, ContextType, RequireFields<QueryrebaseEventsArgs, 'skip' | 'first' | 'subgraphError'>>;
+  tokenTransferEvent?: Resolver<Maybe<ResolversTypes['TokenTransferEvent']>, ParentType, ContextType, RequireFields<QuerytokenTransferEventArgs, 'id' | 'subgraphError'>>;
+  tokenTransferEvents?: Resolver<Array<ResolversTypes['TokenTransferEvent']>, ParentType, ContextType, RequireFields<QuerytokenTransferEventsArgs, 'skip' | 'first' | 'subgraphError'>>;
+  _meta?: Resolver<Maybe<ResolversTypes['_Meta_']>, ParentType, ContextType, Partial<Query_metaArgs>>;
+  getUserMultichain?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<QuerygetUserMultichainArgs, 'user' | 'subgraphs'>>;
+}>;
+
+export type SubscriptionResolvers<ContextType = MeshContext & { subgraph: string }, ParentType extends ResolversParentTypes['Subscription'] = ResolversParentTypes['Subscription']> = ResolversObject<{
+  asset?: SubscriptionResolver<Maybe<ResolversTypes['Asset']>, "asset", ParentType, ContextType, RequireFields<SubscriptionassetArgs, 'id' | 'subgraphError'>>;
+  assets?: SubscriptionResolver<Array<ResolversTypes['Asset']>, "assets", ParentType, ContextType, RequireFields<SubscriptionassetsArgs, 'skip' | 'first' | 'subgraphError'>>;
+  tenderizer?: SubscriptionResolver<Maybe<ResolversTypes['Tenderizer']>, "tenderizer", ParentType, ContextType, RequireFields<SubscriptiontenderizerArgs, 'id' | 'subgraphError'>>;
+  tenderizers?: SubscriptionResolver<Array<ResolversTypes['Tenderizer']>, "tenderizers", ParentType, ContextType, RequireFields<SubscriptiontenderizersArgs, 'skip' | 'first' | 'subgraphError'>>;
+  user?: SubscriptionResolver<Maybe<ResolversTypes['User']>, "user", ParentType, ContextType, RequireFields<SubscriptionuserArgs, 'id' | 'subgraphError'>>;
+  users?: SubscriptionResolver<Array<ResolversTypes['User']>, "users", ParentType, ContextType, RequireFields<SubscriptionusersArgs, 'skip' | 'first' | 'subgraphError'>>;
+  stake?: SubscriptionResolver<Maybe<ResolversTypes['Stake']>, "stake", ParentType, ContextType, RequireFields<SubscriptionstakeArgs, 'id' | 'subgraphError'>>;
+  stakes?: SubscriptionResolver<Array<ResolversTypes['Stake']>, "stakes", ParentType, ContextType, RequireFields<SubscriptionstakesArgs, 'skip' | 'first' | 'subgraphError'>>;
+  unlock?: SubscriptionResolver<Maybe<ResolversTypes['Unlock']>, "unlock", ParentType, ContextType, RequireFields<SubscriptionunlockArgs, 'id' | 'subgraphError'>>;
+  unlocks?: SubscriptionResolver<Array<ResolversTypes['Unlock']>, "unlocks", ParentType, ContextType, RequireFields<SubscriptionunlocksArgs, 'skip' | 'first' | 'subgraphError'>>;
+  assetDay?: SubscriptionResolver<Maybe<ResolversTypes['AssetDay']>, "assetDay", ParentType, ContextType, RequireFields<SubscriptionassetDayArgs, 'id' | 'subgraphError'>>;
+  assetDays?: SubscriptionResolver<Array<ResolversTypes['AssetDay']>, "assetDays", ParentType, ContextType, RequireFields<SubscriptionassetDaysArgs, 'skip' | 'first' | 'subgraphError'>>;
+  tenderizerDay?: SubscriptionResolver<Maybe<ResolversTypes['TenderizerDay']>, "tenderizerDay", ParentType, ContextType, RequireFields<SubscriptiontenderizerDayArgs, 'id' | 'subgraphError'>>;
+  tenderizerDays?: SubscriptionResolver<Array<ResolversTypes['TenderizerDay']>, "tenderizerDays", ParentType, ContextType, RequireFields<SubscriptiontenderizerDaysArgs, 'skip' | 'first' | 'subgraphError'>>;
+  depositEvent?: SubscriptionResolver<Maybe<ResolversTypes['DepositEvent']>, "depositEvent", ParentType, ContextType, RequireFields<SubscriptiondepositEventArgs, 'id' | 'subgraphError'>>;
+  depositEvents?: SubscriptionResolver<Array<ResolversTypes['DepositEvent']>, "depositEvents", ParentType, ContextType, RequireFields<SubscriptiondepositEventsArgs, 'skip' | 'first' | 'subgraphError'>>;
+  unlockEvent?: SubscriptionResolver<Maybe<ResolversTypes['UnlockEvent']>, "unlockEvent", ParentType, ContextType, RequireFields<SubscriptionunlockEventArgs, 'id' | 'subgraphError'>>;
+  unlockEvents?: SubscriptionResolver<Array<ResolversTypes['UnlockEvent']>, "unlockEvents", ParentType, ContextType, RequireFields<SubscriptionunlockEventsArgs, 'skip' | 'first' | 'subgraphError'>>;
+  withdrawEvent?: SubscriptionResolver<Maybe<ResolversTypes['WithdrawEvent']>, "withdrawEvent", ParentType, ContextType, RequireFields<SubscriptionwithdrawEventArgs, 'id' | 'subgraphError'>>;
+  withdrawEvents?: SubscriptionResolver<Array<ResolversTypes['WithdrawEvent']>, "withdrawEvents", ParentType, ContextType, RequireFields<SubscriptionwithdrawEventsArgs, 'skip' | 'first' | 'subgraphError'>>;
+  rebaseEvent?: SubscriptionResolver<Maybe<ResolversTypes['RebaseEvent']>, "rebaseEvent", ParentType, ContextType, RequireFields<SubscriptionrebaseEventArgs, 'id' | 'subgraphError'>>;
+  rebaseEvents?: SubscriptionResolver<Array<ResolversTypes['RebaseEvent']>, "rebaseEvents", ParentType, ContextType, RequireFields<SubscriptionrebaseEventsArgs, 'skip' | 'first' | 'subgraphError'>>;
+  tokenTransferEvent?: SubscriptionResolver<Maybe<ResolversTypes['TokenTransferEvent']>, "tokenTransferEvent", ParentType, ContextType, RequireFields<SubscriptiontokenTransferEventArgs, 'id' | 'subgraphError'>>;
+  tokenTransferEvents?: SubscriptionResolver<Array<ResolversTypes['TokenTransferEvent']>, "tokenTransferEvents", ParentType, ContextType, RequireFields<SubscriptiontokenTransferEventsArgs, 'skip' | 'first' | 'subgraphError'>>;
+  _meta?: SubscriptionResolver<Maybe<ResolversTypes['_Meta_']>, "_meta", ParentType, ContextType, Partial<Subscription_metaArgs>>;
+}>;
+
+export type AssetResolvers<ContextType = MeshContext & { subgraph: string }, ParentType extends ResolversParentTypes['Asset'] = ResolversParentTypes['Asset']> = ResolversObject<{
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   tvl?: Resolver<ResolversTypes['BigDecimal'], ParentType, ContextType>;
   tenderizerCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
@@ -1264,7 +2332,7 @@ export type AssetResolvers<ContextType = MeshContext, ParentType extends Resolve
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
-export type AssetDayResolvers<ContextType = MeshContext, ParentType extends ResolversParentTypes['AssetDay'] = ResolversParentTypes['AssetDay']> = ResolversObject<{
+export type AssetDayResolvers<ContextType = MeshContext & { subgraph: string }, ParentType extends ResolversParentTypes['AssetDay'] = ResolversParentTypes['AssetDay']> = ResolversObject<{
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   date?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   asset?: Resolver<ResolversTypes['Asset'], ParentType, ContextType>;
@@ -1285,29 +2353,33 @@ export interface BytesScalarConfig extends GraphQLScalarTypeConfig<ResolversType
   name: 'Bytes';
 }
 
+export type DepositEventResolvers<ContextType = MeshContext & { subgraph: string }, ParentType extends ResolversParentTypes['DepositEvent'] = ResolversParentTypes['DepositEvent']> = ResolversObject<{
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  timestamp?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  assetsIn?: Resolver<ResolversTypes['BigDecimal'], ParentType, ContextType>;
+  tTokenOut?: Resolver<ResolversTypes['BigDecimal'], ParentType, ContextType>;
+  shares?: Resolver<ResolversTypes['BigDecimal'], ParentType, ContextType>;
+  user?: Resolver<ResolversTypes['User'], ParentType, ContextType>;
+  asset?: Resolver<ResolversTypes['Asset'], ParentType, ContextType>;
+  tenderizer?: Resolver<ResolversTypes['Tenderizer'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
 export interface Int8ScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['Int8'], any> {
   name: 'Int8';
 }
 
-export type QueryResolvers<ContextType = MeshContext, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = ResolversObject<{
-  asset?: Resolver<Maybe<ResolversTypes['Asset']>, ParentType, ContextType, RequireFields<QueryassetArgs, 'id' | 'subgraphError'>>;
-  assets?: Resolver<Array<ResolversTypes['Asset']>, ParentType, ContextType, RequireFields<QueryassetsArgs, 'skip' | 'first' | 'subgraphError'>>;
-  tenderizer?: Resolver<Maybe<ResolversTypes['Tenderizer']>, ParentType, ContextType, RequireFields<QuerytenderizerArgs, 'id' | 'subgraphError'>>;
-  tenderizers?: Resolver<Array<ResolversTypes['Tenderizer']>, ParentType, ContextType, RequireFields<QuerytenderizersArgs, 'skip' | 'first' | 'subgraphError'>>;
-  user?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<QueryuserArgs, 'id' | 'subgraphError'>>;
-  users?: Resolver<Array<ResolversTypes['User']>, ParentType, ContextType, RequireFields<QueryusersArgs, 'skip' | 'first' | 'subgraphError'>>;
-  stake?: Resolver<Maybe<ResolversTypes['Stake']>, ParentType, ContextType, RequireFields<QuerystakeArgs, 'id' | 'subgraphError'>>;
-  stakes?: Resolver<Array<ResolversTypes['Stake']>, ParentType, ContextType, RequireFields<QuerystakesArgs, 'skip' | 'first' | 'subgraphError'>>;
-  unlock?: Resolver<Maybe<ResolversTypes['Unlock']>, ParentType, ContextType, RequireFields<QueryunlockArgs, 'id' | 'subgraphError'>>;
-  unlocks?: Resolver<Array<ResolversTypes['Unlock']>, ParentType, ContextType, RequireFields<QueryunlocksArgs, 'skip' | 'first' | 'subgraphError'>>;
-  assetDay?: Resolver<Maybe<ResolversTypes['AssetDay']>, ParentType, ContextType, RequireFields<QueryassetDayArgs, 'id' | 'subgraphError'>>;
-  assetDays?: Resolver<Array<ResolversTypes['AssetDay']>, ParentType, ContextType, RequireFields<QueryassetDaysArgs, 'skip' | 'first' | 'subgraphError'>>;
-  tenderizerDay?: Resolver<Maybe<ResolversTypes['TenderizerDay']>, ParentType, ContextType, RequireFields<QuerytenderizerDayArgs, 'id' | 'subgraphError'>>;
-  tenderizerDays?: Resolver<Array<ResolversTypes['TenderizerDay']>, ParentType, ContextType, RequireFields<QuerytenderizerDaysArgs, 'skip' | 'first' | 'subgraphError'>>;
-  _meta?: Resolver<Maybe<ResolversTypes['_Meta_']>, ParentType, ContextType, Partial<Query_metaArgs>>;
+export type RebaseEventResolvers<ContextType = MeshContext & { subgraph: string }, ParentType extends ResolversParentTypes['RebaseEvent'] = ResolversParentTypes['RebaseEvent']> = ResolversObject<{
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  timestamp?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  oldStake?: Resolver<ResolversTypes['BigDecimal'], ParentType, ContextType>;
+  newStake?: Resolver<ResolversTypes['BigDecimal'], ParentType, ContextType>;
+  asset?: Resolver<ResolversTypes['Asset'], ParentType, ContextType>;
+  tenderizer?: Resolver<ResolversTypes['Tenderizer'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
-export type StakeResolvers<ContextType = MeshContext, ParentType extends ResolversParentTypes['Stake'] = ResolversParentTypes['Stake']> = ResolversObject<{
+export type StakeResolvers<ContextType = MeshContext & { subgraph: string }, ParentType extends ResolversParentTypes['Stake'] = ResolversParentTypes['Stake']> = ResolversObject<{
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   user?: Resolver<ResolversTypes['User'], ParentType, ContextType>;
   asset?: Resolver<ResolversTypes['Asset'], ParentType, ContextType>;
@@ -1316,25 +2388,7 @@ export type StakeResolvers<ContextType = MeshContext, ParentType extends Resolve
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
-export type SubscriptionResolvers<ContextType = MeshContext, ParentType extends ResolversParentTypes['Subscription'] = ResolversParentTypes['Subscription']> = ResolversObject<{
-  asset?: SubscriptionResolver<Maybe<ResolversTypes['Asset']>, "asset", ParentType, ContextType, RequireFields<SubscriptionassetArgs, 'id' | 'subgraphError'>>;
-  assets?: SubscriptionResolver<Array<ResolversTypes['Asset']>, "assets", ParentType, ContextType, RequireFields<SubscriptionassetsArgs, 'skip' | 'first' | 'subgraphError'>>;
-  tenderizer?: SubscriptionResolver<Maybe<ResolversTypes['Tenderizer']>, "tenderizer", ParentType, ContextType, RequireFields<SubscriptiontenderizerArgs, 'id' | 'subgraphError'>>;
-  tenderizers?: SubscriptionResolver<Array<ResolversTypes['Tenderizer']>, "tenderizers", ParentType, ContextType, RequireFields<SubscriptiontenderizersArgs, 'skip' | 'first' | 'subgraphError'>>;
-  user?: SubscriptionResolver<Maybe<ResolversTypes['User']>, "user", ParentType, ContextType, RequireFields<SubscriptionuserArgs, 'id' | 'subgraphError'>>;
-  users?: SubscriptionResolver<Array<ResolversTypes['User']>, "users", ParentType, ContextType, RequireFields<SubscriptionusersArgs, 'skip' | 'first' | 'subgraphError'>>;
-  stake?: SubscriptionResolver<Maybe<ResolversTypes['Stake']>, "stake", ParentType, ContextType, RequireFields<SubscriptionstakeArgs, 'id' | 'subgraphError'>>;
-  stakes?: SubscriptionResolver<Array<ResolversTypes['Stake']>, "stakes", ParentType, ContextType, RequireFields<SubscriptionstakesArgs, 'skip' | 'first' | 'subgraphError'>>;
-  unlock?: SubscriptionResolver<Maybe<ResolversTypes['Unlock']>, "unlock", ParentType, ContextType, RequireFields<SubscriptionunlockArgs, 'id' | 'subgraphError'>>;
-  unlocks?: SubscriptionResolver<Array<ResolversTypes['Unlock']>, "unlocks", ParentType, ContextType, RequireFields<SubscriptionunlocksArgs, 'skip' | 'first' | 'subgraphError'>>;
-  assetDay?: SubscriptionResolver<Maybe<ResolversTypes['AssetDay']>, "assetDay", ParentType, ContextType, RequireFields<SubscriptionassetDayArgs, 'id' | 'subgraphError'>>;
-  assetDays?: SubscriptionResolver<Array<ResolversTypes['AssetDay']>, "assetDays", ParentType, ContextType, RequireFields<SubscriptionassetDaysArgs, 'skip' | 'first' | 'subgraphError'>>;
-  tenderizerDay?: SubscriptionResolver<Maybe<ResolversTypes['TenderizerDay']>, "tenderizerDay", ParentType, ContextType, RequireFields<SubscriptiontenderizerDayArgs, 'id' | 'subgraphError'>>;
-  tenderizerDays?: SubscriptionResolver<Array<ResolversTypes['TenderizerDay']>, "tenderizerDays", ParentType, ContextType, RequireFields<SubscriptiontenderizerDaysArgs, 'skip' | 'first' | 'subgraphError'>>;
-  _meta?: SubscriptionResolver<Maybe<ResolversTypes['_Meta_']>, "_meta", ParentType, ContextType, Partial<Subscription_metaArgs>>;
-}>;
-
-export type TenderizerResolvers<ContextType = MeshContext, ParentType extends ResolversParentTypes['Tenderizer'] = ResolversParentTypes['Tenderizer']> = ResolversObject<{
+export type TenderizerResolvers<ContextType = MeshContext & { subgraph: string }, ParentType extends ResolversParentTypes['Tenderizer'] = ResolversParentTypes['Tenderizer']> = ResolversObject<{
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   symbol?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -1346,10 +2400,15 @@ export type TenderizerResolvers<ContextType = MeshContext, ParentType extends Re
   stakes?: Resolver<Array<ResolversTypes['Stake']>, ParentType, ContextType, RequireFields<TenderizerstakesArgs, 'skip' | 'first'>>;
   tenderizerDays?: Resolver<Array<ResolversTypes['TenderizerDay']>, ParentType, ContextType, RequireFields<TenderizertenderizerDaysArgs, 'skip' | 'first'>>;
   lastUpdateDay?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
+  depositEvents?: Resolver<Array<ResolversTypes['DepositEvent']>, ParentType, ContextType, RequireFields<TenderizerdepositEventsArgs, 'skip' | 'first'>>;
+  unlockEvents?: Resolver<Array<ResolversTypes['UnlockEvent']>, ParentType, ContextType, RequireFields<TenderizerunlockEventsArgs, 'skip' | 'first'>>;
+  withdrawEvents?: Resolver<Array<ResolversTypes['WithdrawEvent']>, ParentType, ContextType, RequireFields<TenderizerwithdrawEventsArgs, 'skip' | 'first'>>;
+  rebaseEvents?: Resolver<Array<ResolversTypes['RebaseEvent']>, ParentType, ContextType, RequireFields<TenderizerrebaseEventsArgs, 'skip' | 'first'>>;
+  tokenTransferEvents?: Resolver<Array<ResolversTypes['TokenTransferEvent']>, ParentType, ContextType, RequireFields<TenderizertokenTransferEventsArgs, 'skip' | 'first'>>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
-export type TenderizerDayResolvers<ContextType = MeshContext, ParentType extends ResolversParentTypes['TenderizerDay'] = ResolversParentTypes['TenderizerDay']> = ResolversObject<{
+export type TenderizerDayResolvers<ContextType = MeshContext & { subgraph: string }, ParentType extends ResolversParentTypes['TenderizerDay'] = ResolversParentTypes['TenderizerDay']> = ResolversObject<{
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   date?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   tenderizer?: Resolver<ResolversTypes['Tenderizer'], ParentType, ContextType>;
@@ -1359,63 +2418,104 @@ export type TenderizerDayResolvers<ContextType = MeshContext, ParentType extends
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
-export type UnlockResolvers<ContextType = MeshContext, ParentType extends ResolversParentTypes['Unlock'] = ResolversParentTypes['Unlock']> = ResolversObject<{
+export type TokenTransferEventResolvers<ContextType = MeshContext & { subgraph: string }, ParentType extends ResolversParentTypes['TokenTransferEvent'] = ResolversParentTypes['TokenTransferEvent']> = ResolversObject<{
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  timestamp?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  amount?: Resolver<ResolversTypes['BigDecimal'], ParentType, ContextType>;
+  shares?: Resolver<ResolversTypes['BigDecimal'], ParentType, ContextType>;
+  from?: Resolver<ResolversTypes['User'], ParentType, ContextType>;
+  to?: Resolver<ResolversTypes['User'], ParentType, ContextType>;
+  asset?: Resolver<ResolversTypes['Asset'], ParentType, ContextType>;
+  tenderizer?: Resolver<ResolversTypes['Tenderizer'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type UnlockResolvers<ContextType = MeshContext & { subgraph: string }, ParentType extends ResolversParentTypes['Unlock'] = ResolversParentTypes['Unlock']> = ResolversObject<{
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   user?: Resolver<ResolversTypes['User'], ParentType, ContextType>;
   asset?: Resolver<ResolversTypes['Asset'], ParentType, ContextType>;
   tenderizer?: Resolver<ResolversTypes['Tenderizer'], ParentType, ContextType>;
   amount?: Resolver<ResolversTypes['BigDecimal'], ParentType, ContextType>;
-  maturity?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
+  timestamp?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  maturity?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   redeemed?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
-export type UserResolvers<ContextType = MeshContext, ParentType extends ResolversParentTypes['User'] = ResolversParentTypes['User']> = ResolversObject<{
+export type UnlockEventResolvers<ContextType = MeshContext & { subgraph: string }, ParentType extends ResolversParentTypes['UnlockEvent'] = ResolversParentTypes['UnlockEvent']> = ResolversObject<{
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  timestamp?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  amount?: Resolver<ResolversTypes['BigDecimal'], ParentType, ContextType>;
+  shares?: Resolver<ResolversTypes['BigDecimal'], ParentType, ContextType>;
+  unlock?: Resolver<ResolversTypes['Unlock'], ParentType, ContextType>;
+  user?: Resolver<ResolversTypes['User'], ParentType, ContextType>;
+  asset?: Resolver<ResolversTypes['Asset'], ParentType, ContextType>;
+  tenderizer?: Resolver<ResolversTypes['Tenderizer'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type UserResolvers<ContextType = MeshContext & { subgraph: string }, ParentType extends ResolversParentTypes['User'] = ResolversParentTypes['User']> = ResolversObject<{
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   stakes?: Resolver<Maybe<Array<ResolversTypes['Stake']>>, ParentType, ContextType, RequireFields<UserstakesArgs, 'skip' | 'first'>>;
   unlocks?: Resolver<Maybe<Array<ResolversTypes['Unlock']>>, ParentType, ContextType, RequireFields<UserunlocksArgs, 'skip' | 'first'>>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
-export type _Block_Resolvers<ContextType = MeshContext, ParentType extends ResolversParentTypes['_Block_'] = ResolversParentTypes['_Block_']> = ResolversObject<{
+export type WithdrawEventResolvers<ContextType = MeshContext & { subgraph: string }, ParentType extends ResolversParentTypes['WithdrawEvent'] = ResolversParentTypes['WithdrawEvent']> = ResolversObject<{
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  timestamp?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  assetsOut?: Resolver<ResolversTypes['BigDecimal'], ParentType, ContextType>;
+  unlock?: Resolver<ResolversTypes['Unlock'], ParentType, ContextType>;
+  user?: Resolver<ResolversTypes['User'], ParentType, ContextType>;
+  asset?: Resolver<ResolversTypes['Asset'], ParentType, ContextType>;
+  tenderizer?: Resolver<ResolversTypes['Tenderizer'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type _Block_Resolvers<ContextType = MeshContext & { subgraph: string }, ParentType extends ResolversParentTypes['_Block_'] = ResolversParentTypes['_Block_']> = ResolversObject<{
   hash?: Resolver<Maybe<ResolversTypes['Bytes']>, ParentType, ContextType>;
   number?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   timestamp?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
-export type _Meta_Resolvers<ContextType = MeshContext, ParentType extends ResolversParentTypes['_Meta_'] = ResolversParentTypes['_Meta_']> = ResolversObject<{
+export type _Meta_Resolvers<ContextType = MeshContext & { subgraph: string }, ParentType extends ResolversParentTypes['_Meta_'] = ResolversParentTypes['_Meta_']> = ResolversObject<{
   block?: Resolver<ResolversTypes['_Block_'], ParentType, ContextType>;
   deployment?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   hasIndexingErrors?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
-export type Resolvers<ContextType = MeshContext> = ResolversObject<{
+export type Resolvers<ContextType = MeshContext & { subgraph: string }> = ResolversObject<{
+  Query?: QueryResolvers<ContextType>;
+  Subscription?: SubscriptionResolvers<ContextType>;
   Asset?: AssetResolvers<ContextType>;
   AssetDay?: AssetDayResolvers<ContextType>;
   BigDecimal?: GraphQLScalarType;
   BigInt?: GraphQLScalarType;
   Bytes?: GraphQLScalarType;
+  DepositEvent?: DepositEventResolvers<ContextType>;
   Int8?: GraphQLScalarType;
-  Query?: QueryResolvers<ContextType>;
+  RebaseEvent?: RebaseEventResolvers<ContextType>;
   Stake?: StakeResolvers<ContextType>;
-  Subscription?: SubscriptionResolvers<ContextType>;
   Tenderizer?: TenderizerResolvers<ContextType>;
   TenderizerDay?: TenderizerDayResolvers<ContextType>;
+  TokenTransferEvent?: TokenTransferEventResolvers<ContextType>;
   Unlock?: UnlockResolvers<ContextType>;
+  UnlockEvent?: UnlockEventResolvers<ContextType>;
   User?: UserResolvers<ContextType>;
+  WithdrawEvent?: WithdrawEventResolvers<ContextType>;
   _Block_?: _Block_Resolvers<ContextType>;
   _Meta_?: _Meta_Resolvers<ContextType>;
 }>;
 
-export type DirectiveResolvers<ContextType = MeshContext> = ResolversObject<{
+export type DirectiveResolvers<ContextType = MeshContext & { subgraph: string }> = ResolversObject<{
   entity?: entityDirectiveResolver<any, any, ContextType>;
   subgraphId?: subgraphIdDirectiveResolver<any, any, ContextType>;
   derivedFrom?: derivedFromDirectiveResolver<any, any, ContextType>;
 }>;
 
-export type MeshContext = TenderizeTenderizeLocalhostTypes.Context & BaseMeshContext;
+export type MeshContext = TenderizeTypes.Context & BaseMeshContext;
 
 
 const baseDir = pathModule.join(typeof __dirname === 'string' ? __dirname : '/', '..');
@@ -1423,9 +2523,6 @@ const baseDir = pathModule.join(typeof __dirname === 'string' ? __dirname : '/',
 const importFn: ImportFn = <T>(moduleId: string) => {
   const relativeModuleId = (pathModule.isAbsolute(moduleId) ? pathModule.relative(baseDir, moduleId) : moduleId).split('\\').join('/').replace(baseDir + '/', '');
   switch(relativeModuleId) {
-    case ".graphclient/sources/tenderize/tenderize-localhost/introspectionSchema":
-      return Promise.resolve(importedModule$0) as T;
-    
     default:
       return Promise.reject(new Error(`Cannot find module '${relativeModuleId}'.`));
   }
@@ -1440,94 +2537,15 @@ const rootStore = new MeshStore('.graphclient', new FsStoreStorageAdapter({
   validate: false
 });
 
-export const rawServeConfig: YamlConfig.Config['serve'] = undefined as any
-export async function getMeshOptions(): Promise<GetMeshOptions> {
-const pubsub = new PubSub();
-const sourcesStore = rootStore.child('sources');
-const logger = new DefaultLogger("GraphClient");
-const cache = new (MeshCache as any)({
-      ...({} as any),
-      importFn,
-      store: rootStore.child('cache'),
-      pubsub,
-      logger,
-    } as any)
-
-const sources: MeshResolvedSource[] = [];
-const transforms: MeshTransform[] = [];
-const additionalEnvelopPlugins: MeshPlugin<any>[] = [];
-const tenderizeTenderizeLocalhostTransforms = [];
-const additionalTypeDefs = [] as any[];
-const tenderizeTenderizeLocalhostHandler = new GraphqlHandler({
-              name: "tenderize/tenderize-localhost",
-              config: {"endpoint":"http://127.0.0.1:8000/subgraphs/name/tenderize/tenderize-localhost"},
-              baseDir,
-              cache,
-              pubsub,
-              store: sourcesStore.child("tenderize/tenderize-localhost"),
-              logger: logger.child("tenderize/tenderize-localhost"),
-              importFn,
-            });
-sources[0] = {
-          name: 'tenderize/tenderize-localhost',
-          handler: tenderizeTenderizeLocalhostHandler,
-          transforms: tenderizeTenderizeLocalhostTransforms
-        }
-const additionalResolvers = [] as any[]
-const merger = new(BareMerger as any)({
-        cache,
-        pubsub,
-        logger: logger.child('bareMerger'),
-        store: rootStore.child('bareMerger')
-      })
-
-  return {
-    sources,
-    transforms,
-    additionalTypeDefs,
-    additionalResolvers,
-    cache,
-    pubsub,
-    merger,
-    logger,
-    additionalEnvelopPlugins,
-    get documents() {
-      return [
-      {
-        document: GetAssetDocument,
-        get rawSDL() {
-          return printWithCache(GetAssetDocument);
-        },
-        location: 'GetAssetDocument.graphql'
-      },{
-        document: GetTenderizersDocument,
-        get rawSDL() {
-          return printWithCache(GetTenderizersDocument);
-        },
-        location: 'GetTenderizersDocument.graphql'
-      },{
-        document: GetTenderizerDocument,
-        get rawSDL() {
-          return printWithCache(GetTenderizerDocument);
-        },
-        location: 'GetTenderizerDocument.graphql'
-      },{
-        document: GetUserDocument,
-        get rawSDL() {
-          return printWithCache(GetUserDocument);
-        },
-        location: 'GetUserDocument.graphql'
-      },{
-        document: GetBalancesDocument,
-        get rawSDL() {
-          return printWithCache(GetBalancesDocument);
-        },
-        location: 'GetBalancesDocument.graphql'
-      }
-    ];
-    },
-    fetchFn,
-  };
+export function getMeshOptions() {
+  console.warn('WARNING: These artifacts are built for development mode. Please run "graphclient build" to build production artifacts');
+  return findAndParseConfig({
+    dir: baseDir,
+    artifactsDir: ".graphclient",
+    configName: "graphclient",
+    additionalPackagePrefixes: ["@graphprotocol/client-"],
+    initialLoggerPrefix: "GraphClient",
+  });
 }
 
 export function createBuiltMeshHTTPHandler<TServerContext = {}>(): MeshHTTPHandler<TServerContext> {
@@ -1537,7 +2555,6 @@ export function createBuiltMeshHTTPHandler<TServerContext = {}>(): MeshHTTPHandl
     rawServeConfig: undefined,
   })
 }
-
 
 let meshInstance$: Promise<MeshInstance> | undefined;
 
@@ -1599,6 +2616,26 @@ export type GetUserQueryVariables = Exact<{
 
 
 export type GetUserQuery = { user?: Maybe<{ stakes?: Maybe<Array<(
+      Pick<Stake, 'id' | 'shares'>
+      & { tenderizer: (
+        Pick<Tenderizer, 'id' | 'tvl' | 'shares' | 'validator' | 'symbol' | 'name'>
+        & { asset: Pick<Asset, 'id'> }
+      ) }
+    )>>, unlocks?: Maybe<Array<(
+      Pick<Unlock, 'id' | 'amount' | 'maturity' | 'redeemed'>
+      & { tenderizer: (
+        Pick<Tenderizer, 'id' | 'validator' | 'symbol' | 'name'>
+        & { asset: Pick<Asset, 'id'> }
+      ) }
+    )>> }> };
+
+export type GetUserMultichainQueryVariables = Exact<{
+  user: Scalars['ID'];
+  subgraphs: Array<Scalars['String']> | Scalars['String'];
+}>;
+
+
+export type GetUserMultichainQuery = { user?: Maybe<{ stakes?: Maybe<Array<(
       Pick<Stake, 'id' | 'shares'>
       & { tenderizer: (
         Pick<Tenderizer, 'id' | 'tvl' | 'shares' | 'validator' | 'symbol' | 'name'>
@@ -1715,6 +2752,42 @@ export const GetUserDocument = gql`
   }
 }
     ` as unknown as DocumentNode<GetUserQuery, GetUserQueryVariables>;
+export const GetUserMultichainDocument = gql`
+    query GetUserMultichain($user: ID!, $subgraphs: [String!]!) {
+  user(id: $user) {
+    stakes {
+      id
+      shares
+      tenderizer {
+        id
+        tvl
+        shares
+        validator
+        symbol
+        name
+        asset {
+          id
+        }
+      }
+    }
+    unlocks(where: {redeemed: false}) {
+      id
+      amount
+      maturity
+      redeemed
+      tenderizer {
+        id
+        validator
+        symbol
+        name
+        asset {
+          id
+        }
+      }
+    }
+  }
+}
+    ` as unknown as DocumentNode<GetUserMultichainQuery, GetUserMultichainQueryVariables>;
 export const GetBalancesDocument = gql`
     query GetBalances($user: String!, $asset: String) {
   stakes(where: {user: $user, asset: $asset}) {
@@ -1749,6 +2822,7 @@ export const GetBalancesDocument = gql`
 
 
 
+
 export type Requester<C = {}, E = unknown> = <R, V>(doc: DocumentNode, vars?: V, options?: C) => Promise<R> | AsyncIterable<R>
 export function getSdk<C, E>(requester: Requester<C, E>) {
   return {
@@ -1763,6 +2837,9 @@ export function getSdk<C, E>(requester: Requester<C, E>) {
     },
     GetUser(variables: GetUserQueryVariables, options?: C): Promise<GetUserQuery> {
       return requester<GetUserQuery, GetUserQueryVariables>(GetUserDocument, variables, options) as Promise<GetUserQuery>;
+    },
+    GetUserMultichain(variables: GetUserMultichainQueryVariables, options?: C): Promise<GetUserMultichainQuery> {
+      return requester<GetUserMultichainQuery, GetUserMultichainQueryVariables>(GetUserMultichainDocument, variables, options) as Promise<GetUserMultichainQuery>;
     },
     GetBalances(variables: GetBalancesQueryVariables, options?: C): Promise<GetBalancesQuery> {
       return requester<GetBalancesQuery, GetBalancesQueryVariables>(GetBalancesDocument, variables, options) as Promise<GetBalancesQuery>;

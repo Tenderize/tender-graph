@@ -33,6 +33,41 @@ query GetUser($user: ID!) {
   }
 }
 
+query GetUserMultichain($user: ID!, $subgraphs: [String!]!) {
+  user(id: $user) {
+    stakes {
+      id
+      shares
+      tenderizer {
+        id
+        tvl
+        shares
+        validator
+        symbol
+        name
+        asset {
+          id
+        }
+      }
+    }
+    unlocks(where: { redeemed: false }) {
+      id
+      amount
+      maturity
+      redeemed
+      tenderizer {
+        id
+        validator
+        symbol
+        name
+        asset {
+          id
+        }
+      }
+    }
+  }
+}
+
 query GetBalances($user: String!, $asset: String) {
   stakes(where: { user: $user, asset: $asset }) {
     id

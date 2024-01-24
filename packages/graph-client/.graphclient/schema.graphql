@@ -12,159 +12,6 @@ directive @subgraphId(id: String!) on OBJECT
 "creates a virtual field on the entity that may be queried but cannot be set manually through the mappings API."
 directive @derivedFrom(field: String!) on FIELD_DEFINITION
 
-type Asset {
-  id: ID!
-  tvl: BigDecimal!
-  tenderizerCount: Int!
-  assetDays(skip: Int = 0, first: Int = 100, orderBy: AssetDay_orderBy, orderDirection: OrderDirection, where: AssetDay_filter): [AssetDay!]!
-}
-
-type AssetDay {
-  id: ID!
-  date: Int!
-  asset: Asset!
-  tvl: BigDecimal!
-  rewards: BigDecimal!
-}
-
-input AssetDay_filter {
-  id: ID
-  id_not: ID
-  id_gt: ID
-  id_lt: ID
-  id_gte: ID
-  id_lte: ID
-  id_in: [ID!]
-  id_not_in: [ID!]
-  date: Int
-  date_not: Int
-  date_gt: Int
-  date_lt: Int
-  date_gte: Int
-  date_lte: Int
-  date_in: [Int!]
-  date_not_in: [Int!]
-  asset: String
-  asset_not: String
-  asset_gt: String
-  asset_lt: String
-  asset_gte: String
-  asset_lte: String
-  asset_in: [String!]
-  asset_not_in: [String!]
-  asset_contains: String
-  asset_contains_nocase: String
-  asset_not_contains: String
-  asset_not_contains_nocase: String
-  asset_starts_with: String
-  asset_starts_with_nocase: String
-  asset_not_starts_with: String
-  asset_not_starts_with_nocase: String
-  asset_ends_with: String
-  asset_ends_with_nocase: String
-  asset_not_ends_with: String
-  asset_not_ends_with_nocase: String
-  asset_: Asset_filter
-  tvl: BigDecimal
-  tvl_not: BigDecimal
-  tvl_gt: BigDecimal
-  tvl_lt: BigDecimal
-  tvl_gte: BigDecimal
-  tvl_lte: BigDecimal
-  tvl_in: [BigDecimal!]
-  tvl_not_in: [BigDecimal!]
-  rewards: BigDecimal
-  rewards_not: BigDecimal
-  rewards_gt: BigDecimal
-  rewards_lt: BigDecimal
-  rewards_gte: BigDecimal
-  rewards_lte: BigDecimal
-  rewards_in: [BigDecimal!]
-  rewards_not_in: [BigDecimal!]
-  """Filter for the block changed event."""
-  _change_block: BlockChangedFilter
-  and: [AssetDay_filter]
-  or: [AssetDay_filter]
-}
-
-enum AssetDay_orderBy {
-  id
-  date
-  asset
-  asset__id
-  asset__tvl
-  asset__tenderizerCount
-  tvl
-  rewards
-}
-
-input Asset_filter {
-  id: ID
-  id_not: ID
-  id_gt: ID
-  id_lt: ID
-  id_gte: ID
-  id_lte: ID
-  id_in: [ID!]
-  id_not_in: [ID!]
-  tvl: BigDecimal
-  tvl_not: BigDecimal
-  tvl_gt: BigDecimal
-  tvl_lt: BigDecimal
-  tvl_gte: BigDecimal
-  tvl_lte: BigDecimal
-  tvl_in: [BigDecimal!]
-  tvl_not_in: [BigDecimal!]
-  tenderizerCount: Int
-  tenderizerCount_not: Int
-  tenderizerCount_gt: Int
-  tenderizerCount_lt: Int
-  tenderizerCount_gte: Int
-  tenderizerCount_lte: Int
-  tenderizerCount_in: [Int!]
-  tenderizerCount_not_in: [Int!]
-  assetDays_: AssetDay_filter
-  """Filter for the block changed event."""
-  _change_block: BlockChangedFilter
-  and: [Asset_filter]
-  or: [Asset_filter]
-}
-
-enum Asset_orderBy {
-  id
-  tvl
-  tenderizerCount
-  assetDays
-}
-
-scalar BigDecimal
-
-scalar BigInt
-
-input BlockChangedFilter {
-  number_gte: Int!
-}
-
-input Block_height {
-  hash: Bytes
-  number: Int
-  number_gte: Int
-}
-
-scalar Bytes
-
-"""
-8 bytes signed integer
-
-"""
-scalar Int8
-
-"""Defines the order direction, either ascending or descending"""
-enum OrderDirection {
-  asc
-  desc
-}
-
 type Query {
   asset(
     id: ID!
@@ -348,122 +195,139 @@ type Query {
     """
     subgraphError: _SubgraphErrorPolicy_! = deny
   ): [TenderizerDay!]!
+  depositEvent(
+    id: ID!
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): DepositEvent
+  depositEvents(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: DepositEvent_orderBy
+    orderDirection: OrderDirection
+    where: DepositEvent_filter
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): [DepositEvent!]!
+  unlockEvent(
+    id: ID!
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): UnlockEvent
+  unlockEvents(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: UnlockEvent_orderBy
+    orderDirection: OrderDirection
+    where: UnlockEvent_filter
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): [UnlockEvent!]!
+  withdrawEvent(
+    id: ID!
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): WithdrawEvent
+  withdrawEvents(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: WithdrawEvent_orderBy
+    orderDirection: OrderDirection
+    where: WithdrawEvent_filter
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): [WithdrawEvent!]!
+  rebaseEvent(
+    id: ID!
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): RebaseEvent
+  rebaseEvents(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: RebaseEvent_orderBy
+    orderDirection: OrderDirection
+    where: RebaseEvent_filter
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): [RebaseEvent!]!
+  tokenTransferEvent(
+    id: ID!
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): TokenTransferEvent
+  tokenTransferEvents(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: TokenTransferEvent_orderBy
+    orderDirection: OrderDirection
+    where: TokenTransferEvent_filter
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): [TokenTransferEvent!]!
   """Access to subgraph metadata"""
   _meta(block: Block_height): _Meta_
-}
-
-type Stake {
-  id: ID!
-  user: User!
-  asset: Asset!
-  tenderizer: Tenderizer!
-  shares: BigDecimal!
-}
-
-input Stake_filter {
-  id: ID
-  id_not: ID
-  id_gt: ID
-  id_lt: ID
-  id_gte: ID
-  id_lte: ID
-  id_in: [ID!]
-  id_not_in: [ID!]
-  user: String
-  user_not: String
-  user_gt: String
-  user_lt: String
-  user_gte: String
-  user_lte: String
-  user_in: [String!]
-  user_not_in: [String!]
-  user_contains: String
-  user_contains_nocase: String
-  user_not_contains: String
-  user_not_contains_nocase: String
-  user_starts_with: String
-  user_starts_with_nocase: String
-  user_not_starts_with: String
-  user_not_starts_with_nocase: String
-  user_ends_with: String
-  user_ends_with_nocase: String
-  user_not_ends_with: String
-  user_not_ends_with_nocase: String
-  user_: User_filter
-  asset: String
-  asset_not: String
-  asset_gt: String
-  asset_lt: String
-  asset_gte: String
-  asset_lte: String
-  asset_in: [String!]
-  asset_not_in: [String!]
-  asset_contains: String
-  asset_contains_nocase: String
-  asset_not_contains: String
-  asset_not_contains_nocase: String
-  asset_starts_with: String
-  asset_starts_with_nocase: String
-  asset_not_starts_with: String
-  asset_not_starts_with_nocase: String
-  asset_ends_with: String
-  asset_ends_with_nocase: String
-  asset_not_ends_with: String
-  asset_not_ends_with_nocase: String
-  asset_: Asset_filter
-  tenderizer: String
-  tenderizer_not: String
-  tenderizer_gt: String
-  tenderizer_lt: String
-  tenderizer_gte: String
-  tenderizer_lte: String
-  tenderizer_in: [String!]
-  tenderizer_not_in: [String!]
-  tenderizer_contains: String
-  tenderizer_contains_nocase: String
-  tenderizer_not_contains: String
-  tenderizer_not_contains_nocase: String
-  tenderizer_starts_with: String
-  tenderizer_starts_with_nocase: String
-  tenderizer_not_starts_with: String
-  tenderizer_not_starts_with_nocase: String
-  tenderizer_ends_with: String
-  tenderizer_ends_with_nocase: String
-  tenderizer_not_ends_with: String
-  tenderizer_not_ends_with_nocase: String
-  tenderizer_: Tenderizer_filter
-  shares: BigDecimal
-  shares_not: BigDecimal
-  shares_gt: BigDecimal
-  shares_lt: BigDecimal
-  shares_gte: BigDecimal
-  shares_lte: BigDecimal
-  shares_in: [BigDecimal!]
-  shares_not_in: [BigDecimal!]
-  """Filter for the block changed event."""
-  _change_block: BlockChangedFilter
-  and: [Stake_filter]
-  or: [Stake_filter]
-}
-
-enum Stake_orderBy {
-  id
-  user
-  user__id
-  asset
-  asset__id
-  asset__tvl
-  asset__tenderizerCount
-  tenderizer
-  tenderizer__id
-  tenderizer__symbol
-  tenderizer__name
-  tenderizer__validator
-  tenderizer__tvl
-  tenderizer__shares
-  tenderizer__apr
-  tenderizer__lastUpdateDay
-  shares
+  getUserMultichain(user: ID!, subgraphs: [String!]!): User!
 }
 
 type Subscription {
@@ -649,8 +513,659 @@ type Subscription {
     """
     subgraphError: _SubgraphErrorPolicy_! = deny
   ): [TenderizerDay!]!
+  depositEvent(
+    id: ID!
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): DepositEvent
+  depositEvents(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: DepositEvent_orderBy
+    orderDirection: OrderDirection
+    where: DepositEvent_filter
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): [DepositEvent!]!
+  unlockEvent(
+    id: ID!
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): UnlockEvent
+  unlockEvents(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: UnlockEvent_orderBy
+    orderDirection: OrderDirection
+    where: UnlockEvent_filter
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): [UnlockEvent!]!
+  withdrawEvent(
+    id: ID!
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): WithdrawEvent
+  withdrawEvents(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: WithdrawEvent_orderBy
+    orderDirection: OrderDirection
+    where: WithdrawEvent_filter
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): [WithdrawEvent!]!
+  rebaseEvent(
+    id: ID!
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): RebaseEvent
+  rebaseEvents(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: RebaseEvent_orderBy
+    orderDirection: OrderDirection
+    where: RebaseEvent_filter
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): [RebaseEvent!]!
+  tokenTransferEvent(
+    id: ID!
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): TokenTransferEvent
+  tokenTransferEvents(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: TokenTransferEvent_orderBy
+    orderDirection: OrderDirection
+    where: TokenTransferEvent_filter
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): [TokenTransferEvent!]!
   """Access to subgraph metadata"""
   _meta(block: Block_height): _Meta_
+}
+
+type Asset {
+  id: ID!
+  tvl: BigDecimal!
+  tenderizerCount: Int!
+  assetDays(skip: Int = 0, first: Int = 100, orderBy: AssetDay_orderBy, orderDirection: OrderDirection, where: AssetDay_filter): [AssetDay!]!
+}
+
+type AssetDay {
+  id: ID!
+  date: Int!
+  asset: Asset!
+  tvl: BigDecimal!
+  rewards: BigDecimal!
+}
+
+input AssetDay_filter {
+  id: ID
+  id_not: ID
+  id_gt: ID
+  id_lt: ID
+  id_gte: ID
+  id_lte: ID
+  id_in: [ID!]
+  id_not_in: [ID!]
+  date: Int
+  date_not: Int
+  date_gt: Int
+  date_lt: Int
+  date_gte: Int
+  date_lte: Int
+  date_in: [Int!]
+  date_not_in: [Int!]
+  asset: String
+  asset_not: String
+  asset_gt: String
+  asset_lt: String
+  asset_gte: String
+  asset_lte: String
+  asset_in: [String!]
+  asset_not_in: [String!]
+  asset_contains: String
+  asset_contains_nocase: String
+  asset_not_contains: String
+  asset_not_contains_nocase: String
+  asset_starts_with: String
+  asset_starts_with_nocase: String
+  asset_not_starts_with: String
+  asset_not_starts_with_nocase: String
+  asset_ends_with: String
+  asset_ends_with_nocase: String
+  asset_not_ends_with: String
+  asset_not_ends_with_nocase: String
+  asset_: Asset_filter
+  tvl: BigDecimal
+  tvl_not: BigDecimal
+  tvl_gt: BigDecimal
+  tvl_lt: BigDecimal
+  tvl_gte: BigDecimal
+  tvl_lte: BigDecimal
+  tvl_in: [BigDecimal!]
+  tvl_not_in: [BigDecimal!]
+  rewards: BigDecimal
+  rewards_not: BigDecimal
+  rewards_gt: BigDecimal
+  rewards_lt: BigDecimal
+  rewards_gte: BigDecimal
+  rewards_lte: BigDecimal
+  rewards_in: [BigDecimal!]
+  rewards_not_in: [BigDecimal!]
+  """Filter for the block changed event."""
+  _change_block: BlockChangedFilter
+  and: [AssetDay_filter]
+  or: [AssetDay_filter]
+}
+
+enum AssetDay_orderBy {
+  id
+  date
+  asset
+  asset__id
+  asset__tvl
+  asset__tenderizerCount
+  tvl
+  rewards
+}
+
+input Asset_filter {
+  id: ID
+  id_not: ID
+  id_gt: ID
+  id_lt: ID
+  id_gte: ID
+  id_lte: ID
+  id_in: [ID!]
+  id_not_in: [ID!]
+  tvl: BigDecimal
+  tvl_not: BigDecimal
+  tvl_gt: BigDecimal
+  tvl_lt: BigDecimal
+  tvl_gte: BigDecimal
+  tvl_lte: BigDecimal
+  tvl_in: [BigDecimal!]
+  tvl_not_in: [BigDecimal!]
+  tenderizerCount: Int
+  tenderizerCount_not: Int
+  tenderizerCount_gt: Int
+  tenderizerCount_lt: Int
+  tenderizerCount_gte: Int
+  tenderizerCount_lte: Int
+  tenderizerCount_in: [Int!]
+  tenderizerCount_not_in: [Int!]
+  assetDays_: AssetDay_filter
+  """Filter for the block changed event."""
+  _change_block: BlockChangedFilter
+  and: [Asset_filter]
+  or: [Asset_filter]
+}
+
+enum Asset_orderBy {
+  id
+  tvl
+  tenderizerCount
+  assetDays
+}
+
+scalar BigDecimal
+
+scalar BigInt
+
+input BlockChangedFilter {
+  number_gte: Int!
+}
+
+input Block_height {
+  hash: Bytes
+  number: Int
+  number_gte: Int
+}
+
+scalar Bytes
+
+type DepositEvent {
+  id: ID!
+  timestamp: Int!
+  assetsIn: BigDecimal!
+  tTokenOut: BigDecimal!
+  shares: BigDecimal!
+  user: User!
+  asset: Asset!
+  tenderizer: Tenderizer!
+}
+
+input DepositEvent_filter {
+  id: ID
+  id_not: ID
+  id_gt: ID
+  id_lt: ID
+  id_gte: ID
+  id_lte: ID
+  id_in: [ID!]
+  id_not_in: [ID!]
+  timestamp: Int
+  timestamp_not: Int
+  timestamp_gt: Int
+  timestamp_lt: Int
+  timestamp_gte: Int
+  timestamp_lte: Int
+  timestamp_in: [Int!]
+  timestamp_not_in: [Int!]
+  assetsIn: BigDecimal
+  assetsIn_not: BigDecimal
+  assetsIn_gt: BigDecimal
+  assetsIn_lt: BigDecimal
+  assetsIn_gte: BigDecimal
+  assetsIn_lte: BigDecimal
+  assetsIn_in: [BigDecimal!]
+  assetsIn_not_in: [BigDecimal!]
+  tTokenOut: BigDecimal
+  tTokenOut_not: BigDecimal
+  tTokenOut_gt: BigDecimal
+  tTokenOut_lt: BigDecimal
+  tTokenOut_gte: BigDecimal
+  tTokenOut_lte: BigDecimal
+  tTokenOut_in: [BigDecimal!]
+  tTokenOut_not_in: [BigDecimal!]
+  shares: BigDecimal
+  shares_not: BigDecimal
+  shares_gt: BigDecimal
+  shares_lt: BigDecimal
+  shares_gte: BigDecimal
+  shares_lte: BigDecimal
+  shares_in: [BigDecimal!]
+  shares_not_in: [BigDecimal!]
+  user: String
+  user_not: String
+  user_gt: String
+  user_lt: String
+  user_gte: String
+  user_lte: String
+  user_in: [String!]
+  user_not_in: [String!]
+  user_contains: String
+  user_contains_nocase: String
+  user_not_contains: String
+  user_not_contains_nocase: String
+  user_starts_with: String
+  user_starts_with_nocase: String
+  user_not_starts_with: String
+  user_not_starts_with_nocase: String
+  user_ends_with: String
+  user_ends_with_nocase: String
+  user_not_ends_with: String
+  user_not_ends_with_nocase: String
+  user_: User_filter
+  asset: String
+  asset_not: String
+  asset_gt: String
+  asset_lt: String
+  asset_gte: String
+  asset_lte: String
+  asset_in: [String!]
+  asset_not_in: [String!]
+  asset_contains: String
+  asset_contains_nocase: String
+  asset_not_contains: String
+  asset_not_contains_nocase: String
+  asset_starts_with: String
+  asset_starts_with_nocase: String
+  asset_not_starts_with: String
+  asset_not_starts_with_nocase: String
+  asset_ends_with: String
+  asset_ends_with_nocase: String
+  asset_not_ends_with: String
+  asset_not_ends_with_nocase: String
+  asset_: Asset_filter
+  tenderizer: String
+  tenderizer_not: String
+  tenderizer_gt: String
+  tenderizer_lt: String
+  tenderizer_gte: String
+  tenderizer_lte: String
+  tenderizer_in: [String!]
+  tenderizer_not_in: [String!]
+  tenderizer_contains: String
+  tenderizer_contains_nocase: String
+  tenderizer_not_contains: String
+  tenderizer_not_contains_nocase: String
+  tenderizer_starts_with: String
+  tenderizer_starts_with_nocase: String
+  tenderizer_not_starts_with: String
+  tenderizer_not_starts_with_nocase: String
+  tenderizer_ends_with: String
+  tenderizer_ends_with_nocase: String
+  tenderizer_not_ends_with: String
+  tenderizer_not_ends_with_nocase: String
+  tenderizer_: Tenderizer_filter
+  """Filter for the block changed event."""
+  _change_block: BlockChangedFilter
+  and: [DepositEvent_filter]
+  or: [DepositEvent_filter]
+}
+
+enum DepositEvent_orderBy {
+  id
+  timestamp
+  assetsIn
+  tTokenOut
+  shares
+  user
+  user__id
+  asset
+  asset__id
+  asset__tvl
+  asset__tenderizerCount
+  tenderizer
+  tenderizer__id
+  tenderizer__symbol
+  tenderizer__name
+  tenderizer__validator
+  tenderizer__tvl
+  tenderizer__shares
+  tenderizer__apr
+  tenderizer__lastUpdateDay
+}
+
+"""
+8 bytes signed integer
+
+"""
+scalar Int8
+
+"""Defines the order direction, either ascending or descending"""
+enum OrderDirection {
+  asc
+  desc
+}
+
+type RebaseEvent {
+  id: ID!
+  timestamp: Int!
+  oldStake: BigDecimal!
+  newStake: BigDecimal!
+  asset: Asset!
+  tenderizer: Tenderizer!
+}
+
+input RebaseEvent_filter {
+  id: ID
+  id_not: ID
+  id_gt: ID
+  id_lt: ID
+  id_gte: ID
+  id_lte: ID
+  id_in: [ID!]
+  id_not_in: [ID!]
+  timestamp: Int
+  timestamp_not: Int
+  timestamp_gt: Int
+  timestamp_lt: Int
+  timestamp_gte: Int
+  timestamp_lte: Int
+  timestamp_in: [Int!]
+  timestamp_not_in: [Int!]
+  oldStake: BigDecimal
+  oldStake_not: BigDecimal
+  oldStake_gt: BigDecimal
+  oldStake_lt: BigDecimal
+  oldStake_gte: BigDecimal
+  oldStake_lte: BigDecimal
+  oldStake_in: [BigDecimal!]
+  oldStake_not_in: [BigDecimal!]
+  newStake: BigDecimal
+  newStake_not: BigDecimal
+  newStake_gt: BigDecimal
+  newStake_lt: BigDecimal
+  newStake_gte: BigDecimal
+  newStake_lte: BigDecimal
+  newStake_in: [BigDecimal!]
+  newStake_not_in: [BigDecimal!]
+  asset: String
+  asset_not: String
+  asset_gt: String
+  asset_lt: String
+  asset_gte: String
+  asset_lte: String
+  asset_in: [String!]
+  asset_not_in: [String!]
+  asset_contains: String
+  asset_contains_nocase: String
+  asset_not_contains: String
+  asset_not_contains_nocase: String
+  asset_starts_with: String
+  asset_starts_with_nocase: String
+  asset_not_starts_with: String
+  asset_not_starts_with_nocase: String
+  asset_ends_with: String
+  asset_ends_with_nocase: String
+  asset_not_ends_with: String
+  asset_not_ends_with_nocase: String
+  asset_: Asset_filter
+  tenderizer: String
+  tenderizer_not: String
+  tenderizer_gt: String
+  tenderizer_lt: String
+  tenderizer_gte: String
+  tenderizer_lte: String
+  tenderizer_in: [String!]
+  tenderizer_not_in: [String!]
+  tenderizer_contains: String
+  tenderizer_contains_nocase: String
+  tenderizer_not_contains: String
+  tenderizer_not_contains_nocase: String
+  tenderizer_starts_with: String
+  tenderizer_starts_with_nocase: String
+  tenderizer_not_starts_with: String
+  tenderizer_not_starts_with_nocase: String
+  tenderizer_ends_with: String
+  tenderizer_ends_with_nocase: String
+  tenderizer_not_ends_with: String
+  tenderizer_not_ends_with_nocase: String
+  tenderizer_: Tenderizer_filter
+  """Filter for the block changed event."""
+  _change_block: BlockChangedFilter
+  and: [RebaseEvent_filter]
+  or: [RebaseEvent_filter]
+}
+
+enum RebaseEvent_orderBy {
+  id
+  timestamp
+  oldStake
+  newStake
+  asset
+  asset__id
+  asset__tvl
+  asset__tenderizerCount
+  tenderizer
+  tenderizer__id
+  tenderizer__symbol
+  tenderizer__name
+  tenderizer__validator
+  tenderizer__tvl
+  tenderizer__shares
+  tenderizer__apr
+  tenderizer__lastUpdateDay
+}
+
+type Stake {
+  id: ID!
+  user: User!
+  asset: Asset!
+  tenderizer: Tenderizer!
+  shares: BigDecimal!
+}
+
+input Stake_filter {
+  id: ID
+  id_not: ID
+  id_gt: ID
+  id_lt: ID
+  id_gte: ID
+  id_lte: ID
+  id_in: [ID!]
+  id_not_in: [ID!]
+  user: String
+  user_not: String
+  user_gt: String
+  user_lt: String
+  user_gte: String
+  user_lte: String
+  user_in: [String!]
+  user_not_in: [String!]
+  user_contains: String
+  user_contains_nocase: String
+  user_not_contains: String
+  user_not_contains_nocase: String
+  user_starts_with: String
+  user_starts_with_nocase: String
+  user_not_starts_with: String
+  user_not_starts_with_nocase: String
+  user_ends_with: String
+  user_ends_with_nocase: String
+  user_not_ends_with: String
+  user_not_ends_with_nocase: String
+  user_: User_filter
+  asset: String
+  asset_not: String
+  asset_gt: String
+  asset_lt: String
+  asset_gte: String
+  asset_lte: String
+  asset_in: [String!]
+  asset_not_in: [String!]
+  asset_contains: String
+  asset_contains_nocase: String
+  asset_not_contains: String
+  asset_not_contains_nocase: String
+  asset_starts_with: String
+  asset_starts_with_nocase: String
+  asset_not_starts_with: String
+  asset_not_starts_with_nocase: String
+  asset_ends_with: String
+  asset_ends_with_nocase: String
+  asset_not_ends_with: String
+  asset_not_ends_with_nocase: String
+  asset_: Asset_filter
+  tenderizer: String
+  tenderizer_not: String
+  tenderizer_gt: String
+  tenderizer_lt: String
+  tenderizer_gte: String
+  tenderizer_lte: String
+  tenderizer_in: [String!]
+  tenderizer_not_in: [String!]
+  tenderizer_contains: String
+  tenderizer_contains_nocase: String
+  tenderizer_not_contains: String
+  tenderizer_not_contains_nocase: String
+  tenderizer_starts_with: String
+  tenderizer_starts_with_nocase: String
+  tenderizer_not_starts_with: String
+  tenderizer_not_starts_with_nocase: String
+  tenderizer_ends_with: String
+  tenderizer_ends_with_nocase: String
+  tenderizer_not_ends_with: String
+  tenderizer_not_ends_with_nocase: String
+  tenderizer_: Tenderizer_filter
+  shares: BigDecimal
+  shares_not: BigDecimal
+  shares_gt: BigDecimal
+  shares_lt: BigDecimal
+  shares_gte: BigDecimal
+  shares_lte: BigDecimal
+  shares_in: [BigDecimal!]
+  shares_not_in: [BigDecimal!]
+  """Filter for the block changed event."""
+  _change_block: BlockChangedFilter
+  and: [Stake_filter]
+  or: [Stake_filter]
+}
+
+enum Stake_orderBy {
+  id
+  user
+  user__id
+  asset
+  asset__id
+  asset__tvl
+  asset__tenderizerCount
+  tenderizer
+  tenderizer__id
+  tenderizer__symbol
+  tenderizer__name
+  tenderizer__validator
+  tenderizer__tvl
+  tenderizer__shares
+  tenderizer__apr
+  tenderizer__lastUpdateDay
+  shares
 }
 
 type Tenderizer {
@@ -665,6 +1180,11 @@ type Tenderizer {
   stakes(skip: Int = 0, first: Int = 100, orderBy: Stake_orderBy, orderDirection: OrderDirection, where: Stake_filter): [Stake!]!
   tenderizerDays(skip: Int = 0, first: Int = 100, orderBy: TenderizerDay_orderBy, orderDirection: OrderDirection, where: TenderizerDay_filter): [TenderizerDay!]!
   lastUpdateDay: BigInt!
+  depositEvents(skip: Int = 0, first: Int = 100, orderBy: DepositEvent_orderBy, orderDirection: OrderDirection, where: DepositEvent_filter): [DepositEvent!]!
+  unlockEvents(skip: Int = 0, first: Int = 100, orderBy: UnlockEvent_orderBy, orderDirection: OrderDirection, where: UnlockEvent_filter): [UnlockEvent!]!
+  withdrawEvents(skip: Int = 0, first: Int = 100, orderBy: WithdrawEvent_orderBy, orderDirection: OrderDirection, where: WithdrawEvent_filter): [WithdrawEvent!]!
+  rebaseEvents(skip: Int = 0, first: Int = 100, orderBy: RebaseEvent_orderBy, orderDirection: OrderDirection, where: RebaseEvent_filter): [RebaseEvent!]!
+  tokenTransferEvents(skip: Int = 0, first: Int = 100, orderBy: TokenTransferEvent_orderBy, orderDirection: OrderDirection, where: TokenTransferEvent_filter): [TokenTransferEvent!]!
 }
 
 type TenderizerDay {
@@ -885,6 +1405,11 @@ input Tenderizer_filter {
   lastUpdateDay_lte: BigInt
   lastUpdateDay_in: [BigInt!]
   lastUpdateDay_not_in: [BigInt!]
+  depositEvents_: DepositEvent_filter
+  unlockEvents_: UnlockEvent_filter
+  withdrawEvents_: WithdrawEvent_filter
+  rebaseEvents_: RebaseEvent_filter
+  tokenTransferEvents_: TokenTransferEvent_filter
   """Filter for the block changed event."""
   _change_block: BlockChangedFilter
   and: [Tenderizer_filter]
@@ -906,6 +1431,169 @@ enum Tenderizer_orderBy {
   stakes
   tenderizerDays
   lastUpdateDay
+  depositEvents
+  unlockEvents
+  withdrawEvents
+  rebaseEvents
+  tokenTransferEvents
+}
+
+type TokenTransferEvent {
+  id: ID!
+  timestamp: Int!
+  amount: BigDecimal!
+  shares: BigDecimal!
+  from: User!
+  to: User!
+  asset: Asset!
+  tenderizer: Tenderizer!
+}
+
+input TokenTransferEvent_filter {
+  id: ID
+  id_not: ID
+  id_gt: ID
+  id_lt: ID
+  id_gte: ID
+  id_lte: ID
+  id_in: [ID!]
+  id_not_in: [ID!]
+  timestamp: Int
+  timestamp_not: Int
+  timestamp_gt: Int
+  timestamp_lt: Int
+  timestamp_gte: Int
+  timestamp_lte: Int
+  timestamp_in: [Int!]
+  timestamp_not_in: [Int!]
+  amount: BigDecimal
+  amount_not: BigDecimal
+  amount_gt: BigDecimal
+  amount_lt: BigDecimal
+  amount_gte: BigDecimal
+  amount_lte: BigDecimal
+  amount_in: [BigDecimal!]
+  amount_not_in: [BigDecimal!]
+  shares: BigDecimal
+  shares_not: BigDecimal
+  shares_gt: BigDecimal
+  shares_lt: BigDecimal
+  shares_gte: BigDecimal
+  shares_lte: BigDecimal
+  shares_in: [BigDecimal!]
+  shares_not_in: [BigDecimal!]
+  from: String
+  from_not: String
+  from_gt: String
+  from_lt: String
+  from_gte: String
+  from_lte: String
+  from_in: [String!]
+  from_not_in: [String!]
+  from_contains: String
+  from_contains_nocase: String
+  from_not_contains: String
+  from_not_contains_nocase: String
+  from_starts_with: String
+  from_starts_with_nocase: String
+  from_not_starts_with: String
+  from_not_starts_with_nocase: String
+  from_ends_with: String
+  from_ends_with_nocase: String
+  from_not_ends_with: String
+  from_not_ends_with_nocase: String
+  from_: User_filter
+  to: String
+  to_not: String
+  to_gt: String
+  to_lt: String
+  to_gte: String
+  to_lte: String
+  to_in: [String!]
+  to_not_in: [String!]
+  to_contains: String
+  to_contains_nocase: String
+  to_not_contains: String
+  to_not_contains_nocase: String
+  to_starts_with: String
+  to_starts_with_nocase: String
+  to_not_starts_with: String
+  to_not_starts_with_nocase: String
+  to_ends_with: String
+  to_ends_with_nocase: String
+  to_not_ends_with: String
+  to_not_ends_with_nocase: String
+  to_: User_filter
+  asset: String
+  asset_not: String
+  asset_gt: String
+  asset_lt: String
+  asset_gte: String
+  asset_lte: String
+  asset_in: [String!]
+  asset_not_in: [String!]
+  asset_contains: String
+  asset_contains_nocase: String
+  asset_not_contains: String
+  asset_not_contains_nocase: String
+  asset_starts_with: String
+  asset_starts_with_nocase: String
+  asset_not_starts_with: String
+  asset_not_starts_with_nocase: String
+  asset_ends_with: String
+  asset_ends_with_nocase: String
+  asset_not_ends_with: String
+  asset_not_ends_with_nocase: String
+  asset_: Asset_filter
+  tenderizer: String
+  tenderizer_not: String
+  tenderizer_gt: String
+  tenderizer_lt: String
+  tenderizer_gte: String
+  tenderizer_lte: String
+  tenderizer_in: [String!]
+  tenderizer_not_in: [String!]
+  tenderizer_contains: String
+  tenderizer_contains_nocase: String
+  tenderizer_not_contains: String
+  tenderizer_not_contains_nocase: String
+  tenderizer_starts_with: String
+  tenderizer_starts_with_nocase: String
+  tenderizer_not_starts_with: String
+  tenderizer_not_starts_with_nocase: String
+  tenderizer_ends_with: String
+  tenderizer_ends_with_nocase: String
+  tenderizer_not_ends_with: String
+  tenderizer_not_ends_with_nocase: String
+  tenderizer_: Tenderizer_filter
+  """Filter for the block changed event."""
+  _change_block: BlockChangedFilter
+  and: [TokenTransferEvent_filter]
+  or: [TokenTransferEvent_filter]
+}
+
+enum TokenTransferEvent_orderBy {
+  id
+  timestamp
+  amount
+  shares
+  from
+  from__id
+  to
+  to__id
+  asset
+  asset__id
+  asset__tvl
+  asset__tenderizerCount
+  tenderizer
+  tenderizer__id
+  tenderizer__symbol
+  tenderizer__name
+  tenderizer__validator
+  tenderizer__tvl
+  tenderizer__shares
+  tenderizer__apr
+  tenderizer__lastUpdateDay
 }
 
 type Unlock {
@@ -914,8 +1602,171 @@ type Unlock {
   asset: Asset!
   tenderizer: Tenderizer!
   amount: BigDecimal!
-  maturity: BigInt!
+  timestamp: Int!
+  maturity: Int!
   redeemed: Boolean!
+}
+
+type UnlockEvent {
+  id: ID!
+  timestamp: Int!
+  amount: BigDecimal!
+  shares: BigDecimal!
+  unlock: Unlock!
+  user: User!
+  asset: Asset!
+  tenderizer: Tenderizer!
+}
+
+input UnlockEvent_filter {
+  id: ID
+  id_not: ID
+  id_gt: ID
+  id_lt: ID
+  id_gte: ID
+  id_lte: ID
+  id_in: [ID!]
+  id_not_in: [ID!]
+  timestamp: Int
+  timestamp_not: Int
+  timestamp_gt: Int
+  timestamp_lt: Int
+  timestamp_gte: Int
+  timestamp_lte: Int
+  timestamp_in: [Int!]
+  timestamp_not_in: [Int!]
+  amount: BigDecimal
+  amount_not: BigDecimal
+  amount_gt: BigDecimal
+  amount_lt: BigDecimal
+  amount_gte: BigDecimal
+  amount_lte: BigDecimal
+  amount_in: [BigDecimal!]
+  amount_not_in: [BigDecimal!]
+  shares: BigDecimal
+  shares_not: BigDecimal
+  shares_gt: BigDecimal
+  shares_lt: BigDecimal
+  shares_gte: BigDecimal
+  shares_lte: BigDecimal
+  shares_in: [BigDecimal!]
+  shares_not_in: [BigDecimal!]
+  unlock: String
+  unlock_not: String
+  unlock_gt: String
+  unlock_lt: String
+  unlock_gte: String
+  unlock_lte: String
+  unlock_in: [String!]
+  unlock_not_in: [String!]
+  unlock_contains: String
+  unlock_contains_nocase: String
+  unlock_not_contains: String
+  unlock_not_contains_nocase: String
+  unlock_starts_with: String
+  unlock_starts_with_nocase: String
+  unlock_not_starts_with: String
+  unlock_not_starts_with_nocase: String
+  unlock_ends_with: String
+  unlock_ends_with_nocase: String
+  unlock_not_ends_with: String
+  unlock_not_ends_with_nocase: String
+  unlock_: Unlock_filter
+  user: String
+  user_not: String
+  user_gt: String
+  user_lt: String
+  user_gte: String
+  user_lte: String
+  user_in: [String!]
+  user_not_in: [String!]
+  user_contains: String
+  user_contains_nocase: String
+  user_not_contains: String
+  user_not_contains_nocase: String
+  user_starts_with: String
+  user_starts_with_nocase: String
+  user_not_starts_with: String
+  user_not_starts_with_nocase: String
+  user_ends_with: String
+  user_ends_with_nocase: String
+  user_not_ends_with: String
+  user_not_ends_with_nocase: String
+  user_: User_filter
+  asset: String
+  asset_not: String
+  asset_gt: String
+  asset_lt: String
+  asset_gte: String
+  asset_lte: String
+  asset_in: [String!]
+  asset_not_in: [String!]
+  asset_contains: String
+  asset_contains_nocase: String
+  asset_not_contains: String
+  asset_not_contains_nocase: String
+  asset_starts_with: String
+  asset_starts_with_nocase: String
+  asset_not_starts_with: String
+  asset_not_starts_with_nocase: String
+  asset_ends_with: String
+  asset_ends_with_nocase: String
+  asset_not_ends_with: String
+  asset_not_ends_with_nocase: String
+  asset_: Asset_filter
+  tenderizer: String
+  tenderizer_not: String
+  tenderizer_gt: String
+  tenderizer_lt: String
+  tenderizer_gte: String
+  tenderizer_lte: String
+  tenderizer_in: [String!]
+  tenderizer_not_in: [String!]
+  tenderizer_contains: String
+  tenderizer_contains_nocase: String
+  tenderizer_not_contains: String
+  tenderizer_not_contains_nocase: String
+  tenderizer_starts_with: String
+  tenderizer_starts_with_nocase: String
+  tenderizer_not_starts_with: String
+  tenderizer_not_starts_with_nocase: String
+  tenderizer_ends_with: String
+  tenderizer_ends_with_nocase: String
+  tenderizer_not_ends_with: String
+  tenderizer_not_ends_with_nocase: String
+  tenderizer_: Tenderizer_filter
+  """Filter for the block changed event."""
+  _change_block: BlockChangedFilter
+  and: [UnlockEvent_filter]
+  or: [UnlockEvent_filter]
+}
+
+enum UnlockEvent_orderBy {
+  id
+  timestamp
+  amount
+  shares
+  unlock
+  unlock__id
+  unlock__amount
+  unlock__timestamp
+  unlock__maturity
+  unlock__redeemed
+  user
+  user__id
+  asset
+  asset__id
+  asset__tvl
+  asset__tenderizerCount
+  tenderizer
+  tenderizer__id
+  tenderizer__symbol
+  tenderizer__name
+  tenderizer__validator
+  tenderizer__tvl
+  tenderizer__shares
+  tenderizer__apr
+  tenderizer__lastUpdateDay
 }
 
 input Unlock_filter {
@@ -998,14 +1849,22 @@ input Unlock_filter {
   amount_lte: BigDecimal
   amount_in: [BigDecimal!]
   amount_not_in: [BigDecimal!]
-  maturity: BigInt
-  maturity_not: BigInt
-  maturity_gt: BigInt
-  maturity_lt: BigInt
-  maturity_gte: BigInt
-  maturity_lte: BigInt
-  maturity_in: [BigInt!]
-  maturity_not_in: [BigInt!]
+  timestamp: Int
+  timestamp_not: Int
+  timestamp_gt: Int
+  timestamp_lt: Int
+  timestamp_gte: Int
+  timestamp_lte: Int
+  timestamp_in: [Int!]
+  timestamp_not_in: [Int!]
+  maturity: Int
+  maturity_not: Int
+  maturity_gt: Int
+  maturity_lt: Int
+  maturity_gte: Int
+  maturity_lte: Int
+  maturity_in: [Int!]
+  maturity_not_in: [Int!]
   redeemed: Boolean
   redeemed_not: Boolean
   redeemed_in: [Boolean!]
@@ -1034,6 +1893,7 @@ enum Unlock_orderBy {
   tenderizer__apr
   tenderizer__lastUpdateDay
   amount
+  timestamp
   maturity
   redeemed
 }
@@ -1065,6 +1925,158 @@ enum User_orderBy {
   id
   stakes
   unlocks
+}
+
+type WithdrawEvent {
+  id: ID!
+  timestamp: Int!
+  assetsOut: BigDecimal!
+  unlock: Unlock!
+  user: User!
+  asset: Asset!
+  tenderizer: Tenderizer!
+}
+
+input WithdrawEvent_filter {
+  id: ID
+  id_not: ID
+  id_gt: ID
+  id_lt: ID
+  id_gte: ID
+  id_lte: ID
+  id_in: [ID!]
+  id_not_in: [ID!]
+  timestamp: Int
+  timestamp_not: Int
+  timestamp_gt: Int
+  timestamp_lt: Int
+  timestamp_gte: Int
+  timestamp_lte: Int
+  timestamp_in: [Int!]
+  timestamp_not_in: [Int!]
+  assetsOut: BigDecimal
+  assetsOut_not: BigDecimal
+  assetsOut_gt: BigDecimal
+  assetsOut_lt: BigDecimal
+  assetsOut_gte: BigDecimal
+  assetsOut_lte: BigDecimal
+  assetsOut_in: [BigDecimal!]
+  assetsOut_not_in: [BigDecimal!]
+  unlock: String
+  unlock_not: String
+  unlock_gt: String
+  unlock_lt: String
+  unlock_gte: String
+  unlock_lte: String
+  unlock_in: [String!]
+  unlock_not_in: [String!]
+  unlock_contains: String
+  unlock_contains_nocase: String
+  unlock_not_contains: String
+  unlock_not_contains_nocase: String
+  unlock_starts_with: String
+  unlock_starts_with_nocase: String
+  unlock_not_starts_with: String
+  unlock_not_starts_with_nocase: String
+  unlock_ends_with: String
+  unlock_ends_with_nocase: String
+  unlock_not_ends_with: String
+  unlock_not_ends_with_nocase: String
+  unlock_: Unlock_filter
+  user: String
+  user_not: String
+  user_gt: String
+  user_lt: String
+  user_gte: String
+  user_lte: String
+  user_in: [String!]
+  user_not_in: [String!]
+  user_contains: String
+  user_contains_nocase: String
+  user_not_contains: String
+  user_not_contains_nocase: String
+  user_starts_with: String
+  user_starts_with_nocase: String
+  user_not_starts_with: String
+  user_not_starts_with_nocase: String
+  user_ends_with: String
+  user_ends_with_nocase: String
+  user_not_ends_with: String
+  user_not_ends_with_nocase: String
+  user_: User_filter
+  asset: String
+  asset_not: String
+  asset_gt: String
+  asset_lt: String
+  asset_gte: String
+  asset_lte: String
+  asset_in: [String!]
+  asset_not_in: [String!]
+  asset_contains: String
+  asset_contains_nocase: String
+  asset_not_contains: String
+  asset_not_contains_nocase: String
+  asset_starts_with: String
+  asset_starts_with_nocase: String
+  asset_not_starts_with: String
+  asset_not_starts_with_nocase: String
+  asset_ends_with: String
+  asset_ends_with_nocase: String
+  asset_not_ends_with: String
+  asset_not_ends_with_nocase: String
+  asset_: Asset_filter
+  tenderizer: String
+  tenderizer_not: String
+  tenderizer_gt: String
+  tenderizer_lt: String
+  tenderizer_gte: String
+  tenderizer_lte: String
+  tenderizer_in: [String!]
+  tenderizer_not_in: [String!]
+  tenderizer_contains: String
+  tenderizer_contains_nocase: String
+  tenderizer_not_contains: String
+  tenderizer_not_contains_nocase: String
+  tenderizer_starts_with: String
+  tenderizer_starts_with_nocase: String
+  tenderizer_not_starts_with: String
+  tenderizer_not_starts_with_nocase: String
+  tenderizer_ends_with: String
+  tenderizer_ends_with_nocase: String
+  tenderizer_not_ends_with: String
+  tenderizer_not_ends_with_nocase: String
+  tenderizer_: Tenderizer_filter
+  """Filter for the block changed event."""
+  _change_block: BlockChangedFilter
+  and: [WithdrawEvent_filter]
+  or: [WithdrawEvent_filter]
+}
+
+enum WithdrawEvent_orderBy {
+  id
+  timestamp
+  assetsOut
+  unlock
+  unlock__id
+  unlock__amount
+  unlock__timestamp
+  unlock__maturity
+  unlock__redeemed
+  user
+  user__id
+  asset
+  asset__id
+  asset__tvl
+  asset__tenderizerCount
+  tenderizer
+  tenderizer__id
+  tenderizer__symbol
+  tenderizer__name
+  tenderizer__validator
+  tenderizer__tvl
+  tenderizer__shares
+  tenderizer__apr
+  tenderizer__lastUpdateDay
 }
 
 type _Block_ {

@@ -1,7 +1,18 @@
 sources:
-  - name: tenderize/tenderize-localhost
+  - name: Tenderize
     handler:
       graphql:
-        endpoint: "http://127.0.0.1:8000/subgraphs/name/tenderize/tenderize-localhost"
+        endpoint: '{context.subgraph:https://api.studio.thegraph.com/query/45970/v2-testnet/version/latest}'
 documents:
   - ./gql/**/*.gql
+
+additionalTypeDefs: |
+  extend type Query {
+    getUserMultichain(user: ID!, subgraphs: [String!]!): User!
+  }
+
+additionalResolvers:
+  - ./src/resolvers.ts
+
+codegen:
+  contextType: 'MeshContext & { subgraph: string }'

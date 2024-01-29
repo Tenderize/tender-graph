@@ -13,3 +13,9 @@ localhost:
 arbitrum-goerli:
   networkName: arbitrum-goerli
   startBlock: 48901518
+arbitrum-sepolia:
+  networkName: arbitrum-sepolia
+  startBlock: 10460524
+sepolia:
+  networkName: sepolia
+  startBlock: 5178926

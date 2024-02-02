@@ -9,6 +9,11 @@ query GetTenderizers($asset: String, $first: Int = 1000, $skip: Int = 0) {
     }
     tvl
     apr
+    tenderizerDays(first: 2, orderBy: date, orderDirection: desc){
+      date
+      id
+      rewards
+    }
   }
 }
 

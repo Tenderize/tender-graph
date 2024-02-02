@@ -2162,6 +2162,6 @@ export type _SubgraphErrorPolicy_ =
 
   export type Context = {
       ["Tenderize"]: { Query: QuerySdk, Mutation: MutationSdk, Subscription: SubscriptionSdk },
-      ["subgraph"]: Scalars['ID']
+      
     };
 }

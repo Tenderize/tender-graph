@@ -2,17 +2,6 @@ sources:
   - name: Tenderize
     handler:
       graphql:
-        endpoint: '{context.subgraph:https://api.studio.thegraph.com/query/45970/v2-testnet/version/latest}'
+        endpoint: 'https://api.studio.thegraph.com/query/45970/tenderize-v2-arbitrum/version/latest'
 documents:
   - ./gql/**/*.gql
-
-additionalTypeDefs: |
-  extend type Query {
-    getUserMultichain(user: ID!, subgraphs: [String!]!): User!
-  }
-
-additionalResolvers:
-  - ./src/resolvers.ts
-
-codegen:
-  contextType: 'MeshContext & { subgraph: string }'

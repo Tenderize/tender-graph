@@ -191,11 +191,18 @@ export function handleRebase(event: EmitRebase): void {
   tenderizerDay.shares = BD_ZERO
 
   // Calculate APR for period
-  tenderizer.apr = BD_ZERO
-  let daysElapsed = dayID - tenderizer.lastUpdateDay.toI32()
-  tenderizer.apr = tenderizer.apr.plus(tenderizerDay.rewards
-    .div(oldStake)
-    .times(BigDecimal.fromString((365 / (daysElapsed ? daysElapsed : 1)).toString()))).div(BigDecimal.fromString('2'))
+  let lastTenderizerDay = TenderizerDay.load(tenderizer.id.concat('-').concat(tenderizer.lastUpdateDay.toString()))
+  let daysElapsed = BigDecimal.fromString('1');
+  if (lastTenderizerDay != null) {
+    daysElapsed = BigDecimal.fromString((dayID - tenderizer.lastUpdateDay.toI32() / 86400).toString())
+    const apr = tenderizerDay.tvl.minus(lastTenderizerDay.tvl).div(lastTenderizerDay.tvl).times(BigDecimal.fromString("365").div(daysElapsed)).times(BigDecimal.fromString("100"))
+    tenderizerDay.apr = apr
+    tenderizer.apr = apr
+  } else {
+    const apr = newStake.minus(oldStake).div(oldStake).times(BigDecimal.fromString("365")).times(BigDecimal.fromString("100"))
+    tenderizerDay.apr = apr
+    tenderizer.apr = apr
+  }
 
   asset.save()
   assetDay.save()

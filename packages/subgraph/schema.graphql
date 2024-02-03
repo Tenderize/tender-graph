@@ -83,6 +83,8 @@ type TenderizerDay @entity {
   tenderizer: Tenderizer!
 
   tvl: BigDecimal!
+  apr: BigDecimal!
+  
   rewards: BigDecimal!
   shares: BigDecimal!
 }

@@ -1,7 +1,7 @@
 sources:
-  - name: tenderize/tenderize-localhost
+  - name: Tenderize
     handler:
       graphql:
-        endpoint: "http://127.0.0.1:8000/subgraphs/name/tenderize/tenderize-localhost"
+        endpoint: "https://api.studio.thegraph.com/query/45970/tenderize-v2-arbitrum/version/latest"
 documents:
   - ./gql/**/*.gql

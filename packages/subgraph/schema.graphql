@@ -18,16 +18,14 @@ type Tenderizer @entity {
 
   tvl: BigDecimal! # total value locked
   shares: BigDecimal! # total shares
-
   apr: BigDecimal!
 
   # balances
   stakes: [Stake!]! @derivedFrom(field: "tenderizer")
-  
+
   # time series
   tenderizerDays: [TenderizerDay!]! @derivedFrom(field: "tenderizer")
   lastUpdateDay: BigInt! # last day the tenderizer was updated
-
   # events
   depositEvents: [DepositEvent!]! @derivedFrom(field: "tenderizer")
   unlockEvents: [UnlockEvent!]! @derivedFrom(field: "tenderizer")
@@ -82,17 +80,20 @@ type TenderizerDay @entity {
 
   tenderizer: Tenderizer!
 
-  tvl: BigDecimal!
-  rewards: BigDecimal!
   shares: BigDecimal!
+  tvl: BigDecimal!
+
+  startStake: BigDecimal!
+  apr: BigDecimal!
+  rewards: BigDecimal!
 }
 
 # Events
 
 type DepositEvent @entity {
-  id: ID! 
+  id: ID!
   timestamp: Int!
-  
+
   assetsIn: BigDecimal!
   tTokenOut: BigDecimal!
   shares: BigDecimal!
@@ -104,13 +105,12 @@ type DepositEvent @entity {
 }
 
 type UnlockEvent @entity {
-  id: ID! 
+  id: ID!
   timestamp: Int!
-  
+
   amount: BigDecimal!
   shares: BigDecimal!
   unlock: Unlock! # the unlock that was created
-
   # Relational fields
   user: User!
   asset: Asset!
@@ -118,12 +118,11 @@ type UnlockEvent @entity {
 }
 
 type WithdrawEvent @entity {
-  id: ID! 
+  id: ID!
   timestamp: Int!
-  
+
   assetsOut: BigDecimal!
   unlock: Unlock! # the unlock that was consumed
-
   # Relational fields
   user: User!
   asset: Asset!
@@ -131,9 +130,9 @@ type WithdrawEvent @entity {
 }
 
 type RebaseEvent @entity {
-  id: ID! 
+  id: ID!
   timestamp: Int!
-  
+
   oldStake: BigDecimal!
   newStake: BigDecimal!
 
@@ -143,9 +142,9 @@ type RebaseEvent @entity {
 }
 
 type TokenTransferEvent @entity {
-  id: ID! 
+  id: ID!
   timestamp: Int!
-  
+
   amount: BigDecimal!
   shares: BigDecimal!
   from: User!

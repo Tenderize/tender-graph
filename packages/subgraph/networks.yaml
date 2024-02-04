@@ -1,15 +1,15 @@
 mainnet:
   networkName: mainnet
-  startBlock: 0
-arbitrum-rinkeby:
-  networkName: arbitrum-rinkeby
-  startBlock: 0
+  startBlock: 19115200
 arbitrum-one:
   networkName: arbitrum-one
-  startBlock: 0
+  startBlock: 175531000
 localhost:
   networkName: localhost
   startBlock: 0
-arbitrum-goerli:
-  networkName: arbitrum-goerli
-  startBlock: 48901518
+arbitrum-sepolia:
+  networkName: arbitrum-sepolia
+  startBlock: 10460524
+sepolia:
+  networkName: sepolia
+  startBlock: 5178926

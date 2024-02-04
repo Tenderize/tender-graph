@@ -1,6 +1,19 @@
 import { BigDecimal } from '@graphprotocol/graph-ts'
 
-import { Asset, AssetDay, Tenderizer, TenderizerDay, Stake, Unlock, User, DepositEvent, UnlockEvent, WithdrawEvent, RebaseEvent, TokenTransferEvent } from '../types/schema'
+import {
+  Asset,
+  AssetDay,
+  Tenderizer,
+  TenderizerDay,
+  Stake,
+  Unlock,
+  User,
+  DepositEvent,
+  UnlockEvent,
+  WithdrawEvent,
+  RebaseEvent,
+  TokenTransferEvent,
+} from '../types/schema'
 import {
   Deposit as EmitDeposit,
   Unlock as EmitUnlock,
@@ -160,8 +173,8 @@ export function handleRebase(event: EmitRebase): void {
   let oldStake = convertToDecimal(event.params.oldStake)
   let newStake = convertToDecimal(event.params.newStake)
   // if old stake equals zero, return to avoid division by zero
-  if (oldStake.equals(BD_ZERO)) return;
-  if (oldStake.equals(newStake)) return;
+  if (oldStake.equals(BD_ZERO)) return
+  if (oldStake.equals(newStake)) return
 
   asset.tvl = asset.tvl.plus(newStake.minus(oldStake))
   tenderizer.tvl = newStake
@@ -180,26 +193,33 @@ export function handleRebase(event: EmitRebase): void {
   assetDay.rewards = assetDay.rewards.plus(newStake.minus(oldStake))
 
   let tenderizerDay = TenderizerDay.load(tenderizer.id.concat('-').concat(dayID.toString()))
+  const days = tenderizer.tenderizerDays.load()
+
+  let lastTenderizerDay: TenderizerDay | null
   if (tenderizerDay == null) {
     tenderizerDay = new TenderizerDay(tenderizer.id.concat('-').concat(dayID.toString()))
     tenderizerDay.date = dayID * 86400
     tenderizerDay.tenderizer = tenderizer.id
     tenderizerDay.rewards = BD_ZERO
+    tenderizerDay.startStake = oldStake
+    lastTenderizerDay = days.length ? days[days.length - 1] : null
+  } else {
+    lastTenderizerDay = days.length > 1 ? days[days.length - 2] : null
   }
   tenderizerDay.tvl = tenderizer.tvl
   tenderizerDay.rewards = tenderizerDay.rewards.plus(newStake.minus(oldStake))
-  tenderizerDay.shares = BD_ZERO
+  tenderizerDay.shares = tenderizer.shares
 
   // Calculate APR for period
-  let lastTenderizerDay = TenderizerDay.load(tenderizer.id.concat('-').concat(tenderizer.lastUpdateDay.toString()))
-  let daysElapsed = BigDecimal.fromString('1');
+  let daysElapsed = BigDecimal.fromString('1')
+
   if (lastTenderizerDay != null) {
-    daysElapsed = BigDecimal.fromString((dayID - tenderizer.lastUpdateDay.toI32() / 86400).toString())
-    const apr = tenderizerDay.tvl.minus(lastTenderizerDay.tvl).div(lastTenderizerDay.tvl).times(BigDecimal.fromString("365").div(daysElapsed)).times(BigDecimal.fromString("100"))
+    daysElapsed = BigDecimal.fromString((dayID - lastTenderizerDay.date / 86400).toString())
+    const apr = tenderizerDay.rewards.div(tenderizerDay.startStake).times(BigDecimal.fromString('365').div(daysElapsed))
     tenderizerDay.apr = apr
     tenderizer.apr = apr
   } else {
-    const apr = newStake.minus(oldStake).div(oldStake).times(BigDecimal.fromString("365")).times(BigDecimal.fromString("100"))
+    const apr = newStake.minus(oldStake).div(oldStake).times(BigDecimal.fromString('365'))
     tenderizerDay.apr = apr
     tenderizer.apr = apr
   }

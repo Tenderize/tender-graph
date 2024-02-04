@@ -2,6 +2,6 @@ sources:
   - name: Tenderize
     handler:
       graphql:
-        endpoint: 'https://api.studio.thegraph.com/query/45970/tenderize-v2-arbitrum/version/latest'
+        endpoint: "https://api.studio.thegraph.com/query/45970/tenderize-v2-arbitrum/version/latest"
 documents:
   - ./gql/**/*.gql

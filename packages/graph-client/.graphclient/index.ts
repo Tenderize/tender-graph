@@ -1142,9 +1142,11 @@ export type TenderizerDay = {
   id: Scalars['ID'];
   date: Scalars['Int'];
   tenderizer: Tenderizer;
-  tvl: Scalars['BigDecimal'];
-  rewards: Scalars['BigDecimal'];
   shares: Scalars['BigDecimal'];
+  tvl: Scalars['BigDecimal'];
+  startStake: Scalars['BigDecimal'];
+  apr: Scalars['BigDecimal'];
+  rewards: Scalars['BigDecimal'];
 };
 
 export type TenderizerDay_filter = {
@@ -1185,22 +1187,6 @@ export type TenderizerDay_filter = {
   tenderizer_not_ends_with?: InputMaybe<Scalars['String']>;
   tenderizer_not_ends_with_nocase?: InputMaybe<Scalars['String']>;
   tenderizer_?: InputMaybe<Tenderizer_filter>;
-  tvl?: InputMaybe<Scalars['BigDecimal']>;
-  tvl_not?: InputMaybe<Scalars['BigDecimal']>;
-  tvl_gt?: InputMaybe<Scalars['BigDecimal']>;
-  tvl_lt?: InputMaybe<Scalars['BigDecimal']>;
-  tvl_gte?: InputMaybe<Scalars['BigDecimal']>;
-  tvl_lte?: InputMaybe<Scalars['BigDecimal']>;
-  tvl_in?: InputMaybe<Array<Scalars['BigDecimal']>>;
-  tvl_not_in?: InputMaybe<Array<Scalars['BigDecimal']>>;
-  rewards?: InputMaybe<Scalars['BigDecimal']>;
-  rewards_not?: InputMaybe<Scalars['BigDecimal']>;
-  rewards_gt?: InputMaybe<Scalars['BigDecimal']>;
-  rewards_lt?: InputMaybe<Scalars['BigDecimal']>;
-  rewards_gte?: InputMaybe<Scalars['BigDecimal']>;
-  rewards_lte?: InputMaybe<Scalars['BigDecimal']>;
-  rewards_in?: InputMaybe<Array<Scalars['BigDecimal']>>;
-  rewards_not_in?: InputMaybe<Array<Scalars['BigDecimal']>>;
   shares?: InputMaybe<Scalars['BigDecimal']>;
   shares_not?: InputMaybe<Scalars['BigDecimal']>;
   shares_gt?: InputMaybe<Scalars['BigDecimal']>;
@@ -1209,6 +1195,38 @@ export type TenderizerDay_filter = {
   shares_lte?: InputMaybe<Scalars['BigDecimal']>;
   shares_in?: InputMaybe<Array<Scalars['BigDecimal']>>;
   shares_not_in?: InputMaybe<Array<Scalars['BigDecimal']>>;
+  tvl?: InputMaybe<Scalars['BigDecimal']>;
+  tvl_not?: InputMaybe<Scalars['BigDecimal']>;
+  tvl_gt?: InputMaybe<Scalars['BigDecimal']>;
+  tvl_lt?: InputMaybe<Scalars['BigDecimal']>;
+  tvl_gte?: InputMaybe<Scalars['BigDecimal']>;
+  tvl_lte?: InputMaybe<Scalars['BigDecimal']>;
+  tvl_in?: InputMaybe<Array<Scalars['BigDecimal']>>;
+  tvl_not_in?: InputMaybe<Array<Scalars['BigDecimal']>>;
+  startStake?: InputMaybe<Scalars['BigDecimal']>;
+  startStake_not?: InputMaybe<Scalars['BigDecimal']>;
+  startStake_gt?: InputMaybe<Scalars['BigDecimal']>;
+  startStake_lt?: InputMaybe<Scalars['BigDecimal']>;
+  startStake_gte?: InputMaybe<Scalars['BigDecimal']>;
+  startStake_lte?: InputMaybe<Scalars['BigDecimal']>;
+  startStake_in?: InputMaybe<Array<Scalars['BigDecimal']>>;
+  startStake_not_in?: InputMaybe<Array<Scalars['BigDecimal']>>;
+  apr?: InputMaybe<Scalars['BigDecimal']>;
+  apr_not?: InputMaybe<Scalars['BigDecimal']>;
+  apr_gt?: InputMaybe<Scalars['BigDecimal']>;
+  apr_lt?: InputMaybe<Scalars['BigDecimal']>;
+  apr_gte?: InputMaybe<Scalars['BigDecimal']>;
+  apr_lte?: InputMaybe<Scalars['BigDecimal']>;
+  apr_in?: InputMaybe<Array<Scalars['BigDecimal']>>;
+  apr_not_in?: InputMaybe<Array<Scalars['BigDecimal']>>;
+  rewards?: InputMaybe<Scalars['BigDecimal']>;
+  rewards_not?: InputMaybe<Scalars['BigDecimal']>;
+  rewards_gt?: InputMaybe<Scalars['BigDecimal']>;
+  rewards_lt?: InputMaybe<Scalars['BigDecimal']>;
+  rewards_gte?: InputMaybe<Scalars['BigDecimal']>;
+  rewards_lte?: InputMaybe<Scalars['BigDecimal']>;
+  rewards_in?: InputMaybe<Array<Scalars['BigDecimal']>>;
+  rewards_not_in?: InputMaybe<Array<Scalars['BigDecimal']>>;
   /** Filter for the block changed event. */
   _change_block?: InputMaybe<BlockChangedFilter>;
   and?: InputMaybe<Array<InputMaybe<TenderizerDay_filter>>>;
@@ -1227,9 +1245,11 @@ export type TenderizerDay_orderBy =
   | 'tenderizer__shares'
   | 'tenderizer__apr'
   | 'tenderizer__lastUpdateDay'
+  | 'shares'
   | 'tvl'
-  | 'rewards'
-  | 'shares';
+  | 'startStake'
+  | 'apr'
+  | 'rewards';
 
 export type Tenderizer_filter = {
   id?: InputMaybe<Scalars['ID']>;
@@ -2416,9 +2436,11 @@ export type TenderizerDayResolvers<ContextType = MeshContext, ParentType extends
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   date?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   tenderizer?: Resolver<ResolversTypes['Tenderizer'], ParentType, ContextType>;
-  tvl?: Resolver<ResolversTypes['BigDecimal'], ParentType, ContextType>;
-  rewards?: Resolver<ResolversTypes['BigDecimal'], ParentType, ContextType>;
   shares?: Resolver<ResolversTypes['BigDecimal'], ParentType, ContextType>;
+  tvl?: Resolver<ResolversTypes['BigDecimal'], ParentType, ContextType>;
+  startStake?: Resolver<ResolversTypes['BigDecimal'], ParentType, ContextType>;
+  apr?: Resolver<ResolversTypes['BigDecimal'], ParentType, ContextType>;
+  rewards?: Resolver<ResolversTypes['BigDecimal'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -2690,7 +2712,7 @@ export type GetTenderizersQueryVariables = Exact<{
 
 export type GetTenderizersQuery = { tenderizers: Array<(
     Pick<Tenderizer, 'id' | 'symbol' | 'name' | 'validator' | 'tvl' | 'apr'>
-    & { asset: Pick<Asset, 'id'>, tenderizerDays: Array<Pick<TenderizerDay, 'date' | 'id' | 'rewards'>> }
+    & { asset: Pick<Asset, 'id'>, tenderizerDays: Array<Pick<TenderizerDay, 'date' | 'id' | 'rewards' | 'apr'>> }
   )> };
 
 export type GetTenderizerQueryVariables = Exact<{
@@ -2783,10 +2805,11 @@ export const GetTenderizersDocument = gql`
     }
     tvl
     apr
-    tenderizerDays(first: 2, orderBy: date, orderDirection: desc) {
+    tenderizerDays(first: 30, orderBy: date, orderDirection: desc) {
       date
       id
       rewards
+      apr
     }
   }
 }

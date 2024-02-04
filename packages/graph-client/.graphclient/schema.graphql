@@ -1190,9 +1190,11 @@ type TenderizerDay {
   id: ID!
   date: Int!
   tenderizer: Tenderizer!
-  tvl: BigDecimal!
-  rewards: BigDecimal!
   shares: BigDecimal!
+  tvl: BigDecimal!
+  startStake: BigDecimal!
+  apr: BigDecimal!
+  rewards: BigDecimal!
 }
 
 input TenderizerDay_filter {
@@ -1233,22 +1235,6 @@ input TenderizerDay_filter {
   tenderizer_not_ends_with: String
   tenderizer_not_ends_with_nocase: String
   tenderizer_: Tenderizer_filter
-  tvl: BigDecimal
-  tvl_not: BigDecimal
-  tvl_gt: BigDecimal
-  tvl_lt: BigDecimal
-  tvl_gte: BigDecimal
-  tvl_lte: BigDecimal
-  tvl_in: [BigDecimal!]
-  tvl_not_in: [BigDecimal!]
-  rewards: BigDecimal
-  rewards_not: BigDecimal
-  rewards_gt: BigDecimal
-  rewards_lt: BigDecimal
-  rewards_gte: BigDecimal
-  rewards_lte: BigDecimal
-  rewards_in: [BigDecimal!]
-  rewards_not_in: [BigDecimal!]
   shares: BigDecimal
   shares_not: BigDecimal
   shares_gt: BigDecimal
@@ -1257,6 +1243,38 @@ input TenderizerDay_filter {
   shares_lte: BigDecimal
   shares_in: [BigDecimal!]
   shares_not_in: [BigDecimal!]
+  tvl: BigDecimal
+  tvl_not: BigDecimal
+  tvl_gt: BigDecimal
+  tvl_lt: BigDecimal
+  tvl_gte: BigDecimal
+  tvl_lte: BigDecimal
+  tvl_in: [BigDecimal!]
+  tvl_not_in: [BigDecimal!]
+  startStake: BigDecimal
+  startStake_not: BigDecimal
+  startStake_gt: BigDecimal
+  startStake_lt: BigDecimal
+  startStake_gte: BigDecimal
+  startStake_lte: BigDecimal
+  startStake_in: [BigDecimal!]
+  startStake_not_in: [BigDecimal!]
+  apr: BigDecimal
+  apr_not: BigDecimal
+  apr_gt: BigDecimal
+  apr_lt: BigDecimal
+  apr_gte: BigDecimal
+  apr_lte: BigDecimal
+  apr_in: [BigDecimal!]
+  apr_not_in: [BigDecimal!]
+  rewards: BigDecimal
+  rewards_not: BigDecimal
+  rewards_gt: BigDecimal
+  rewards_lt: BigDecimal
+  rewards_gte: BigDecimal
+  rewards_lte: BigDecimal
+  rewards_in: [BigDecimal!]
+  rewards_not_in: [BigDecimal!]
   """Filter for the block changed event."""
   _change_block: BlockChangedFilter
   and: [TenderizerDay_filter]
@@ -1275,9 +1293,11 @@ enum TenderizerDay_orderBy {
   tenderizer__shares
   tenderizer__apr
   tenderizer__lastUpdateDay
-  tvl
-  rewards
   shares
+  tvl
+  startStake
+  apr
+  rewards
 }
 
 input Tenderizer_filter {

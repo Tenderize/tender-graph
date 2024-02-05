@@ -219,7 +219,9 @@ export function handleRebase(event: EmitRebase): void {
     tenderizerDay.apr = apr
     tenderizer.apr = apr
   } else {
-    const apr = newStake.minus(oldStake).div(oldStake).times(BigDecimal.fromString('365'))
+    const createdDay = tenderizer.createdAt / 86400
+    const now = event.block.timestamp.toI32() / 86400
+    const apr = newStake.minus(oldStake).div(oldStake).times(BigDecimal.fromString('365').div(BigDecimal.fromString((now === createdDay ? 1 : now - createdDay).toString())))
     tenderizerDay.apr = apr
     tenderizer.apr = apr
   }

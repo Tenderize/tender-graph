@@ -8,7 +8,7 @@ dataSources:
     name: Registry
     network: '{{ networkName }}'
     source:
-      startBlock: { { startBlock } } # Define start block
+      startBlock: {{ startBlock}} # Define start block
       address: '0xa7cA8732Be369CaEaE8C230537Fc8EF82a3387EE' # Define deterministic Registry address here
       abi: Registry
     mapping:

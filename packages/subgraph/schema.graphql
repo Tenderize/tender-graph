@@ -15,6 +15,7 @@ type Tenderizer @entity {
   name: String!
   validator: String!
   asset: Asset!
+  createdAt: Int!
 
   tvl: BigDecimal! # total value locked
   shares: BigDecimal! # total shares

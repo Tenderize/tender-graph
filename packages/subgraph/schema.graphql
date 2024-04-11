@@ -20,6 +20,7 @@ type Tenderizer @entity {
   tvl: BigDecimal! # total value locked
   shares: BigDecimal! # total shares
   apr: BigDecimal!
+  apy: BigDecimal!
 
   # balances
   stakes: [Stake!]! @derivedFrom(field: "tenderizer")
@@ -85,8 +86,10 @@ type TenderizerDay @entity {
   tvl: BigDecimal!
 
   startStake: BigDecimal!
-  apr: BigDecimal!
   rewards: BigDecimal!
+
+  apr: BigDecimal!
+  apy: BigDecimal!
 }
 
 # Events

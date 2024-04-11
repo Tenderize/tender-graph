@@ -1,4 +1,4 @@
-import { BigDecimal } from '@graphprotocol/graph-ts'
+import { BigDecimal, BigInt } from '@graphprotocol/graph-ts'
 
 import {
   Asset,
@@ -210,7 +210,7 @@ export function handleRebase(event: EmitRebase): void {
   tenderizerDay.rewards = tenderizerDay.rewards.plus(newStake.minus(oldStake))
   tenderizerDay.shares = tenderizer.shares
 
-  // Calculate APR for period
+  // Assuming BigDecimal is already defined and available in your environment
   let daysElapsed = BigDecimal.fromString('1')
 
   if (lastTenderizerDay != null) {
@@ -221,10 +221,19 @@ export function handleRebase(event: EmitRebase): void {
   } else {
     const createdDay = tenderizer.createdAt / 86400
     const now = event.block.timestamp.toI32() / 86400
-    const apr = newStake.minus(oldStake).div(oldStake).times(BigDecimal.fromString('365').div(BigDecimal.fromString((now === createdDay ? 1 : now - createdDay).toString())))
+    daysElapsed = BigDecimal.fromString((now === createdDay ? 1 : now - createdDay).toString())
+    const apr = newStake.minus(oldStake).div(oldStake).times(BigDecimal.fromString('365').div(daysElapsed))
     tenderizerDay.apr = apr
     tenderizer.apr = apr
   }
+
+  // Convert APR to APY using daysElapsed as the compounding frequency
+  let periodsPerYear = 365 / parseFloat(daysElapsed.toString()) // Calculate the number of periods per year
+  let apy = BigDecimal.fromString(
+    (Math.pow(1 + parseFloat(tenderizer.apr.toString()) / periodsPerYear, periodsPerYear) - 1).toString()
+  )
+  tenderizerDay.apy = apy
+  tenderizer.apy = apy
 
   asset.save()
   assetDay.save()

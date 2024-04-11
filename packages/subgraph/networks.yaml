@@ -6,7 +6,7 @@ arbitrum-one:
   startBlock: 175531000
 localhost:
   networkName: localhost
-  startBlock: 0
+  startBlock: 19427276
 arbitrum-sepolia:
   networkName: arbitrum-sepolia
   startBlock: 10460524

@@ -44,6 +44,10 @@ export type Scalars = {
   Int8: any;
 };
 
+export type Aggregation_interval =
+  | 'hour'
+  | 'day';
+
 export type Asset = {
   id: Scalars['ID'];
   tvl: Scalars['BigDecimal'];
@@ -324,9 +328,11 @@ export type DepositEvent_orderBy =
   | 'tenderizer__symbol'
   | 'tenderizer__name'
   | 'tenderizer__validator'
+  | 'tenderizer__createdAt'
   | 'tenderizer__tvl'
   | 'tenderizer__shares'
   | 'tenderizer__apr'
+  | 'tenderizer__apy'
   | 'tenderizer__lastUpdateDay';
 
 /** Defines the order direction, either ascending or descending */
@@ -688,9 +694,11 @@ export type RebaseEvent_orderBy =
   | 'tenderizer__symbol'
   | 'tenderizer__name'
   | 'tenderizer__validator'
+  | 'tenderizer__createdAt'
   | 'tenderizer__tvl'
   | 'tenderizer__shares'
   | 'tenderizer__apr'
+  | 'tenderizer__apy'
   | 'tenderizer__lastUpdateDay';
 
 export type Stake = {
@@ -800,9 +808,11 @@ export type Stake_orderBy =
   | 'tenderizer__symbol'
   | 'tenderizer__name'
   | 'tenderizer__validator'
+  | 'tenderizer__createdAt'
   | 'tenderizer__tvl'
   | 'tenderizer__shares'
   | 'tenderizer__apr'
+  | 'tenderizer__apy'
   | 'tenderizer__lastUpdateDay'
   | 'shares';
 
@@ -1062,9 +1072,11 @@ export type Tenderizer = {
   name: Scalars['String'];
   validator: Scalars['String'];
   asset: Asset;
+  createdAt: Scalars['Int'];
   tvl: Scalars['BigDecimal'];
   shares: Scalars['BigDecimal'];
   apr: Scalars['BigDecimal'];
+  apy: Scalars['BigDecimal'];
   stakes: Array<Stake>;
   tenderizerDays: Array<TenderizerDay>;
   lastUpdateDay: Scalars['BigInt'];
@@ -1145,8 +1157,9 @@ export type TenderizerDay = {
   shares: Scalars['BigDecimal'];
   tvl: Scalars['BigDecimal'];
   startStake: Scalars['BigDecimal'];
-  apr: Scalars['BigDecimal'];
   rewards: Scalars['BigDecimal'];
+  apr: Scalars['BigDecimal'];
+  apy: Scalars['BigDecimal'];
 };
 
 export type TenderizerDay_filter = {
@@ -1211,14 +1224,6 @@ export type TenderizerDay_filter = {
   startStake_lte?: InputMaybe<Scalars['BigDecimal']>;
   startStake_in?: InputMaybe<Array<Scalars['BigDecimal']>>;
   startStake_not_in?: InputMaybe<Array<Scalars['BigDecimal']>>;
-  apr?: InputMaybe<Scalars['BigDecimal']>;
-  apr_not?: InputMaybe<Scalars['BigDecimal']>;
-  apr_gt?: InputMaybe<Scalars['BigDecimal']>;
-  apr_lt?: InputMaybe<Scalars['BigDecimal']>;
-  apr_gte?: InputMaybe<Scalars['BigDecimal']>;
-  apr_lte?: InputMaybe<Scalars['BigDecimal']>;
-  apr_in?: InputMaybe<Array<Scalars['BigDecimal']>>;
-  apr_not_in?: InputMaybe<Array<Scalars['BigDecimal']>>;
   rewards?: InputMaybe<Scalars['BigDecimal']>;
   rewards_not?: InputMaybe<Scalars['BigDecimal']>;
   rewards_gt?: InputMaybe<Scalars['BigDecimal']>;
@@ -1227,6 +1232,22 @@ export type TenderizerDay_filter = {
   rewards_lte?: InputMaybe<Scalars['BigDecimal']>;
   rewards_in?: InputMaybe<Array<Scalars['BigDecimal']>>;
   rewards_not_in?: InputMaybe<Array<Scalars['BigDecimal']>>;
+  apr?: InputMaybe<Scalars['BigDecimal']>;
+  apr_not?: InputMaybe<Scalars['BigDecimal']>;
+  apr_gt?: InputMaybe<Scalars['BigDecimal']>;
+  apr_lt?: InputMaybe<Scalars['BigDecimal']>;
+  apr_gte?: InputMaybe<Scalars['BigDecimal']>;
+  apr_lte?: InputMaybe<Scalars['BigDecimal']>;
+  apr_in?: InputMaybe<Array<Scalars['BigDecimal']>>;
+  apr_not_in?: InputMaybe<Array<Scalars['BigDecimal']>>;
+  apy?: InputMaybe<Scalars['BigDecimal']>;
+  apy_not?: InputMaybe<Scalars['BigDecimal']>;
+  apy_gt?: InputMaybe<Scalars['BigDecimal']>;
+  apy_lt?: InputMaybe<Scalars['BigDecimal']>;
+  apy_gte?: InputMaybe<Scalars['BigDecimal']>;
+  apy_lte?: InputMaybe<Scalars['BigDecimal']>;
+  apy_in?: InputMaybe<Array<Scalars['BigDecimal']>>;
+  apy_not_in?: InputMaybe<Array<Scalars['BigDecimal']>>;
   /** Filter for the block changed event. */
   _change_block?: InputMaybe<BlockChangedFilter>;
   and?: InputMaybe<Array<InputMaybe<TenderizerDay_filter>>>;
@@ -1241,15 +1262,18 @@ export type TenderizerDay_orderBy =
   | 'tenderizer__symbol'
   | 'tenderizer__name'
   | 'tenderizer__validator'
+  | 'tenderizer__createdAt'
   | 'tenderizer__tvl'
   | 'tenderizer__shares'
   | 'tenderizer__apr'
+  | 'tenderizer__apy'
   | 'tenderizer__lastUpdateDay'
   | 'shares'
   | 'tvl'
   | 'startStake'
+  | 'rewards'
   | 'apr'
-  | 'rewards';
+  | 'apy';
 
 export type Tenderizer_filter = {
   id?: InputMaybe<Scalars['ID']>;
@@ -1341,6 +1365,14 @@ export type Tenderizer_filter = {
   asset_not_ends_with?: InputMaybe<Scalars['String']>;
   asset_not_ends_with_nocase?: InputMaybe<Scalars['String']>;
   asset_?: InputMaybe<Asset_filter>;
+  createdAt?: InputMaybe<Scalars['Int']>;
+  createdAt_not?: InputMaybe<Scalars['Int']>;
+  createdAt_gt?: InputMaybe<Scalars['Int']>;
+  createdAt_lt?: InputMaybe<Scalars['Int']>;
+  createdAt_gte?: InputMaybe<Scalars['Int']>;
+  createdAt_lte?: InputMaybe<Scalars['Int']>;
+  createdAt_in?: InputMaybe<Array<Scalars['Int']>>;
+  createdAt_not_in?: InputMaybe<Array<Scalars['Int']>>;
   tvl?: InputMaybe<Scalars['BigDecimal']>;
   tvl_not?: InputMaybe<Scalars['BigDecimal']>;
   tvl_gt?: InputMaybe<Scalars['BigDecimal']>;
@@ -1365,6 +1397,14 @@ export type Tenderizer_filter = {
   apr_lte?: InputMaybe<Scalars['BigDecimal']>;
   apr_in?: InputMaybe<Array<Scalars['BigDecimal']>>;
   apr_not_in?: InputMaybe<Array<Scalars['BigDecimal']>>;
+  apy?: InputMaybe<Scalars['BigDecimal']>;
+  apy_not?: InputMaybe<Scalars['BigDecimal']>;
+  apy_gt?: InputMaybe<Scalars['BigDecimal']>;
+  apy_lt?: InputMaybe<Scalars['BigDecimal']>;
+  apy_gte?: InputMaybe<Scalars['BigDecimal']>;
+  apy_lte?: InputMaybe<Scalars['BigDecimal']>;
+  apy_in?: InputMaybe<Array<Scalars['BigDecimal']>>;
+  apy_not_in?: InputMaybe<Array<Scalars['BigDecimal']>>;
   stakes_?: InputMaybe<Stake_filter>;
   tenderizerDays_?: InputMaybe<TenderizerDay_filter>;
   lastUpdateDay?: InputMaybe<Scalars['BigInt']>;
@@ -1395,9 +1435,11 @@ export type Tenderizer_orderBy =
   | 'asset__id'
   | 'asset__tvl'
   | 'asset__tenderizerCount'
+  | 'createdAt'
   | 'tvl'
   | 'shares'
   | 'apr'
+  | 'apy'
   | 'stakes'
   | 'tenderizerDays'
   | 'lastUpdateDay'
@@ -1559,9 +1601,11 @@ export type TokenTransferEvent_orderBy =
   | 'tenderizer__symbol'
   | 'tenderizer__name'
   | 'tenderizer__validator'
+  | 'tenderizer__createdAt'
   | 'tenderizer__tvl'
   | 'tenderizer__shares'
   | 'tenderizer__apr'
+  | 'tenderizer__apy'
   | 'tenderizer__lastUpdateDay';
 
 export type Unlock = {
@@ -1731,9 +1775,11 @@ export type UnlockEvent_orderBy =
   | 'tenderizer__symbol'
   | 'tenderizer__name'
   | 'tenderizer__validator'
+  | 'tenderizer__createdAt'
   | 'tenderizer__tvl'
   | 'tenderizer__shares'
   | 'tenderizer__apr'
+  | 'tenderizer__apy'
   | 'tenderizer__lastUpdateDay';
 
 export type Unlock_filter = {
@@ -1855,9 +1901,11 @@ export type Unlock_orderBy =
   | 'tenderizer__symbol'
   | 'tenderizer__name'
   | 'tenderizer__validator'
+  | 'tenderizer__createdAt'
   | 'tenderizer__tvl'
   | 'tenderizer__shares'
   | 'tenderizer__apr'
+  | 'tenderizer__apy'
   | 'tenderizer__lastUpdateDay'
   | 'amount'
   | 'timestamp'
@@ -2056,9 +2104,11 @@ export type WithdrawEvent_orderBy =
   | 'tenderizer__symbol'
   | 'tenderizer__name'
   | 'tenderizer__validator'
+  | 'tenderizer__createdAt'
   | 'tenderizer__tvl'
   | 'tenderizer__shares'
   | 'tenderizer__apr'
+  | 'tenderizer__apy'
   | 'tenderizer__lastUpdateDay';
 
 export type _Block_ = {
@@ -2178,6 +2228,7 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
 
 /** Mapping between all available schema types and the resolvers types */
 export type ResolversTypes = ResolversObject<{
+  Aggregation_interval: Aggregation_interval;
   Asset: ResolverTypeWrapper<Asset>;
   AssetDay: ResolverTypeWrapper<AssetDay>;
   AssetDay_filter: AssetDay_filter;
@@ -2418,9 +2469,11 @@ export type TenderizerResolvers<ContextType = MeshContext, ParentType extends Re
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   validator?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   asset?: Resolver<ResolversTypes['Asset'], ParentType, ContextType>;
+  createdAt?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   tvl?: Resolver<ResolversTypes['BigDecimal'], ParentType, ContextType>;
   shares?: Resolver<ResolversTypes['BigDecimal'], ParentType, ContextType>;
   apr?: Resolver<ResolversTypes['BigDecimal'], ParentType, ContextType>;
+  apy?: Resolver<ResolversTypes['BigDecimal'], ParentType, ContextType>;
   stakes?: Resolver<Array<ResolversTypes['Stake']>, ParentType, ContextType, RequireFields<TenderizerstakesArgs, 'skip' | 'first'>>;
   tenderizerDays?: Resolver<Array<ResolversTypes['TenderizerDay']>, ParentType, ContextType, RequireFields<TenderizertenderizerDaysArgs, 'skip' | 'first'>>;
   lastUpdateDay?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
@@ -2439,8 +2492,9 @@ export type TenderizerDayResolvers<ContextType = MeshContext, ParentType extends
   shares?: Resolver<ResolversTypes['BigDecimal'], ParentType, ContextType>;
   tvl?: Resolver<ResolversTypes['BigDecimal'], ParentType, ContextType>;
   startStake?: Resolver<ResolversTypes['BigDecimal'], ParentType, ContextType>;
-  apr?: Resolver<ResolversTypes['BigDecimal'], ParentType, ContextType>;
   rewards?: Resolver<ResolversTypes['BigDecimal'], ParentType, ContextType>;
+  apr?: Resolver<ResolversTypes['BigDecimal'], ParentType, ContextType>;
+  apy?: Resolver<ResolversTypes['BigDecimal'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -2586,7 +2640,7 @@ const tenderizeTransforms = [];
 const additionalTypeDefs = [] as any[];
 const tenderizeHandler = new GraphqlHandler({
               name: "Tenderize",
-              config: {"endpoint":"https://api.studio.thegraph.com/query/45970/tenderize-v2-arbitrum/version/latest"},
+              config: {"endpoint":"https://gateway-arbitrum.network.thegraph.com/api/1bebc8cea3046e82264ffadc0e36e3f4/subgraphs/id/2ygWAHMhm9tKXm59DN8DdSJ7VNpxrKMkA39Krij4b4tu"},
               baseDir,
               cache,
               pubsub,
@@ -2711,8 +2765,8 @@ export type GetTenderizersQueryVariables = Exact<{
 
 
 export type GetTenderizersQuery = { tenderizers: Array<(
-    Pick<Tenderizer, 'id' | 'symbol' | 'name' | 'validator' | 'tvl' | 'apr'>
-    & { asset: Pick<Asset, 'id'>, tenderizerDays: Array<Pick<TenderizerDay, 'date' | 'id' | 'rewards' | 'apr'>> }
+    Pick<Tenderizer, 'id' | 'symbol' | 'name' | 'validator' | 'tvl' | 'apr' | 'apy'>
+    & { asset: Pick<Asset, 'id'>, tenderizerDays: Array<Pick<TenderizerDay, 'date' | 'id' | 'rewards' | 'apr' | 'apy'>> }
   )> };
 
 export type GetTenderizerQueryVariables = Exact<{
@@ -2805,11 +2859,13 @@ export const GetTenderizersDocument = gql`
     }
     tvl
     apr
+    apy
     tenderizerDays(first: 30, orderBy: date, orderDirection: desc) {
       date
       id
       rewards
       apr
+      apy
     }
   }
 }

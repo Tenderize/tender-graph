@@ -12,6 +12,11 @@ directive @subgraphId(id: String!) on OBJECT
 "creates a virtual field on the entity that may be queried but cannot be set manually through the mappings API."
 directive @derivedFrom(field: String!) on FIELD_DEFINITION
 
+enum Aggregation_interval {
+  hour
+  day
+}
+
 type Asset {
   id: ID!
   tvl: BigDecimal!
@@ -291,9 +296,11 @@ enum DepositEvent_orderBy {
   tenderizer__symbol
   tenderizer__name
   tenderizer__validator
+  tenderizer__createdAt
   tenderizer__tvl
   tenderizer__shares
   tenderizer__apr
+  tenderizer__apy
   tenderizer__lastUpdateDay
 }
 
@@ -730,9 +737,11 @@ enum RebaseEvent_orderBy {
   tenderizer__symbol
   tenderizer__name
   tenderizer__validator
+  tenderizer__createdAt
   tenderizer__tvl
   tenderizer__shares
   tenderizer__apr
+  tenderizer__apy
   tenderizer__lastUpdateDay
 }
 
@@ -843,9 +852,11 @@ enum Stake_orderBy {
   tenderizer__symbol
   tenderizer__name
   tenderizer__validator
+  tenderizer__createdAt
   tenderizer__tvl
   tenderizer__shares
   tenderizer__apr
+  tenderizer__apy
   tenderizer__lastUpdateDay
   shares
 }
@@ -1173,9 +1184,11 @@ type Tenderizer {
   name: String!
   validator: String!
   asset: Asset!
+  createdAt: Int!
   tvl: BigDecimal!
   shares: BigDecimal!
   apr: BigDecimal!
+  apy: BigDecimal!
   stakes(skip: Int = 0, first: Int = 100, orderBy: Stake_orderBy, orderDirection: OrderDirection, where: Stake_filter): [Stake!]!
   tenderizerDays(skip: Int = 0, first: Int = 100, orderBy: TenderizerDay_orderBy, orderDirection: OrderDirection, where: TenderizerDay_filter): [TenderizerDay!]!
   lastUpdateDay: BigInt!
@@ -1193,8 +1206,9 @@ type TenderizerDay {
   shares: BigDecimal!
   tvl: BigDecimal!
   startStake: BigDecimal!
-  apr: BigDecimal!
   rewards: BigDecimal!
+  apr: BigDecimal!
+  apy: BigDecimal!
 }
 
 input TenderizerDay_filter {
@@ -1259,14 +1273,6 @@ input TenderizerDay_filter {
   startStake_lte: BigDecimal
   startStake_in: [BigDecimal!]
   startStake_not_in: [BigDecimal!]
-  apr: BigDecimal
-  apr_not: BigDecimal
-  apr_gt: BigDecimal
-  apr_lt: BigDecimal
-  apr_gte: BigDecimal
-  apr_lte: BigDecimal
-  apr_in: [BigDecimal!]
-  apr_not_in: [BigDecimal!]
   rewards: BigDecimal
   rewards_not: BigDecimal
   rewards_gt: BigDecimal
@@ -1275,6 +1281,22 @@ input TenderizerDay_filter {
   rewards_lte: BigDecimal
   rewards_in: [BigDecimal!]
   rewards_not_in: [BigDecimal!]
+  apr: BigDecimal
+  apr_not: BigDecimal
+  apr_gt: BigDecimal
+  apr_lt: BigDecimal
+  apr_gte: BigDecimal
+  apr_lte: BigDecimal
+  apr_in: [BigDecimal!]
+  apr_not_in: [BigDecimal!]
+  apy: BigDecimal
+  apy_not: BigDecimal
+  apy_gt: BigDecimal
+  apy_lt: BigDecimal
+  apy_gte: BigDecimal
+  apy_lte: BigDecimal
+  apy_in: [BigDecimal!]
+  apy_not_in: [BigDecimal!]
   """Filter for the block changed event."""
   _change_block: BlockChangedFilter
   and: [TenderizerDay_filter]
@@ -1289,15 +1311,18 @@ enum TenderizerDay_orderBy {
   tenderizer__symbol
   tenderizer__name
   tenderizer__validator
+  tenderizer__createdAt
   tenderizer__tvl
   tenderizer__shares
   tenderizer__apr
+  tenderizer__apy
   tenderizer__lastUpdateDay
   shares
   tvl
   startStake
-  apr
   rewards
+  apr
+  apy
 }
 
 input Tenderizer_filter {
@@ -1390,6 +1415,14 @@ input Tenderizer_filter {
   asset_not_ends_with: String
   asset_not_ends_with_nocase: String
   asset_: Asset_filter
+  createdAt: Int
+  createdAt_not: Int
+  createdAt_gt: Int
+  createdAt_lt: Int
+  createdAt_gte: Int
+  createdAt_lte: Int
+  createdAt_in: [Int!]
+  createdAt_not_in: [Int!]
   tvl: BigDecimal
   tvl_not: BigDecimal
   tvl_gt: BigDecimal
@@ -1414,6 +1447,14 @@ input Tenderizer_filter {
   apr_lte: BigDecimal
   apr_in: [BigDecimal!]
   apr_not_in: [BigDecimal!]
+  apy: BigDecimal
+  apy_not: BigDecimal
+  apy_gt: BigDecimal
+  apy_lt: BigDecimal
+  apy_gte: BigDecimal
+  apy_lte: BigDecimal
+  apy_in: [BigDecimal!]
+  apy_not_in: [BigDecimal!]
   stakes_: Stake_filter
   tenderizerDays_: TenderizerDay_filter
   lastUpdateDay: BigInt
@@ -1444,9 +1485,11 @@ enum Tenderizer_orderBy {
   asset__id
   asset__tvl
   asset__tenderizerCount
+  createdAt
   tvl
   shares
   apr
+  apy
   stakes
   tenderizerDays
   lastUpdateDay
@@ -1609,9 +1652,11 @@ enum TokenTransferEvent_orderBy {
   tenderizer__symbol
   tenderizer__name
   tenderizer__validator
+  tenderizer__createdAt
   tenderizer__tvl
   tenderizer__shares
   tenderizer__apr
+  tenderizer__apy
   tenderizer__lastUpdateDay
 }
 
@@ -1782,9 +1827,11 @@ enum UnlockEvent_orderBy {
   tenderizer__symbol
   tenderizer__name
   tenderizer__validator
+  tenderizer__createdAt
   tenderizer__tvl
   tenderizer__shares
   tenderizer__apr
+  tenderizer__apy
   tenderizer__lastUpdateDay
 }
 
@@ -1907,9 +1954,11 @@ enum Unlock_orderBy {
   tenderizer__symbol
   tenderizer__name
   tenderizer__validator
+  tenderizer__createdAt
   tenderizer__tvl
   tenderizer__shares
   tenderizer__apr
+  tenderizer__apy
   tenderizer__lastUpdateDay
   amount
   timestamp
@@ -2092,9 +2141,11 @@ enum WithdrawEvent_orderBy {
   tenderizer__symbol
   tenderizer__name
   tenderizer__validator
+  tenderizer__createdAt
   tenderizer__tvl
   tenderizer__shares
   tenderizer__apr
+  tenderizer__apy
   tenderizer__lastUpdateDay
 }
 

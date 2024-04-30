@@ -1,9 +1,13 @@
 mainnet:
   networkName: mainnet
   startBlock: 19115200
+  swapFactory: '0xcB78EbD81D08df037973Afd70D7FeF7b6b0C6B06'
+  swapStartBlock: 19660555
 arbitrum-one:
   networkName: arbitrum-one
   startBlock: 175531000
+  swapFactory: '0xac273c1187ddf51e2e57fa71e85ba0924bfb7bb6'
+  swapStartBlock: 201228435
 localhost:
   networkName: localhost
   startBlock: 19427276

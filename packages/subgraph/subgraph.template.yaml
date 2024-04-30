@@ -27,6 +27,28 @@ dataSources:
       eventHandlers:
         - event: NewTenderizer(indexed address,indexed address,address)
           handler: handleNewTenderizer
+  - kind: ethereum/contract
+    name: SwapFactory # Swap Factory
+    network: '{{ networkName }}'
+    source:
+      startBlock: {{ swapStartBlock }} # Define start block
+      address: '{{ swapFactory }}' # Define deterministic Factory address here
+      abi: SwapFactory
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      file: ./src/mappings/swapFactory.ts
+      entities:
+        - SwapPool
+      abis:
+        - name: SwapFactory
+          file: ./abis/SwapFactory.json
+        - name: TenderSwap
+          file: ./abis/TenderSwap.json
+      eventHandlers:
+        - event: SwapDeployed(address,address,address)
+          handler: handleNewSwapPool
 templates:
   - name: Tenderizer
     kind: ethereum/contract
@@ -56,3 +78,31 @@ templates:
           handler: handleRebase
         - event: Transfer(indexed address,indexed address,uint256)
           handler: handleTransfer
+  - name: SwapPool
+    kind: ethereum/contract
+    network: '{{ networkName }}'
+    source:
+      abi: TenderSwap
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      file: ./src/mappings/tenderswap.ts
+      entities:
+        - SwapPool
+      abis:
+        - name: TenderSwap
+          file: ./abis/TenderSwap.json
+        - name: UniswapQuoter
+          file: ./abis/UniswapQuoter.json
+      eventHandlers:
+        - event: Swap(indexed address,indexed address,uint256,uint256,uint256)
+          handler: handleSwap
+        - event: Deposit(indexed address,uint256,uint256)
+          handler: handleSwapDeposit
+        - event: Withdraw(indexed address,uint256,uint256)
+          handler: handleSwapWithdraw
+        - event: UnlockBought(indexed address,uint256,uint256,uint256,uint256)
+          handler: handleSwapUnlockBought
+        - event: UnlockRedeemed(indexed address,uint256,uint256,uint256,uint256)
+          handler: handleSwapUnlockRedeemed

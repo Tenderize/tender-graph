@@ -1,0 +1,75 @@
+query GetTenderizers($asset: String, $first: Int = 1000, $skip: Int = 0) {
+  tenderizers(first: $first, skip: $skip, where: { asset: $asset }) {
+    id
+    symbol
+    name
+    validator
+    asset {
+      id
+    }
+    tvl
+    apr
+    apy
+    tenderizerDays(first: 30, orderBy: date, orderDirection: desc) {
+      date
+      id
+      rewards
+      apr
+      apy
+    }
+  }
+}
+
+query getPools($first: Int = 1000, $skip: Int = 0) {
+  swapPools {
+    id
+    asset
+    lpToken
+
+    liabilities
+    totalSupply
+    unlocking
+
+    volume
+    volumeUSD
+    fees
+    feesUSD
+    lpRewards
+    lpRewardsUSD
+  }
+}
+
+query getPool($id: ID!) {
+    swapPool (id: $id) {
+    id
+    asset
+    lpToken
+
+    liabilities
+    totalSupply
+    unlocking
+
+    volume
+    volumeUSD
+    fees
+    feesUSD
+    lpRewards
+    lpRewardsUSD
+
+    poolDays(first: 30, orderBy: date, orderDirection: desc) {
+      date
+      id
+      
+      liabilities
+      totalSupply
+      unlocking
+
+      volume
+      volumeUSD
+      fees
+      feesUSD
+      lpRewards
+      lpRewardsUSD
+    }
+  }
+}

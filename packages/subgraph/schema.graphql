@@ -15,10 +15,12 @@ type Tenderizer @entity {
   name: String!
   validator: String!
   asset: Asset!
+  createdAt: Int!
 
   tvl: BigDecimal! # total value locked
   shares: BigDecimal! # total shares
   apr: BigDecimal!
+  apy: BigDecimal!
 
   # balances
   stakes: [Stake!]! @derivedFrom(field: "tenderizer")
@@ -84,8 +86,10 @@ type TenderizerDay @entity {
   tvl: BigDecimal!
 
   startStake: BigDecimal!
-  apr: BigDecimal!
   rewards: BigDecimal!
+
+  apr: BigDecimal!
+  apy: BigDecimal!
 }
 
 # Events
@@ -153,4 +157,131 @@ type TokenTransferEvent @entity {
   # Relational fields
   asset: Asset!
   tenderizer: Tenderizer!
+}
+
+type SwapPool @entity {
+  id: ID! # pool address
+  createdAtTimestamp: Int!
+
+  asset: String! # underlying asset
+  lpToken: String! # LP token address
+  
+  totalSupply: BigInt! # LP token supply
+  liabilities: BigInt! # total liabilities
+  unlocking: BigInt! # total unlocking
+  volume: BigInt! # lifetime volume
+  volumeUSD: BigDecimal! # lifetime volume in USD
+  fees: BigInt! # lifetime fees
+  feesUSD: BigDecimal! # lifetime fees in USD
+  lpRewards: BigInt! # lifetime LP rewards
+  lpRewardsUSD: BigDecimal! # lifetime LP rewards in USD
+  treasuryCut: BigInt! # treasury cut
+  treasuryCutUSD: BigDecimal! # treasury cut in USD
+
+  # unlockQueue: [SwapQueueItem!]! @derivedFrom(field: "pool")
+  
+  poolDays: [SwapPoolDay!]! @derivedFrom(field: "pool")
+}
+
+type SwapPoolDay @entity {
+  id: ID! # pool address + date (timestamp rounded to current day by dividing by 86400)
+  date: Int!
+
+  pool: SwapPool!
+
+  totalSupply: BigInt!
+  liabilities: BigInt!
+  unlocking: BigInt!
+
+  volume: BigInt!
+  volumeUSD: BigDecimal!
+  fees: BigInt!
+  feesUSD: BigDecimal!
+  lpRewards: BigInt!
+  lpRewardsUSD: BigDecimal!
+  treasuryCut: BigInt!
+  treasuryCutUSD: BigDecimal!
+}
+
+# type SwapQueueItem @entity {
+#   id: ID!
+#   pool: SwapPool!
+#   unlock: Unlock!
+#   fee: BigInt!
+#   lpRewards: BigInt!
+# }
+
+type SwapEvent @entity {
+  id: ID!
+  timestamp: Int!
+  blockNumber: Int!
+
+  account: String!
+  amount: BigInt!
+  fee: BigInt!
+
+  # Relational fields
+  SwapPool: SwapPool!
+}
+
+type SwapDepositEvent @entity {
+  id: ID!
+  timestamp: Int!
+  blockNumber: Int!
+
+  account: String!
+  amount: BigInt!
+  sharesMinted: BigInt!
+
+  # Relational fields
+  SwapPool: SwapPool!
+}
+
+type SwapWithdrawEvent @entity {
+  id: ID!
+  timestamp: Int!
+  blockNumber: Int!
+
+  account: String!
+  amount: BigInt!
+  sharesBurned: BigInt!
+
+  # Relational fields
+  SwapPool: SwapPool!
+}
+
+type SwapUnlockBuyEvent @entity {
+  id: ID!
+  timestamp: Int!
+  blockNumber: Int!
+
+  account: String!
+
+  unlock: Unlock!
+
+  asset: String!
+  amount: BigInt!
+  reward: BigInt!
+  lpFee: BigInt!
+
+  # Relational fields
+  SwapPool: SwapPool!
+}
+
+type SwapUnlockRedeemedEvent @entity {
+  id: ID!
+  timestamp: Int!
+  blockNumber: Int!
+
+  account: String!
+
+  unlock: Unlock!
+
+  asset: String!
+  amount: BigInt!
+  reward: BigInt!
+  lpFee: BigInt!
+
+  # Relational fields
+  SwapPool: SwapPool!
 }

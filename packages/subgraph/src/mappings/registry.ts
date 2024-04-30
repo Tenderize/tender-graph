@@ -25,6 +25,8 @@ export function handleNewTenderizer(event: NewTenderizer): void {
   tenderizer.tvl = BD_ZERO
   tenderizer.shares = BD_ZERO
   tenderizer.apr = BD_ZERO
+  tenderizer.apy = BD_ZERO
   tenderizer.lastUpdateDay = BigInt.fromI32(event.block.timestamp.toI32() / 86400)
+  tenderizer.createdAt = event.block.timestamp.toI32()
   tenderizer.save()
 }

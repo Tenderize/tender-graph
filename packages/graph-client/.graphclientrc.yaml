@@ -5,3 +5,9 @@ sources:
         endpoint: "https://api.studio.thegraph.com/query/45970/tenderize-v2-arbitrum/version/latest"
 documents:
   - ./gql/**/*.gql
+
+
+
+# 1bebc8cea3046e82264ffadc0e36e3f4
+# mainnet https://gateway-arbitrum.network.thegraph.com/api/1bebc8cea3046e82264ffadc0e36e3f4/subgraphs/id/FNGU4YKPjuy5sayHT6c5xt3EXzZE5fnUwcjFXKLgudBi
+# arbitrum https://gateway-arbitrum.network.thegraph.com/api/1bebc8cea3046e82264ffadc0e36e3f4/subgraphs/id/2ygWAHMhm9tKXm59DN8DdSJ7VNpxrKMkA39Krij4b4tu

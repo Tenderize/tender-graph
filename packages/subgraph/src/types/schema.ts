@@ -441,6 +441,19 @@ export class Stake extends Entity {
   set shares(value: BigDecimal) {
     this.set("shares", Value.fromBigDecimal(value));
   }
+
+  get netDeposits(): BigDecimal {
+    let value = this.get("netDeposits");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigDecimal();
+    }
+  }
+
+  set netDeposits(value: BigDecimal) {
+    this.set("netDeposits", Value.fromBigDecimal(value));
+  }
 }
 
 export class Unlock extends Entity {

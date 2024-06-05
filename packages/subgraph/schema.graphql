@@ -48,6 +48,7 @@ type Stake @entity {
   asset: Asset!
   tenderizer: Tenderizer!
   shares: BigDecimal!
+  netDeposits: BigDecimal! # total deposits - total withdrawals, can be negative, used to calculate rewards
 }
 
 type Unlock @entity {

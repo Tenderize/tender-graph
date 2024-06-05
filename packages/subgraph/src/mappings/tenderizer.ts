@@ -46,8 +46,10 @@ export function handleDeposit(event: EmitDeposit): void {
     stake.tenderizer = tenderizer.id
     stake.user = receiver
     stake.shares = BD_ZERO
+    stake.netDeposits = BD_ZERO
   }
   stake.shares = stake.shares.plus(shares)
+  stake.netDeposits = stake.netDeposits.plus(convertToDecimal(event.params.assetsIn))
   stake.save()
 
   let user = User.load(receiver)
@@ -83,6 +85,7 @@ export function handleUnlock(event: EmitUnlock): void {
   let stake = Stake.load(event.params.receiver.toHex().concat('-').concat(event.address.toHex()))
   if (stake == null) return
   stake.shares = stake.shares.minus(shares)
+  stake.netDeposits = stake.netDeposits.minus(convertToDecimal(event.params.assets))
   stake.save()
 
   // Encode id from event with tenderizer address
@@ -138,6 +141,8 @@ export function handleTransfer(event: EmitTransfer): void {
   let from = Stake.load(fromID)
   if (from == null) return
   from.shares = from.shares.minus(shares)
+  from.netDeposits = from.netDeposits.minus(convertToDecimal(event.params.value))
+
   from.save()
 
   let toID = event.params.to.toHex().concat('-').concat(event.address.toHex())
@@ -148,8 +153,11 @@ export function handleTransfer(event: EmitTransfer): void {
     to.tenderizer = tenderizer.id
     to.user = event.params.to.toHex()
     to.shares = BD_ZERO
+    to.netDeposits = BD_ZERO
   }
   to.shares = to.shares.plus(shares)
+  to.netDeposits = to.netDeposits.plus(convertToDecimal(event.params.value))
+
   to.save()
 
   let transferEvent = new TokenTransferEvent(event.transaction.hash.toHex())

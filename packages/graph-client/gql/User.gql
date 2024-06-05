@@ -3,6 +3,7 @@ query GetUser($user: ID!) {
     stakes {
       id
       shares
+      netDeposits
       tenderizer {
         id
         tvl

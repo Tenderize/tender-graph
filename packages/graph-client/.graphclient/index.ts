@@ -848,6 +848,7 @@ export type Stake = {
   asset: Asset;
   tenderizer: Tenderizer;
   shares: Scalars['BigDecimal'];
+  netDeposits: Scalars['BigDecimal'];
 };
 
 export type Stake_filter = {
@@ -930,6 +931,14 @@ export type Stake_filter = {
   shares_lte?: InputMaybe<Scalars['BigDecimal']>;
   shares_in?: InputMaybe<Array<Scalars['BigDecimal']>>;
   shares_not_in?: InputMaybe<Array<Scalars['BigDecimal']>>;
+  netDeposits?: InputMaybe<Scalars['BigDecimal']>;
+  netDeposits_not?: InputMaybe<Scalars['BigDecimal']>;
+  netDeposits_gt?: InputMaybe<Scalars['BigDecimal']>;
+  netDeposits_lt?: InputMaybe<Scalars['BigDecimal']>;
+  netDeposits_gte?: InputMaybe<Scalars['BigDecimal']>;
+  netDeposits_lte?: InputMaybe<Scalars['BigDecimal']>;
+  netDeposits_in?: InputMaybe<Array<Scalars['BigDecimal']>>;
+  netDeposits_not_in?: InputMaybe<Array<Scalars['BigDecimal']>>;
   /** Filter for the block changed event. */
   _change_block?: InputMaybe<BlockChangedFilter>;
   and?: InputMaybe<Array<InputMaybe<Stake_filter>>>;
@@ -955,7 +964,8 @@ export type Stake_orderBy =
   | 'tenderizer__apr'
   | 'tenderizer__apy'
   | 'tenderizer__lastUpdateDay'
-  | 'shares';
+  | 'shares'
+  | 'netDeposits';
 
 export type Subscription = {
   asset?: Maybe<Asset>;
@@ -3874,6 +3884,7 @@ export type StakeResolvers<ContextType = MeshContext, ParentType extends Resolve
   asset?: Resolver<ResolversTypes['Asset'], ParentType, ContextType>;
   tenderizer?: Resolver<ResolversTypes['Tenderizer'], ParentType, ContextType>;
   shares?: Resolver<ResolversTypes['BigDecimal'], ParentType, ContextType>;
+  netDeposits?: Resolver<ResolversTypes['BigDecimal'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -4356,15 +4367,20 @@ export type GetTenderizersQuery = { tenderizers: Array<(
   )> };
 
 export type getPoolsQueryVariables = Exact<{
+  dateFilter?: InputMaybe<Scalars['Int']>;
   first?: InputMaybe<Scalars['Int']>;
   skip?: InputMaybe<Scalars['Int']>;
 }>;
 
 
-export type getPoolsQuery = { swapPools: Array<Pick<SwapPool, 'id' | 'asset' | 'lpToken' | 'liabilities' | 'totalSupply' | 'unlocking' | 'volume' | 'volumeUSD' | 'fees' | 'feesUSD' | 'lpRewards' | 'lpRewardsUSD'>> };
+export type getPoolsQuery = { swapPools: Array<(
+    Pick<SwapPool, 'id' | 'asset' | 'lpToken' | 'liabilities' | 'totalSupply' | 'unlocking' | 'volume' | 'volumeUSD' | 'fees' | 'feesUSD' | 'lpRewards' | 'lpRewardsUSD'>
+    & { poolDays: Array<Pick<SwapPoolDay, 'date' | 'id' | 'liabilities' | 'totalSupply' | 'unlocking' | 'volume' | 'volumeUSD' | 'fees' | 'feesUSD' | 'lpRewards' | 'lpRewardsUSD'>> }
+  )> };
 
 export type getPoolQueryVariables = Exact<{
   id: Scalars['ID'];
+  dateFilter?: InputMaybe<Scalars['Int']>;
 }>;
 
 
@@ -4389,7 +4405,7 @@ export type GetUserQueryVariables = Exact<{
 
 
 export type GetUserQuery = { user?: Maybe<{ stakes?: Maybe<Array<(
-      Pick<Stake, 'id' | 'shares'>
+      Pick<Stake, 'id' | 'shares' | 'netDeposits'>
       & { tenderizer: (
         Pick<Tenderizer, 'id' | 'tvl' | 'shares' | 'validator' | 'symbol' | 'name'>
         & { asset: Pick<Asset, 'id'> }
@@ -4475,7 +4491,7 @@ export const GetTenderizersDocument = gql`
 }
     ` as unknown as DocumentNode<GetTenderizersQuery, GetTenderizersQueryVariables>;
 export const getPoolsDocument = gql`
-    query getPools($first: Int = 1000, $skip: Int = 0) {
+    query getPools($dateFilter: Int = 0, $first: Int = 1000, $skip: Int = 0) {
   swapPools {
     id
     asset
@@ -4489,11 +4505,24 @@ export const getPoolsDocument = gql`
     feesUSD
     lpRewards
     lpRewardsUSD
+    poolDays(where: {date_gte: $dateFilter}, orderBy: date, orderDirection: desc) {
+      date
+      id
+      liabilities
+      totalSupply
+      unlocking
+      volume
+      volumeUSD
+      fees
+      feesUSD
+      lpRewards
+      lpRewardsUSD
+    }
   }
 }
     ` as unknown as DocumentNode<getPoolsQuery, getPoolsQueryVariables>;
 export const getPoolDocument = gql`
-    query getPool($id: ID!) {
+    query getPool($id: ID!, $dateFilter: Int = 0) {
   swapPool(id: $id) {
     id
     asset
@@ -4507,7 +4536,7 @@ export const getPoolDocument = gql`
     feesUSD
     lpRewards
     lpRewardsUSD
-    poolDays(first: 30, orderBy: date, orderDirection: desc) {
+    poolDays(where: {date_gte: $dateFilter}, orderBy: date, orderDirection: desc) {
       date
       id
       liabilities
@@ -4552,6 +4581,7 @@ export const GetUserDocument = gql`
     stakes {
       id
       shares
+      netDeposits
       tenderizer {
         id
         tvl

@@ -826,6 +826,7 @@ export type Stake = {
   asset: Asset;
   tenderizer: Tenderizer;
   shares: Scalars['BigDecimal'];
+  netDeposits: Scalars['BigDecimal'];
 };
 
 export type Stake_filter = {
@@ -908,6 +909,14 @@ export type Stake_filter = {
   shares_lte?: InputMaybe<Scalars['BigDecimal']>;
   shares_in?: InputMaybe<Array<Scalars['BigDecimal']>>;
   shares_not_in?: InputMaybe<Array<Scalars['BigDecimal']>>;
+  netDeposits?: InputMaybe<Scalars['BigDecimal']>;
+  netDeposits_not?: InputMaybe<Scalars['BigDecimal']>;
+  netDeposits_gt?: InputMaybe<Scalars['BigDecimal']>;
+  netDeposits_lt?: InputMaybe<Scalars['BigDecimal']>;
+  netDeposits_gte?: InputMaybe<Scalars['BigDecimal']>;
+  netDeposits_lte?: InputMaybe<Scalars['BigDecimal']>;
+  netDeposits_in?: InputMaybe<Array<Scalars['BigDecimal']>>;
+  netDeposits_not_in?: InputMaybe<Array<Scalars['BigDecimal']>>;
   /** Filter for the block changed event. */
   _change_block?: InputMaybe<BlockChangedFilter>;
   and?: InputMaybe<Array<InputMaybe<Stake_filter>>>;
@@ -933,7 +942,8 @@ export type Stake_orderBy =
   | 'tenderizer__apr'
   | 'tenderizer__apy'
   | 'tenderizer__lastUpdateDay'
-  | 'shares';
+  | 'shares'
+  | 'netDeposits';
 
 export type Subscription = {
   asset?: Maybe<Asset>;

@@ -20,7 +20,7 @@ query GetTenderizers($asset: String, $first: Int = 1000, $skip: Int = 0) {
   }
 }
 
-query getPools($first: Int = 1000, $skip: Int = 0) {
+query getPools($dateFilter: Int = 0, $first: Int = 1000, $skip: Int = 0) {
   swapPools {
     id
     asset
@@ -36,10 +36,26 @@ query getPools($first: Int = 1000, $skip: Int = 0) {
     feesUSD
     lpRewards
     lpRewardsUSD
+
+    poolDays(where: { date_gte: $dateFilter }, orderBy: date, orderDirection: desc) {
+      date
+      id
+      
+      liabilities
+      totalSupply
+      unlocking
+
+      volume
+      volumeUSD
+      fees
+      feesUSD
+      lpRewards
+      lpRewardsUSD
+    }
   }
 }
 
-query getPool($id: ID!) {
+query getPool($id: ID!, $dateFilter: Int = 0) {
     swapPool (id: $id) {
     id
     asset
@@ -56,7 +72,7 @@ query getPool($id: ID!) {
     lpRewards
     lpRewardsUSD
 
-    poolDays(first: 30, orderBy: date, orderDirection: desc) {
+    poolDays(where: { date_gte: $dateFilter }, orderBy: date, orderDirection: desc) {
       date
       id
       

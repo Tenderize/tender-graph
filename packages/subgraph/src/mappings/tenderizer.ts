@@ -111,7 +111,7 @@ export function handleUnlock(event: EmitUnlock): void {
 }
 
 export function handleWithdraw(event: EmitWithdraw): void {
-  let id = event.params.unlockID.toString()
+  let id = event.params.unlockID.toHex().slice(2)
   let unlockID = event.address.toHex().concat('0'.repeat(24 - id.length).concat(id))
   let unlock = Unlock.load(unlockID)
   if (unlock == null) return

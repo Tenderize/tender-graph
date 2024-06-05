@@ -67,6 +67,7 @@ export function handleSwapUnlockBought(event: UnlockBoughtEmitted): void {
     pool.lpRewardsUSD = pool.lpRewardsUSD.plus(lpRewardsInUSD)
     pool.treasuryCut = pool.treasuryCut.plus(treasuryCut)
     pool.treasuryCutUSD = pool.treasuryCutUSD.plus(treasuryCutInUSD)
+    pool.liabilities = pool.liabilities.plus(event.params.lpFees)
     let dayID = calculateDayID(event.block.timestamp)
     let poolDay = SwapPoolDay.load(pool.id.concat('-').concat(dayID.toString()))
     if (poolDay == null) poolDay = initiatePoolDay(pool, dayID);
@@ -74,7 +75,7 @@ export function handleSwapUnlockBought(event: UnlockBoughtEmitted): void {
     poolDay.lpRewardsUSD = poolDay.lpRewardsUSD.plus(lpRewardsInUSD)
     poolDay.treasuryCut = poolDay.treasuryCut.plus(treasuryCut)
     poolDay.treasuryCutUSD = poolDay.treasuryCutUSD.plus(treasuryCutInUSD)
-
+    poolDay.liabilities = poolDay.liabilities.plus(event.params.lpFees)
     poolDay.save()
     pool.save()
 }
@@ -94,7 +95,7 @@ export function handleSwapUnlockRedeemed(event: UnlockRedeemedEmitted): void {
     pool.lpRewardsUSD = pool.lpRewardsUSD.plus(lpRewardsInUSD)
     pool.treasuryCut = pool.treasuryCut.plus(treasuryCut)
     pool.treasuryCutUSD = pool.treasuryCutUSD.plus(treasuryCutInUSD)
-
+    pool.liabilities = pool.liabilities.plus(event.params.lpFees)
     let dayID = calculateDayID(event.block.timestamp)
     let poolDay = SwapPoolDay.load(pool.id.concat('-').concat(dayID.toString()))
     if (poolDay == null) poolDay = initiatePoolDay(pool, dayID);
@@ -102,7 +103,7 @@ export function handleSwapUnlockRedeemed(event: UnlockRedeemedEmitted): void {
     poolDay.lpRewardsUSD = poolDay.lpRewardsUSD.plus(lpRewardsInUSD)
     poolDay.treasuryCut = poolDay.treasuryCut.plus(treasuryCut)
     poolDay.treasuryCutUSD = poolDay.treasuryCutUSD.plus(treasuryCutInUSD)
-
+    poolDay.liabilities = poolDay.liabilities.plus(event.params.lpFees)
     poolDay.save()
     pool.save()
 }

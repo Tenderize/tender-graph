@@ -28,6 +28,27 @@ dataSources:
         - event: NewTenderizer(indexed address,indexed address,address)
           handler: handleNewTenderizer
   - kind: ethereum/contract
+    name: Unlocks
+    network: '{{ networkName }}'
+    source:
+      startBlock: {{ startBlock }} # Define start block
+      address: '0xb98c7e67f63d198BD96574073AD5B3427a835796' # Define deterministic Unlocks address here
+      abi: Unlocks
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      file: ./src/mappings/unlocks.ts
+      entities:
+        - User
+        - Unlock
+      abis: 
+        - name: Unlocks
+          file: ./abis/Unlocks.json
+      eventHandlers:
+        - event: Transfer(indexed address,indexed address,indexed uint256)
+          handler: handleUnlockTransfer
+  - kind: ethereum/contract
     name: SwapFactory # Swap Factory
     network: '{{ networkName }}'
     source:

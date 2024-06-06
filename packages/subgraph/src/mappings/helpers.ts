@@ -1,4 +1,4 @@
-import { BigDecimal, BigInt, dataSource, Address } from '@graphprotocol/graph-ts'
+import { BigDecimal, BigInt, Address, ByteArray, Bytes, ethereum } from '@graphprotocol/graph-ts'
 import { UniswapQuoter } from '../types/templates/SwapPool/UniswapQuoter'
 
 export const BD_ZERO = BigDecimal.fromString('0')
@@ -99,4 +99,29 @@ export const getUsdPrice = (token: Address): BigDecimal => {
   if (token == GRT) return grtUsd()
   if (token == LPT) return lptUsd()
   return BD_ZERO
+}
+// Define the return type
+class DecodedTokenId {
+  tenderizer: Address;
+  id: BigInt;
+
+  constructor(tenderizer: Address, id: BigInt) {
+    this.tenderizer = tenderizer;
+    this.id = id;
+  }
+}
+
+export const decodeTokenId = (tokenId: BigInt): DecodedTokenId => {
+  // Convert BigInt to bytes
+  let bytes = ByteArray.fromBigInt(tokenId)
+
+  // Extract the address (first 20 bytes)
+  let addressBytes = Bytes.fromUint8Array(bytes.subarray(0, 20));
+  let address = ethereum.decode("address", addressBytes)!.toAddress();
+
+  // Extract the uint96 (last 12 bytes)
+  let uint96Bytes = Bytes.fromUint8Array(bytes.subarray(20, 32));
+  let uint96 = BigInt.fromUnsignedBytes(uint96Bytes);
+
+  return new DecodedTokenId(address, uint96);
 }

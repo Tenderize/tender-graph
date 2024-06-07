@@ -85,6 +85,15 @@ export function handleUnlock(event: EmitUnlock): void {
   let stake = Stake.load(event.params.receiver.toHex().concat('-').concat(event.address.toHex()))
   if (stake == null) return
   stake.shares = stake.shares.minus(shares)
+  let bal = stake.shares.times(tenderizer.tvl).div(tenderizer.shares)
+  let amount = convertToDecimal(event.params.assets)
+  if (bal.minus(stake.netDeposits).lt(amount)) {
+    // if rewards less than amount, set net deposits
+    // to balance minus what wasnt subtracted from the rewards
+    stake.netDeposits = bal.minus(amount.minus(stake.netDeposits))
+  } else {
+    // withdrawn rewards, do nothing
+  }
   stake.netDeposits = stake.netDeposits.minus(convertToDecimal(event.params.assets))
   stake.save()
 

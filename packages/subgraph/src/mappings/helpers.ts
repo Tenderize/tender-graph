@@ -1,5 +1,7 @@
-import { BigDecimal, BigInt, Address, ByteArray, Bytes, ethereum } from '@graphprotocol/graph-ts'
+import { BigDecimal, BigInt, Address, ByteArray, Bytes, ethereum, log } from '@graphprotocol/graph-ts'
 import { UniswapQuoter } from '../types/templates/SwapPool/UniswapQuoter'
+
+export const ADDRESS_ZERO = Address.fromString('0x0000000000000000000000000000000000000000')
 
 export const BD_ZERO = BigDecimal.fromString('0')
 export const BI_ZERO = BigInt.fromI32(0)
@@ -102,26 +104,20 @@ export const getUsdPrice = (token: Address): BigDecimal => {
 }
 // Define the return type
 class DecodedTokenId {
-  tenderizer: Address;
+  tenderizer: string;
   id: BigInt;
 
-  constructor(tenderizer: Address, id: BigInt) {
+  constructor(tenderizer: string, id: BigInt) {
     this.tenderizer = tenderizer;
     this.id = id;
   }
 }
 
 export const decodeTokenId = (tokenId: BigInt): DecodedTokenId => {
-  // Convert BigInt to bytes
-  let bytes = ByteArray.fromBigInt(tokenId)
+  let hexId = tokenId.toHexString()
+  let address = "0x" + hexId.substring(0, 20)
+  let uint96 = BigInt.fromUnsignedBytes(Bytes.fromHexString(hexId.substring(20, 32)))
 
-  // Extract the address (first 20 bytes)
-  let addressBytes = Bytes.fromUint8Array(bytes.subarray(0, 20));
-  let address = ethereum.decode("address", addressBytes)!.toAddress();
-
-  // Extract the uint96 (last 12 bytes)
-  let uint96Bytes = Bytes.fromUint8Array(bytes.subarray(20, 32));
-  let uint96 = BigInt.fromUnsignedBytes(uint96Bytes);
-
+  // Return the decoded values
   return new DecodedTokenId(address, uint96);
 }

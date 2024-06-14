@@ -136,6 +136,7 @@ export function handleSwapDeposit(event: DepositEmitted): void {
     }
     lp.shares = lp.shares.plus(event.params.lpSharesMinted)
     lp.netDeposits = lp.netDeposits.plus(event.params.amount)
+    lp.save()
 
     poolDay.save()
     pool.save()
@@ -153,11 +154,12 @@ export function handleSwapWithdraw(event: WithdrawEmitted): void {
     if (bal.minus(lp.netDeposits).lt(amount)) {
         // if rewards less than amount, set net deposits
         // to balance minus what wasnt subtracted from the rewards
-        lp.netDeposits = bal.minus(amount.minus(bal.minus(lp.netDeposits)))
+        lp.netDeposits = bal.minus(amount)
     } else {
         // withdrawn rewards, do nothing
     }
     lp.shares = lp.shares.minus(event.params.lpSharesBurnt)
+    lp.save()
 
     pool.totalSupply = pool.totalSupply.minus(event.params.lpSharesBurnt)
     pool.liabilities = pool.liabilities.minus(event.params.amount)

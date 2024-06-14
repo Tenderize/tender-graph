@@ -1,4 +1,4 @@
-import { BigDecimal, BigInt } from '@graphprotocol/graph-ts'
+import { BigDecimal, BigInt, ethereum } from '@graphprotocol/graph-ts'
 
 import {
   Asset,
@@ -22,7 +22,7 @@ import {
   Tenderizer as TenderizerContract,
   Rebase as EmitRebase,
 } from '../types/templates/Tenderizer/Tenderizer'
-import { convertToDecimal, BD_ZERO } from './helpers'
+import { convertToDecimal, BD_ZERO, findClosestRebaseEvent } from './helpers'
 
 export function handleDeposit(event: EmitDeposit): void {
   let tenderizer = Tenderizer.load(event.address.toHex())
@@ -72,30 +72,29 @@ export function handleDeposit(event: EmitDeposit): void {
 export function handleUnlock(event: EmitUnlock): void {
   let tenderizer = Tenderizer.load(event.address.toHex())
   if (tenderizer == null) return
-  tenderizer.tvl = tenderizer.tvl.minus(convertToDecimal(event.params.assets))
-  let shares = convertToDecimal(TenderizerContract.bind(event.address).convertToShares(event.params.assets))
-  tenderizer.shares = tenderizer.shares.minus(shares)
-  tenderizer.save()
-
-  let asset = Asset.load(tenderizer.asset)
-  if (asset == null) return
-  asset.tvl = asset.tvl.minus(convertToDecimal(event.params.assets))
-  asset.save()
 
   let stake = Stake.load(event.params.receiver.toHex().concat('-').concat(event.address.toHex()))
   if (stake == null) return
-  stake.shares = stake.shares.minus(shares)
-  let bal = stake.shares.times(tenderizer.tvl).div(tenderizer.shares)
   let amount = convertToDecimal(event.params.assets)
-  if (bal.minus(stake.netDeposits).lt(amount)) {
+
+  let balanceBefore = stake.shares.times(tenderizer.tvl).div(tenderizer.shares)
+  let sharesUnlocked = amount.times(tenderizer.shares).div(tenderizer.tvl)
+  if (balanceBefore.minus(stake.netDeposits).lt(amount)) {
     // if rewards less than amount, set net deposits
     // to balance minus what wasnt subtracted from the rewards
-    stake.netDeposits = bal.minus(amount.minus(stake.netDeposits))
-  } else {
-    // withdrawn rewards, do nothing
+    stake.netDeposits = balanceBefore.minus(amount)
   }
-  stake.netDeposits = stake.netDeposits.minus(convertToDecimal(event.params.assets))
+  stake.shares = stake.shares.minus(sharesUnlocked)
   stake.save()
+
+  let asset = Asset.load(tenderizer.asset)
+  if (asset == null) return
+  asset.tvl = asset.tvl.minus(amount)
+  asset.save()
+
+  tenderizer.tvl = tenderizer.tvl.minus(amount)
+  tenderizer.shares = tenderizer.shares.minus(sharesUnlocked)
+  tenderizer.save()
 
   // Encode id from event with tenderizer address
   // TODO: Turn into helper
@@ -107,14 +106,14 @@ export function handleUnlock(event: EmitUnlock): void {
   unlock.asset = asset.id
   unlock.redeemed = false
   unlock.tenderizer = tenderizer.id
-  unlock.amount = convertToDecimal(event.params.assets)
+  unlock.amount = amount
   unlock.maturity = TenderizerContract.bind(event.address).unlockMaturity(event.params.unlockID).toI32()
   unlock.save()
 
   let unlockEvent = new UnlockEvent(event.transaction.hash.toHex())
   unlockEvent.timestamp = event.block.timestamp.toI32()
-  unlockEvent.amount = convertToDecimal(event.params.assets)
-  unlockEvent.shares = convertToDecimal(TenderizerContract.bind(event.address).convertToShares(event.params.assets))
+  unlockEvent.amount = amount
+  unlockEvent.shares = sharesUnlocked
   unlockEvent.unlock = unlock.id
   unlockEvent.asset = asset.id
   unlockEvent.tenderizer = tenderizer.id
@@ -144,18 +143,27 @@ export function handleTransfer(event: EmitTransfer): void {
   let tenderizer = Tenderizer.load(event.address.toHex())
   if (tenderizer == null) return
 
-  let shares = convertToDecimal(TenderizerContract.bind(event.address).convertToShares(event.params.value))
-
   let fromID = event.params.from.toHex().concat('-').concat(event.address.toHex())
   let from = Stake.load(fromID)
   if (from == null) return
-  from.shares = from.shares.minus(shares)
-  from.netDeposits = from.netDeposits.minus(convertToDecimal(event.params.value))
 
+  let amount = convertToDecimal(event.params.value)
+  let balanceBefore = from.shares.times(tenderizer.tvl).div(tenderizer.shares)
+  let sharestransferred = amount.times(tenderizer.shares).div(tenderizer.tvl)
+  if (balanceBefore.minus(from.netDeposits).lt(amount)) {
+    // if rewards less than amount, set net deposits
+    // to balance minus what wasnt subtracted from the rewards
+    from.netDeposits = balanceBefore.minus(amount)
+  }
+  from.shares = from.shares.minus(sharestransferred)
   from.save()
 
   let toID = event.params.to.toHex().concat('-').concat(event.address.toHex())
   let to = Stake.load(toID)
+  if (User.load(event.params.to.toHex()) == null) {
+    let user = new User(event.params.to.toHex())
+    user.save()
+  }
   if (to == null) {
     to = new Stake(toID)
     to.asset = tenderizer.asset
@@ -164,8 +172,8 @@ export function handleTransfer(event: EmitTransfer): void {
     to.shares = BD_ZERO
     to.netDeposits = BD_ZERO
   }
-  to.shares = to.shares.plus(shares)
-  to.netDeposits = to.netDeposits.plus(convertToDecimal(event.params.value))
+  to.shares = to.shares.plus(sharestransferred)
+  to.netDeposits = to.netDeposits.plus(amount)
 
   to.save()
 
@@ -174,7 +182,7 @@ export function handleTransfer(event: EmitTransfer): void {
   transferEvent.from = event.params.from.toHex()
   transferEvent.to = event.params.to.toHex()
   transferEvent.amount = convertToDecimal(event.params.value)
-  transferEvent.shares = shares
+  transferEvent.shares = sharestransferred
   transferEvent.asset = tenderizer.asset
   transferEvent.tenderizer = tenderizer.id
   transferEvent.save()

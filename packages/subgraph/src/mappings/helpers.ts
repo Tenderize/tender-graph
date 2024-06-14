@@ -1,5 +1,6 @@
-import { BigDecimal, BigInt, Address, ByteArray, Bytes, ethereum, log } from '@graphprotocol/graph-ts'
+import { BigDecimal, BigInt, Address, ByteArray, Bytes, ethereum, crypto, log } from '@graphprotocol/graph-ts'
 import { UniswapQuoter } from '../types/templates/SwapPool/UniswapQuoter'
+import { Rebase, Rebase as RebaseEvent } from '../types/templates/Tenderizer/Tenderizer'
 
 export const ADDRESS_ZERO = Address.fromString('0x0000000000000000000000000000000000000000')
 
@@ -120,4 +121,31 @@ export const decodeTokenId = (tokenId: BigInt): DecodedTokenId => {
 
   // Return the decoded values
   return new DecodedTokenId(address, uint96);
+}
+
+const REBASE_TOPIC = "0x11c6bf55864ff83827df712625d7a80e5583eef0264921025e7cd22003a21511"
+export function findClosestRebaseEvent(
+  receipt: ethereum.TransactionReceipt | null,
+  contractAddress: Address,
+  logIndex: BigInt
+): BigDecimal | null {
+  if (receipt == null) return null;
+  if (logIndex == BI_ZERO) return null;
+
+  for (let i = receipt.logs.length - 1; i >= 0; i--) {
+    let log = receipt.logs[i];
+    if (log.logIndex.ge(logIndex)) continue;
+
+    // Check if the log is from the correct contract
+    if (log.address != contractAddress) continue;
+    if (log.topics.length == 0 || log.topics[0].toHexString() != REBASE_TOPIC) continue;
+
+    // Check if the log is a Rebase event
+    let decoded = ethereum.decode('(uint256,uint256)', log.data);
+    if (decoded == null) return null;
+    const t = decoded.toTuple();
+    return convertToDecimal(t[0].toBigInt());
+  }
+
+  return null;
 }

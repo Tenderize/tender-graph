@@ -314,6 +314,110 @@ export type DepositEvent_orderBy =
   | 'tenderizer__apy'
   | 'tenderizer__lastUpdateDay';
 
+export type LiquidityPosition = {
+  id: Scalars['ID'];
+  user: User;
+  pool: SwapPool;
+  shares: Scalars['BigInt'];
+  netDeposits: Scalars['BigInt'];
+};
+
+export type LiquidityPosition_filter = {
+  id?: InputMaybe<Scalars['ID']>;
+  id_not?: InputMaybe<Scalars['ID']>;
+  id_gt?: InputMaybe<Scalars['ID']>;
+  id_lt?: InputMaybe<Scalars['ID']>;
+  id_gte?: InputMaybe<Scalars['ID']>;
+  id_lte?: InputMaybe<Scalars['ID']>;
+  id_in?: InputMaybe<Array<Scalars['ID']>>;
+  id_not_in?: InputMaybe<Array<Scalars['ID']>>;
+  user?: InputMaybe<Scalars['String']>;
+  user_not?: InputMaybe<Scalars['String']>;
+  user_gt?: InputMaybe<Scalars['String']>;
+  user_lt?: InputMaybe<Scalars['String']>;
+  user_gte?: InputMaybe<Scalars['String']>;
+  user_lte?: InputMaybe<Scalars['String']>;
+  user_in?: InputMaybe<Array<Scalars['String']>>;
+  user_not_in?: InputMaybe<Array<Scalars['String']>>;
+  user_contains?: InputMaybe<Scalars['String']>;
+  user_contains_nocase?: InputMaybe<Scalars['String']>;
+  user_not_contains?: InputMaybe<Scalars['String']>;
+  user_not_contains_nocase?: InputMaybe<Scalars['String']>;
+  user_starts_with?: InputMaybe<Scalars['String']>;
+  user_starts_with_nocase?: InputMaybe<Scalars['String']>;
+  user_not_starts_with?: InputMaybe<Scalars['String']>;
+  user_not_starts_with_nocase?: InputMaybe<Scalars['String']>;
+  user_ends_with?: InputMaybe<Scalars['String']>;
+  user_ends_with_nocase?: InputMaybe<Scalars['String']>;
+  user_not_ends_with?: InputMaybe<Scalars['String']>;
+  user_not_ends_with_nocase?: InputMaybe<Scalars['String']>;
+  user_?: InputMaybe<User_filter>;
+  pool?: InputMaybe<Scalars['String']>;
+  pool_not?: InputMaybe<Scalars['String']>;
+  pool_gt?: InputMaybe<Scalars['String']>;
+  pool_lt?: InputMaybe<Scalars['String']>;
+  pool_gte?: InputMaybe<Scalars['String']>;
+  pool_lte?: InputMaybe<Scalars['String']>;
+  pool_in?: InputMaybe<Array<Scalars['String']>>;
+  pool_not_in?: InputMaybe<Array<Scalars['String']>>;
+  pool_contains?: InputMaybe<Scalars['String']>;
+  pool_contains_nocase?: InputMaybe<Scalars['String']>;
+  pool_not_contains?: InputMaybe<Scalars['String']>;
+  pool_not_contains_nocase?: InputMaybe<Scalars['String']>;
+  pool_starts_with?: InputMaybe<Scalars['String']>;
+  pool_starts_with_nocase?: InputMaybe<Scalars['String']>;
+  pool_not_starts_with?: InputMaybe<Scalars['String']>;
+  pool_not_starts_with_nocase?: InputMaybe<Scalars['String']>;
+  pool_ends_with?: InputMaybe<Scalars['String']>;
+  pool_ends_with_nocase?: InputMaybe<Scalars['String']>;
+  pool_not_ends_with?: InputMaybe<Scalars['String']>;
+  pool_not_ends_with_nocase?: InputMaybe<Scalars['String']>;
+  pool_?: InputMaybe<SwapPool_filter>;
+  shares?: InputMaybe<Scalars['BigInt']>;
+  shares_not?: InputMaybe<Scalars['BigInt']>;
+  shares_gt?: InputMaybe<Scalars['BigInt']>;
+  shares_lt?: InputMaybe<Scalars['BigInt']>;
+  shares_gte?: InputMaybe<Scalars['BigInt']>;
+  shares_lte?: InputMaybe<Scalars['BigInt']>;
+  shares_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  shares_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  netDeposits?: InputMaybe<Scalars['BigInt']>;
+  netDeposits_not?: InputMaybe<Scalars['BigInt']>;
+  netDeposits_gt?: InputMaybe<Scalars['BigInt']>;
+  netDeposits_lt?: InputMaybe<Scalars['BigInt']>;
+  netDeposits_gte?: InputMaybe<Scalars['BigInt']>;
+  netDeposits_lte?: InputMaybe<Scalars['BigInt']>;
+  netDeposits_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  netDeposits_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  /** Filter for the block changed event. */
+  _change_block?: InputMaybe<BlockChangedFilter>;
+  and?: InputMaybe<Array<InputMaybe<LiquidityPosition_filter>>>;
+  or?: InputMaybe<Array<InputMaybe<LiquidityPosition_filter>>>;
+};
+
+export type LiquidityPosition_orderBy =
+  | 'id'
+  | 'user'
+  | 'user__id'
+  | 'pool'
+  | 'pool__id'
+  | 'pool__createdAtTimestamp'
+  | 'pool__asset'
+  | 'pool__lpToken'
+  | 'pool__totalSupply'
+  | 'pool__liabilities'
+  | 'pool__unlocking'
+  | 'pool__volume'
+  | 'pool__volumeUSD'
+  | 'pool__fees'
+  | 'pool__feesUSD'
+  | 'pool__lpRewards'
+  | 'pool__lpRewardsUSD'
+  | 'pool__treasuryCut'
+  | 'pool__treasuryCutUSD'
+  | 'shares'
+  | 'netDeposits';
+
 /** Defines the order direction, either ascending or descending */
 export type OrderDirection =
   | 'asc'
@@ -348,6 +452,8 @@ export type Query = {
   swapPools: Array<SwapPool>;
   swapPoolDay?: Maybe<SwapPoolDay>;
   swapPoolDays: Array<SwapPoolDay>;
+  liquidityPosition?: Maybe<LiquidityPosition>;
+  liquidityPositions: Array<LiquidityPosition>;
   swapEvent?: Maybe<SwapEvent>;
   swapEvents: Array<SwapEvent>;
   swapDepositEvent?: Maybe<SwapDepositEvent>;
@@ -610,6 +716,24 @@ export type QueryswapPoolDaysArgs = {
   orderBy?: InputMaybe<SwapPoolDay_orderBy>;
   orderDirection?: InputMaybe<OrderDirection>;
   where?: InputMaybe<SwapPoolDay_filter>;
+  block?: InputMaybe<Block_height>;
+  subgraphError?: _SubgraphErrorPolicy_;
+};
+
+
+export type QueryliquidityPositionArgs = {
+  id: Scalars['ID'];
+  block?: InputMaybe<Block_height>;
+  subgraphError?: _SubgraphErrorPolicy_;
+};
+
+
+export type QueryliquidityPositionsArgs = {
+  skip?: InputMaybe<Scalars['Int']>;
+  first?: InputMaybe<Scalars['Int']>;
+  orderBy?: InputMaybe<LiquidityPosition_orderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  where?: InputMaybe<LiquidityPosition_filter>;
   block?: InputMaybe<Block_height>;
   subgraphError?: _SubgraphErrorPolicy_;
 };
@@ -974,6 +1098,8 @@ export type Subscription = {
   swapPools: Array<SwapPool>;
   swapPoolDay?: Maybe<SwapPoolDay>;
   swapPoolDays: Array<SwapPoolDay>;
+  liquidityPosition?: Maybe<LiquidityPosition>;
+  liquidityPositions: Array<LiquidityPosition>;
   swapEvent?: Maybe<SwapEvent>;
   swapEvents: Array<SwapEvent>;
   swapDepositEvent?: Maybe<SwapDepositEvent>;
@@ -1236,6 +1362,24 @@ export type SubscriptionswapPoolDaysArgs = {
   orderBy?: InputMaybe<SwapPoolDay_orderBy>;
   orderDirection?: InputMaybe<OrderDirection>;
   where?: InputMaybe<SwapPoolDay_filter>;
+  block?: InputMaybe<Block_height>;
+  subgraphError?: _SubgraphErrorPolicy_;
+};
+
+
+export type SubscriptionliquidityPositionArgs = {
+  id: Scalars['ID'];
+  block?: InputMaybe<Block_height>;
+  subgraphError?: _SubgraphErrorPolicy_;
+};
+
+
+export type SubscriptionliquidityPositionsArgs = {
+  skip?: InputMaybe<Scalars['Int']>;
+  first?: InputMaybe<Scalars['Int']>;
+  orderBy?: InputMaybe<LiquidityPosition_orderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  where?: InputMaybe<LiquidityPosition_filter>;
   block?: InputMaybe<Block_height>;
   subgraphError?: _SubgraphErrorPolicy_;
 };
@@ -3293,6 +3437,7 @@ export type User = {
   id: Scalars['ID'];
   stakes?: Maybe<Array<Stake>>;
   unlocks?: Maybe<Array<Unlock>>;
+  liquidityPositions?: Maybe<Array<LiquidityPosition>>;
 };
 
 
@@ -3313,6 +3458,15 @@ export type UserunlocksArgs = {
   where?: InputMaybe<Unlock_filter>;
 };
 
+
+export type UserliquidityPositionsArgs = {
+  skip?: InputMaybe<Scalars['Int']>;
+  first?: InputMaybe<Scalars['Int']>;
+  orderBy?: InputMaybe<LiquidityPosition_orderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  where?: InputMaybe<LiquidityPosition_filter>;
+};
+
 export type User_filter = {
   id?: InputMaybe<Scalars['ID']>;
   id_not?: InputMaybe<Scalars['ID']>;
@@ -3324,6 +3478,7 @@ export type User_filter = {
   id_not_in?: InputMaybe<Array<Scalars['ID']>>;
   stakes_?: InputMaybe<Stake_filter>;
   unlocks_?: InputMaybe<Unlock_filter>;
+  liquidityPositions_?: InputMaybe<LiquidityPosition_filter>;
   /** Filter for the block changed event. */
   _change_block?: InputMaybe<BlockChangedFilter>;
   and?: InputMaybe<Array<InputMaybe<User_filter>>>;
@@ -3333,7 +3488,8 @@ export type User_filter = {
 export type User_orderBy =
   | 'id'
   | 'stakes'
-  | 'unlocks';
+  | 'unlocks'
+  | 'liquidityPositions';
 
 export type WithdrawEvent = {
   id: Scalars['ID'];
@@ -3579,6 +3735,10 @@ export type _SubgraphErrorPolicy_ =
   /** null **/
   swapPoolDays: InContextSdkMethod<Query['swapPoolDays'], QueryswapPoolDaysArgs, MeshContext>,
   /** null **/
+  liquidityPosition: InContextSdkMethod<Query['liquidityPosition'], QueryliquidityPositionArgs, MeshContext>,
+  /** null **/
+  liquidityPositions: InContextSdkMethod<Query['liquidityPositions'], QueryliquidityPositionsArgs, MeshContext>,
+  /** null **/
   swapEvent: InContextSdkMethod<Query['swapEvent'], QueryswapEventArgs, MeshContext>,
   /** null **/
   swapEvents: InContextSdkMethod<Query['swapEvents'], QueryswapEventsArgs, MeshContext>,
@@ -3663,6 +3823,10 @@ export type _SubgraphErrorPolicy_ =
   swapPoolDay: InContextSdkMethod<Subscription['swapPoolDay'], SubscriptionswapPoolDayArgs, MeshContext>,
   /** null **/
   swapPoolDays: InContextSdkMethod<Subscription['swapPoolDays'], SubscriptionswapPoolDaysArgs, MeshContext>,
+  /** null **/
+  liquidityPosition: InContextSdkMethod<Subscription['liquidityPosition'], SubscriptionliquidityPositionArgs, MeshContext>,
+  /** null **/
+  liquidityPositions: InContextSdkMethod<Subscription['liquidityPositions'], SubscriptionliquidityPositionsArgs, MeshContext>,
   /** null **/
   swapEvent: InContextSdkMethod<Subscription['swapEvent'], SubscriptionswapEventArgs, MeshContext>,
   /** null **/

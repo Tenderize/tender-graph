@@ -1,6 +1,6 @@
 query GetUser($user: ID!) {
   user(id: $user) {
-    stakes {
+    stakes (where: {shares_gt: 0}) {
       id
       shares
       netDeposits
@@ -29,6 +29,18 @@ query GetUser($user: ID!) {
         asset {
           id
         }
+      }
+    }
+    liquidityPositions(where: {shares_gt: 0}) {
+      id
+      shares
+      netDeposits
+      pool {
+        id
+        asset
+        lpToken
+        totalSupply
+        liabilities
       }
     }
   }

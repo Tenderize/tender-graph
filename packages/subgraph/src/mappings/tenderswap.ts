@@ -1,4 +1,4 @@
-import { SwapPool, SwapPoolDay } from '../types/schema'
+import { SwapPool, SwapPoolDay, LiquidityPosition, User } from '../types/schema'
 import { Deposit as DepositEmitted, Withdraw as WithdrawEmitted, Swap as SwapEmitted, UnlockBought as UnlockBoughtEmitted, UnlockRedeemed as UnlockRedeemedEmitted } from '../types/templates/SwapPool/TenderSwap'
 import { Address, BigInt } from '@graphprotocol/graph-ts';
 import { BI_ZERO, BD_ZERO, getUsdPrice, calculateDayID, TEN_18, convertToDecimal } from './helpers';
@@ -119,6 +119,25 @@ export function handleSwapDeposit(event: DepositEmitted): void {
     let poolDay = SwapPoolDay.load(pool.id.concat('-').concat(dayID.toString()))
     if (poolDay == null) poolDay = initiatePoolDay(pool, dayID);
 
+    let from = event.params.from.toHexString();
+    let user = User.load(from)
+    if (user == null) {
+        user = new User(from)
+        user.save()
+    }
+
+    let lp = LiquidityPosition.load(from.concat('-').concat(pool.id))
+    if (lp == null) {
+        lp = new LiquidityPosition(from.concat('-').concat(pool.id))
+        lp.user = from
+        lp.pool = pool.id
+        lp.shares = BI_ZERO
+        lp.netDeposits = BI_ZERO
+    }
+    lp.shares = lp.shares.plus(event.params.lpSharesMinted)
+    lp.netDeposits = lp.netDeposits.plus(event.params.amount)
+    lp.save()
+
     poolDay.save()
     pool.save()
 }
@@ -126,6 +145,21 @@ export function handleSwapDeposit(event: DepositEmitted): void {
 export function handleSwapWithdraw(event: WithdrawEmitted): void {
     let pool = SwapPool.load(event.address.toHex())
     if (pool == null) return;
+
+    let user = event.params.to.toHexString()
+    let lp = LiquidityPosition.load(user.concat('-').concat(pool.id))
+    if (lp == null) return;
+    let bal = lp.shares.times(pool.liabilities.times(TEN_18).div(pool.totalSupply)).div(TEN_18)
+    let amount = event.params.amount
+    if (bal.minus(lp.netDeposits).lt(amount)) {
+        // if rewards less than amount, set net deposits
+        // to balance minus what wasnt subtracted from the rewards
+        lp.netDeposits = bal.minus(amount)
+    } else {
+        // withdrawn rewards, do nothing
+    }
+    lp.shares = lp.shares.minus(event.params.lpSharesBurnt)
+    lp.save()
 
     pool.totalSupply = pool.totalSupply.minus(event.params.lpSharesBurnt)
     pool.liabilities = pool.liabilities.minus(event.params.amount)

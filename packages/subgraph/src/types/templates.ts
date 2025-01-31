@@ -33,3 +33,17 @@ export class SwapPool extends DataSourceTemplate {
     );
   }
 }
+
+export class SwapPoolToken extends DataSourceTemplate {
+  static create(address: Address): void {
+    DataSourceTemplate.create("SwapPoolToken", [address.toHex()]);
+  }
+
+  static createWithContext(address: Address, context: DataSourceContext): void {
+    DataSourceTemplate.createWithContext(
+      "SwapPoolToken",
+      [address.toHex()],
+      context
+    );
+  }
+}

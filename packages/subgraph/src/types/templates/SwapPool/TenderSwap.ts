@@ -376,13 +376,13 @@ export class TenderSwap extends ethereum.SmartContract {
   }
 
   BASE_FEE(): BigInt {
-    let result = super.call("BASE_FEE", "BASE_FEE():(int256)", []);
+    let result = super.call("BASE_FEE", "BASE_FEE():(uint256)", []);
 
     return result[0].toBigInt();
   }
 
   try_BASE_FEE(): ethereum.CallResult<BigInt> {
-    let result = super.tryCall("BASE_FEE", "BASE_FEE():(int256)", []);
+    let result = super.tryCall("BASE_FEE", "BASE_FEE():(uint256)", []);
     if (result.reverted) {
       return new ethereum.CallResult();
     }
@@ -391,13 +391,13 @@ export class TenderSwap extends ethereum.SmartContract {
   }
 
   K(): BigInt {
-    let result = super.call("K", "K():(int256)", []);
+    let result = super.call("K", "K():(uint256)", []);
 
     return result[0].toBigInt();
   }
 
   try_K(): ethereum.CallResult<BigInt> {
-    let result = super.tryCall("K", "K():(int256)", []);
+    let result = super.tryCall("K", "K():(uint256)", []);
     if (result.reverted) {
       return new ethereum.CallResult();
     }
@@ -1024,28 +1024,28 @@ export class DepositCall__Outputs {
   }
 }
 
-export class IntializeCall extends ethereum.Call {
-  get inputs(): IntializeCall__Inputs {
-    return new IntializeCall__Inputs(this);
+export class InitializeCall extends ethereum.Call {
+  get inputs(): InitializeCall__Inputs {
+    return new InitializeCall__Inputs(this);
   }
 
-  get outputs(): IntializeCall__Outputs {
-    return new IntializeCall__Outputs(this);
+  get outputs(): InitializeCall__Outputs {
+    return new InitializeCall__Outputs(this);
   }
 }
 
-export class IntializeCall__Inputs {
-  _call: IntializeCall;
+export class InitializeCall__Inputs {
+  _call: InitializeCall;
 
-  constructor(call: IntializeCall) {
+  constructor(call: InitializeCall) {
     this._call = call;
   }
 }
 
-export class IntializeCall__Outputs {
-  _call: IntializeCall;
+export class InitializeCall__Outputs {
+  _call: InitializeCall;
 
-  constructor(call: IntializeCall) {
+  constructor(call: InitializeCall) {
     this._call = call;
   }
 }

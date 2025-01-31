@@ -167,7 +167,6 @@ type SwapPool @entity {
 
   asset: String! # underlying asset
   lpToken: String! # LP token address
-  
   totalSupply: BigInt! # LP token supply
   liabilities: BigInt! # total liabilities
   unlocking: BigInt! # total unlocking
@@ -179,9 +178,8 @@ type SwapPool @entity {
   lpRewardsUSD: BigDecimal! # lifetime LP rewards in USD
   treasuryCut: BigInt! # treasury cut
   treasuryCutUSD: BigDecimal! # treasury cut in USD
-
   # unlockQueue: [SwapQueueItem!]! @derivedFrom(field: "pool")
-  
+
   poolDays: [SwapPoolDay!]! @derivedFrom(field: "pool")
 }
 
@@ -224,7 +222,7 @@ type LiquidityPosition @entity {
 type SwapEvent @entity {
   id: ID!
   timestamp: Int!
-  blockNumber: Int!
+  blockNumber: BigInt!
 
   account: String!
   amount: BigInt!
@@ -237,7 +235,7 @@ type SwapEvent @entity {
 type SwapDepositEvent @entity {
   id: ID!
   timestamp: Int!
-  blockNumber: Int!
+  blockNumber: BigInt!
 
   account: String!
   amount: BigInt!
@@ -250,11 +248,11 @@ type SwapDepositEvent @entity {
 type SwapWithdrawEvent @entity {
   id: ID!
   timestamp: Int!
-  blockNumber: Int!
+  blockNumber: BigInt!
 
   account: String!
   amount: BigInt!
-  sharesBurned: BigInt!
+  sharesBurnt: BigInt!
 
   # Relational fields
   SwapPool: SwapPool!
@@ -263,7 +261,7 @@ type SwapWithdrawEvent @entity {
 type SwapUnlockBuyEvent @entity {
   id: ID!
   timestamp: Int!
-  blockNumber: Int!
+  blockNumber: BigInt!
 
   account: String!
 
@@ -281,7 +279,7 @@ type SwapUnlockBuyEvent @entity {
 type SwapUnlockRedeemedEvent @entity {
   id: ID!
   timestamp: Int!
-  blockNumber: Int!
+  blockNumber: BigInt!
 
   account: String!
 

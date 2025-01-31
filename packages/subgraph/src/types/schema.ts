@@ -2050,17 +2050,17 @@ export class SwapEvent extends Entity {
     this.set("timestamp", Value.fromI32(value));
   }
 
-  get blockNumber(): i32 {
+  get blockNumber(): BigInt {
     let value = this.get("blockNumber");
     if (!value || value.kind == ValueKind.NULL) {
-      return 0;
+      throw new Error("Cannot return null for a required field.");
     } else {
-      return value.toI32();
+      return value.toBigInt();
     }
   }
 
-  set blockNumber(value: i32) {
-    this.set("blockNumber", Value.fromI32(value));
+  set blockNumber(value: BigInt) {
+    this.set("blockNumber", Value.fromBigInt(value));
   }
 
   get account(): string {
@@ -2172,17 +2172,17 @@ export class SwapDepositEvent extends Entity {
     this.set("timestamp", Value.fromI32(value));
   }
 
-  get blockNumber(): i32 {
+  get blockNumber(): BigInt {
     let value = this.get("blockNumber");
     if (!value || value.kind == ValueKind.NULL) {
-      return 0;
+      throw new Error("Cannot return null for a required field.");
     } else {
-      return value.toI32();
+      return value.toBigInt();
     }
   }
 
-  set blockNumber(value: i32) {
-    this.set("blockNumber", Value.fromI32(value));
+  set blockNumber(value: BigInt) {
+    this.set("blockNumber", Value.fromBigInt(value));
   }
 
   get account(): string {
@@ -2294,17 +2294,17 @@ export class SwapWithdrawEvent extends Entity {
     this.set("timestamp", Value.fromI32(value));
   }
 
-  get blockNumber(): i32 {
+  get blockNumber(): BigInt {
     let value = this.get("blockNumber");
     if (!value || value.kind == ValueKind.NULL) {
-      return 0;
+      throw new Error("Cannot return null for a required field.");
     } else {
-      return value.toI32();
+      return value.toBigInt();
     }
   }
 
-  set blockNumber(value: i32) {
-    this.set("blockNumber", Value.fromI32(value));
+  set blockNumber(value: BigInt) {
+    this.set("blockNumber", Value.fromBigInt(value));
   }
 
   get account(): string {
@@ -2333,8 +2333,8 @@ export class SwapWithdrawEvent extends Entity {
     this.set("amount", Value.fromBigInt(value));
   }
 
-  get sharesBurned(): BigInt {
-    let value = this.get("sharesBurned");
+  get sharesBurnt(): BigInt {
+    let value = this.get("sharesBurnt");
     if (!value || value.kind == ValueKind.NULL) {
       throw new Error("Cannot return null for a required field.");
     } else {
@@ -2342,8 +2342,8 @@ export class SwapWithdrawEvent extends Entity {
     }
   }
 
-  set sharesBurned(value: BigInt) {
-    this.set("sharesBurned", Value.fromBigInt(value));
+  set sharesBurnt(value: BigInt) {
+    this.set("sharesBurnt", Value.fromBigInt(value));
   }
 
   get SwapPool(): string {
@@ -2416,17 +2416,17 @@ export class SwapUnlockBuyEvent extends Entity {
     this.set("timestamp", Value.fromI32(value));
   }
 
-  get blockNumber(): i32 {
+  get blockNumber(): BigInt {
     let value = this.get("blockNumber");
     if (!value || value.kind == ValueKind.NULL) {
-      return 0;
+      throw new Error("Cannot return null for a required field.");
     } else {
-      return value.toI32();
+      return value.toBigInt();
     }
   }
 
-  set blockNumber(value: i32) {
-    this.set("blockNumber", Value.fromI32(value));
+  set blockNumber(value: BigInt) {
+    this.set("blockNumber", Value.fromBigInt(value));
   }
 
   get account(): string {
@@ -2580,17 +2580,17 @@ export class SwapUnlockRedeemedEvent extends Entity {
     this.set("timestamp", Value.fromI32(value));
   }
 
-  get blockNumber(): i32 {
+  get blockNumber(): BigInt {
     let value = this.get("blockNumber");
     if (!value || value.kind == ValueKind.NULL) {
-      return 0;
+      throw new Error("Cannot return null for a required field.");
     } else {
-      return value.toI32();
+      return value.toBigInt();
     }
   }
 
-  set blockNumber(value: i32) {
-    this.set("blockNumber", Value.fromI32(value));
+  set blockNumber(value: BigInt) {
+    this.set("blockNumber", Value.fromBigInt(value));
   }
 
   get account(): string {

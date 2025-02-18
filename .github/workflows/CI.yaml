@@ -1,7 +1,4 @@
-# This workflow will do a clean install of node dependencies, cache/restore them, build the source code and run tests across different versions of node
-# For more information see: https://help.github.com/actions/language-and-framework-guides/using-nodejs-with-github-actions
-
-name: Node.js CI
+name: Bun CI
 
 on:
   push:
@@ -15,21 +12,50 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [16.14.x]
-        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
+        node-version: [18.17.x]
 
     steps:
       - uses: actions/checkout@v2
-      - name: Use Node.js ${{ matrix.node-version }}
+
+      - name: Setup Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v2
         with:
           node-version: ${{ matrix.node-version }}
-          cache: 'yarn'
-      - run: yarn workspace @tender-graph/subgraph install
-      - run: yarn workspace @tender-graph/subgraph prettier:check
-      - run: yarn workspace @tender-graph/subgraph prepare:mainnet
-      - run: yarn workspace @tender-graph/subgraph codegen
-      - run: yarn workspace @tender-graph/subgraph build
-      - run: yarn workspace @tender-graph/client install
-      - run: yarn workspace @tender-graph/client prettier:check
-      - run: yarn workspace @tender-graph/cient codegen
+          # Removed yarn cache since we are using bun
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v1
+
+      # --- Subgraph Workspace ---
+      - name: Install dependencies in subgraph workspace
+        run: bun install
+        working-directory: packages/subgraph
+
+      - name: Run subgraph prettier:check
+        run: bun run prettier:check
+        working-directory: packages/subgraph
+
+      - name: Run subgraph prepare:mainnet
+        run: bun run prepare:mainnet
+        working-directory: packages/subgraph
+
+      - name: Run subgraph codegen
+        run: bun run codegen
+        working-directory: packages/subgraph
+
+      - name: Run subgraph build
+        run: bun run build
+        working-directory: packages/subgraph
+
+      # --- Client Workspace ---
+      - name: Install dependencies in client workspace
+        run: bun install
+        working-directory: packages/graph-client
+
+      - name: Run client prettier:check
+        run: bun run prettier:check
+        working-directory: packages/grap-client
+
+      - name: Run client codegen
+        run: bun run codegen
+        working-directory: packages/graph-client

@@ -1,9 +1,9 @@
-import { SwapPool, SwapPoolDay, LiquidityPosition, User, SwapWithdrawEvent, SwapDepositEvent, SwapEvent, SwapUnlockBuyEvent } from '../types/schema'
+import { SwapPool, SwapPoolDay, LiquidityPosition, User, SwapWithdrawEvent, SwapDepositEvent, SwapEvent, SwapUnlockBuyEvent, SwapLPTokenTransferEvent, LPToken } from '../types/schema'
 import { Deposit as DepositEmitted, Withdraw as WithdrawEmitted, Swap as SwapEmitted, UnlockBought as UnlockBoughtEmitted, UnlockRedeemed as UnlockRedeemedEmitted } from '../types/templates/SwapPool/TenderSwap'
 import {Transfer as SwapTokenTransferEmitted} from '../types/templates/SwapPoolToken/ERC20'
 import { Address, BigInt } from '@graphprotocol/graph-ts';
 import { BI_ZERO, BD_ZERO, getUsdPrice, calculateDayID, TEN_18, convertToDecimal } from './helpers';
-
+import { log } from '@graphprotocol/graph-ts';
 
 const initiatePoolDay = (pool: SwapPool, dayID: BigInt): SwapPoolDay => {
     const poolDay = new SwapPoolDay(pool.id.concat('-').concat(dayID.toString()))
@@ -171,15 +171,20 @@ export function handleSwapWithdraw(event: WithdrawEmitted): void {
     pool.liabilities = pool.liabilities.minus(event.params.amount)
     let user = event.params.to.toHex()
     let lp = LiquidityPosition.load(user.concat('-').concat(pool.id))
-    if (lp == null) return;
-    let bal = lp.shares.times(pool.liabilities.times(TEN_18).div(totalSupply)).div(TEN_18)
-    let amount = event.params.amount
-    if (bal.minus(lp.netDeposits).lt(amount)) {
-        // if rewards less than amount, set net deposits
-        // to balance minus what wasnt subtracted from the rewards
-        lp.netDeposits = bal.minus(amount)
+    if (lp == null) {
+        log.debug("Liquidity Position not found with id: {}", [user.concat('-').concat(pool.id)])
+    } else {
+        let bal = lp.shares.times(pool.liabilities).div(totalSupply)
+        let amount = event.params.amount
+        if (bal.minus(lp.netDeposits).lt(amount)) {
+            // if rewards less than amount, set net deposits
+            // to balance minus what wasnt subtracted from the rewards
+            lp.netDeposits = bal.minus(amount)
+        }
+        lp.shares = lp.shares.minus(event.params.lpSharesBurnt)
+        lp.save()
     }
-    lp.shares = lp.shares.minus(event.params.lpSharesBurnt)
+
 
 
     let dayID = calculateDayID(event.block.timestamp)
@@ -187,7 +192,6 @@ export function handleSwapWithdraw(event: WithdrawEmitted): void {
     if (poolDay == null) poolDay = initiatePoolDay(pool, dayID);
 
     poolDay.save()
-    lp.save()
     pool.save()
 
     let withdrawEvent = new SwapWithdrawEvent(event.transaction.hash.toHex().concat('-').concat(event.logIndex.toString()))
@@ -201,39 +205,68 @@ export function handleSwapWithdraw(event: WithdrawEmitted): void {
 }
 
 export function handleSwapTokenTransfer(event: SwapTokenTransferEmitted): void {
-    let pool = SwapPool.load(event.address.toHex())
-    if (pool == null) return;
+    log.debug("Swap Token Transfer Event: {}", [event.transaction.hash.toHex()])
+   // burn
+   if (event.params.to.toHex() == "0x0000000000000000000000000000000000000000") return;
+   // mint
+   if (event.params.from.toHex() == "0x0000000000000000000000000000000000000000") return;
+   
+   let lpToken = LPToken.load(event.address.toHex());
+    if (lpToken == null) return;
 
-    let from = event.params.from.toHex();
-    let to = event.params.to.toHex();
-    let user = User.load(from)
-    if (user == null) {
-        user = new User(from)
-        user.save()
-    }
+   let pool = SwapPool.load(lpToken.pool);
+   if (pool == null) return;
+ 
+   let from = event.params.from.toHex();
+   let to = event.params.to.toHex();
+   let toUser = User.load(to);
+   if (toUser == null) {
+     toUser = new User(to);
+     toUser.save();
+   }
+ 
+   let lpTo = LiquidityPosition.load(to.concat("-").concat(pool.id));
+   if (lpTo == null) {
+     lpTo = new LiquidityPosition(to.concat("-").concat(pool.id));
+     lpTo.user = to;
+     lpTo.pool = pool.id;
+     lpTo.shares = BI_ZERO;
+     lpTo.netDeposits = BI_ZERO;
+   }  
+   lpTo.shares = lpTo.shares.plus(event.params.value);
 
-    let lp = LiquidityPosition.load(from.concat('-').concat(pool.id))
-    if (lp == null) return;
-
-    let totalSupply = pool.totalSupply
-    let bal = lp.shares.times(pool.liabilities.times(TEN_18).div(totalSupply)).div(TEN_18)
-    let amount = event.params.value
-    if (bal.minus(lp.netDeposits).lt(amount)) {
-        // if rewards less than amount, set net deposits
-        // to balance minus what wasnt subtracted from the rewards
-        lp.netDeposits = bal.minus(amount)
-    }
-
-    let lpTo = LiquidityPosition.load(to.concat('-').concat(pool.id))
-    if (lpTo == null) {
-        lpTo = new LiquidityPosition(to.concat('-').concat(pool.id))
-        lpTo.user = to
-        lpTo.pool = pool.id
-        lpTo.shares = BI_ZERO
-        lpTo.netDeposits = BI_ZERO
-    }
-    lpTo.shares = lpTo.shares.plus(event.params.value)
-    lpTo.netDeposits = lpTo.netDeposits.plus(event.params.value)
-    lp.save()
-    lpTo.save()
+   let value = event.params.value.times(pool.liabilities).div(pool.totalSupply);
+   lpTo.netDeposits = value;
+   lpTo.save();
+ 
+   let transfer = new SwapLPTokenTransferEvent(
+     event.transaction.hash.toHex().concat("-").concat(event.logIndex.toString())
+   );
+   transfer.timestamp = event.block.timestamp.toI32();
+   transfer.blockNumber = event.block.number;
+   transfer.from = from;
+   transfer.to = to;
+   transfer.value = value;
+   transfer.shares = event.params.value;
+   transfer.SwapPool = pool.id;
+   transfer.save();
+  
+   let lp = LiquidityPosition.load(from.concat("-").concat(pool.id));
+   if (lp != null) {
+     lp.shares = lp.shares.minus(event.params.value);
+     let totalSupply = pool.totalSupply;
+     let bal = lp.shares
+       .times(pool.liabilities).div(totalSupply);
+     if (bal.minus(lp.netDeposits).lt(value)) {
+       // if rewards less than amount, set net deposits
+       // to balance minus what wasnt subtracted from the rewards
+       let remainder = value.minus(bal.minus(lp.netDeposits));
+       if (remainder.lt(lp.netDeposits)) {
+       lp.netDeposits = bal.minus(remainder);
+       } else {
+            lp.netDeposits = BI_ZERO;
+       }
+     }
+     lp.save();
+   }
 }

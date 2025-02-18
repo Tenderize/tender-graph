@@ -258,6 +258,20 @@ type SwapWithdrawEvent @entity {
   SwapPool: SwapPool!
 }
 
+type SwapLPTokenTransferEvent @entity {
+  id: ID!
+  timestamp: Int!
+  blockNumber: BigInt!
+
+  from: String!
+  to: String!
+  shares: BigInt!
+  value: BigInt!
+
+  # Relational fields
+  SwapPool: SwapPool!
+}
+
 type SwapUnlockBuyEvent @entity {
   id: ID!
   timestamp: Int!
@@ -292,4 +306,9 @@ type SwapUnlockRedeemedEvent @entity {
 
   # Relational fields
   SwapPool: SwapPool!
+}
+
+type LPToken @entity {
+  id: ID! # LP token address
+  pool: SwapPool!
 }

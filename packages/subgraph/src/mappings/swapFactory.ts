@@ -1,6 +1,6 @@
 import { SwapDeployed as SwapDeployedEvent } from '../types/SwapFactory/SwapFactory'
 import { SwapPool as SwapPoolSource, SwapPoolToken } from '../types/templates'
-import { SwapPool } from '../types/schema'
+import { LPToken, SwapPool } from '../types/schema'
 import { BD_ZERO, BI_ZERO } from './helpers'
 import { TenderSwap } from '../types/templates/SwapPool/TenderSwap'
 
@@ -24,6 +24,10 @@ export function handleNewSwapPool(event: SwapDeployedEvent): void {
     pool.treasuryCutUSD = BD_ZERO
 
     pool.save()
+
+    let lpToken = new LPToken(lpTokenAddr.toHex())
+    lpToken.pool = pool.id
+    lpToken.save()
 
     SwapPoolToken.create(lpTokenAddr)
 }

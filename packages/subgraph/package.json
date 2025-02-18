@@ -17,8 +17,8 @@
     "auth": "graph auth --studio $GRAPH_ACCESS_TOKEN",
     "build": "graph build",
     "codegen": "graph codegen --output-dir src/types/",
-    "prettier:check": "prettier --check \"**/*.{ts,md,yaml,graphql}\"",
-    "prettier:write": "prettier --write \"**/*.{ts,md,yaml,graphql}\"",
+    "prettier:check": "prettier --check \"**/*.{ts,md,graphql}\"",
+    "prettier:write": "prettier --write \"**/*.{ts,md,graphql}\"",
     "deploy": "graph deploy --studio ${SUBGRAPH_NAME}"
   },
   "devDependencies": {

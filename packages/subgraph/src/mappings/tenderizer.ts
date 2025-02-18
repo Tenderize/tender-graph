@@ -108,7 +108,7 @@ export function handleUnlock(event: EmitUnlock): void {
   unlock.tenderizer = tenderizer.id
   unlock.amount = amount
   let unlockMaturityResult = TenderizerContract.bind(event.address).try__unlockMaturity(event.params.unlockID)
-  unlockMaturityResult.reverted ? unlock.maturity = 0 : unlock.maturity = unlockMaturityResult.value.toI32()
+  unlockMaturityResult.reverted ? (unlock.maturity = 0) : (unlock.maturity = unlockMaturityResult.value.toI32())
   unlock.save()
 
   let unlockEvent = new UnlockEvent(event.transaction.hash.toHex())

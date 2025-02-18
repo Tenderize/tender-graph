@@ -139,6 +139,7 @@ templates:
       file: ./src/mappings/tenderswap.ts
       entities:
         - SwapPool
+        - SwapLPTokenTransfer
       abis:
         - name: ERC20
           file: ./abis/ERC20.json

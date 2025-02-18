@@ -482,6 +482,8 @@ export type Query = {
   swapDepositEvents: Array<SwapDepositEvent>;
   swapWithdrawEvent?: Maybe<SwapWithdrawEvent>;
   swapWithdrawEvents: Array<SwapWithdrawEvent>;
+  swapLPTokenTransferEvent?: Maybe<SwapLPTokenTransferEvent>;
+  swapLPTokenTransferEvents: Array<SwapLPTokenTransferEvent>;
   swapUnlockBuyEvent?: Maybe<SwapUnlockBuyEvent>;
   swapUnlockBuyEvents: Array<SwapUnlockBuyEvent>;
   swapUnlockRedeemedEvent?: Maybe<SwapUnlockRedeemedEvent>;
@@ -815,6 +817,24 @@ export type QueryswapWithdrawEventsArgs = {
 };
 
 
+export type QueryswapLPTokenTransferEventArgs = {
+  id: Scalars['ID'];
+  block?: InputMaybe<Block_height>;
+  subgraphError?: _SubgraphErrorPolicy_;
+};
+
+
+export type QueryswapLPTokenTransferEventsArgs = {
+  skip?: InputMaybe<Scalars['Int']>;
+  first?: InputMaybe<Scalars['Int']>;
+  orderBy?: InputMaybe<SwapLPTokenTransferEvent_orderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  where?: InputMaybe<SwapLPTokenTransferEvent_filter>;
+  block?: InputMaybe<Block_height>;
+  subgraphError?: _SubgraphErrorPolicy_;
+};
+
+
 export type QueryswapUnlockBuyEventArgs = {
   id: Scalars['ID'];
   block?: InputMaybe<Block_height>;
@@ -1128,6 +1148,8 @@ export type Subscription = {
   swapDepositEvents: Array<SwapDepositEvent>;
   swapWithdrawEvent?: Maybe<SwapWithdrawEvent>;
   swapWithdrawEvents: Array<SwapWithdrawEvent>;
+  swapLPTokenTransferEvent?: Maybe<SwapLPTokenTransferEvent>;
+  swapLPTokenTransferEvents: Array<SwapLPTokenTransferEvent>;
   swapUnlockBuyEvent?: Maybe<SwapUnlockBuyEvent>;
   swapUnlockBuyEvents: Array<SwapUnlockBuyEvent>;
   swapUnlockRedeemedEvent?: Maybe<SwapUnlockRedeemedEvent>;
@@ -1461,6 +1483,24 @@ export type SubscriptionswapWithdrawEventsArgs = {
 };
 
 
+export type SubscriptionswapLPTokenTransferEventArgs = {
+  id: Scalars['ID'];
+  block?: InputMaybe<Block_height>;
+  subgraphError?: _SubgraphErrorPolicy_;
+};
+
+
+export type SubscriptionswapLPTokenTransferEventsArgs = {
+  skip?: InputMaybe<Scalars['Int']>;
+  first?: InputMaybe<Scalars['Int']>;
+  orderBy?: InputMaybe<SwapLPTokenTransferEvent_orderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  where?: InputMaybe<SwapLPTokenTransferEvent_filter>;
+  block?: InputMaybe<Block_height>;
+  subgraphError?: _SubgraphErrorPolicy_;
+};
+
+
 export type SubscriptionswapUnlockBuyEventArgs = {
   id: Scalars['ID'];
   block?: InputMaybe<Block_height>;
@@ -1504,7 +1544,7 @@ export type Subscription_metaArgs = {
 export type SwapDepositEvent = {
   id: Scalars['ID'];
   timestamp: Scalars['Int'];
-  blockNumber: Scalars['Int'];
+  blockNumber: Scalars['BigInt'];
   account: Scalars['String'];
   amount: Scalars['BigInt'];
   sharesMinted: Scalars['BigInt'];
@@ -1528,14 +1568,14 @@ export type SwapDepositEvent_filter = {
   timestamp_lte?: InputMaybe<Scalars['Int']>;
   timestamp_in?: InputMaybe<Array<Scalars['Int']>>;
   timestamp_not_in?: InputMaybe<Array<Scalars['Int']>>;
-  blockNumber?: InputMaybe<Scalars['Int']>;
-  blockNumber_not?: InputMaybe<Scalars['Int']>;
-  blockNumber_gt?: InputMaybe<Scalars['Int']>;
-  blockNumber_lt?: InputMaybe<Scalars['Int']>;
-  blockNumber_gte?: InputMaybe<Scalars['Int']>;
-  blockNumber_lte?: InputMaybe<Scalars['Int']>;
-  blockNumber_in?: InputMaybe<Array<Scalars['Int']>>;
-  blockNumber_not_in?: InputMaybe<Array<Scalars['Int']>>;
+  blockNumber?: InputMaybe<Scalars['BigInt']>;
+  blockNumber_not?: InputMaybe<Scalars['BigInt']>;
+  blockNumber_gt?: InputMaybe<Scalars['BigInt']>;
+  blockNumber_lt?: InputMaybe<Scalars['BigInt']>;
+  blockNumber_gte?: InputMaybe<Scalars['BigInt']>;
+  blockNumber_lte?: InputMaybe<Scalars['BigInt']>;
+  blockNumber_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  blockNumber_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
   account?: InputMaybe<Scalars['String']>;
   account_not?: InputMaybe<Scalars['String']>;
   account_gt?: InputMaybe<Scalars['String']>;
@@ -1626,7 +1666,7 @@ export type SwapDepositEvent_orderBy =
 export type SwapEvent = {
   id: Scalars['ID'];
   timestamp: Scalars['Int'];
-  blockNumber: Scalars['Int'];
+  blockNumber: Scalars['BigInt'];
   account: Scalars['String'];
   amount: Scalars['BigInt'];
   fee: Scalars['BigInt'];
@@ -1650,14 +1690,14 @@ export type SwapEvent_filter = {
   timestamp_lte?: InputMaybe<Scalars['Int']>;
   timestamp_in?: InputMaybe<Array<Scalars['Int']>>;
   timestamp_not_in?: InputMaybe<Array<Scalars['Int']>>;
-  blockNumber?: InputMaybe<Scalars['Int']>;
-  blockNumber_not?: InputMaybe<Scalars['Int']>;
-  blockNumber_gt?: InputMaybe<Scalars['Int']>;
-  blockNumber_lt?: InputMaybe<Scalars['Int']>;
-  blockNumber_gte?: InputMaybe<Scalars['Int']>;
-  blockNumber_lte?: InputMaybe<Scalars['Int']>;
-  blockNumber_in?: InputMaybe<Array<Scalars['Int']>>;
-  blockNumber_not_in?: InputMaybe<Array<Scalars['Int']>>;
+  blockNumber?: InputMaybe<Scalars['BigInt']>;
+  blockNumber_not?: InputMaybe<Scalars['BigInt']>;
+  blockNumber_gt?: InputMaybe<Scalars['BigInt']>;
+  blockNumber_lt?: InputMaybe<Scalars['BigInt']>;
+  blockNumber_gte?: InputMaybe<Scalars['BigInt']>;
+  blockNumber_lte?: InputMaybe<Scalars['BigInt']>;
+  blockNumber_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  blockNumber_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
   account?: InputMaybe<Scalars['String']>;
   account_not?: InputMaybe<Scalars['String']>;
   account_gt?: InputMaybe<Scalars['String']>;
@@ -1728,6 +1768,140 @@ export type SwapEvent_orderBy =
   | 'account'
   | 'amount'
   | 'fee'
+  | 'SwapPool'
+  | 'SwapPool__id'
+  | 'SwapPool__createdAtTimestamp'
+  | 'SwapPool__asset'
+  | 'SwapPool__lpToken'
+  | 'SwapPool__totalSupply'
+  | 'SwapPool__liabilities'
+  | 'SwapPool__unlocking'
+  | 'SwapPool__volume'
+  | 'SwapPool__volumeUSD'
+  | 'SwapPool__fees'
+  | 'SwapPool__feesUSD'
+  | 'SwapPool__lpRewards'
+  | 'SwapPool__lpRewardsUSD'
+  | 'SwapPool__treasuryCut'
+  | 'SwapPool__treasuryCutUSD';
+
+export type SwapLPTokenTransferEvent = {
+  id: Scalars['ID'];
+  timestamp: Scalars['Int'];
+  blockNumber: Scalars['BigInt'];
+  from: Scalars['String'];
+  to: Scalars['String'];
+  amount: Scalars['BigInt'];
+  SwapPool: SwapPool;
+};
+
+export type SwapLPTokenTransferEvent_filter = {
+  id?: InputMaybe<Scalars['ID']>;
+  id_not?: InputMaybe<Scalars['ID']>;
+  id_gt?: InputMaybe<Scalars['ID']>;
+  id_lt?: InputMaybe<Scalars['ID']>;
+  id_gte?: InputMaybe<Scalars['ID']>;
+  id_lte?: InputMaybe<Scalars['ID']>;
+  id_in?: InputMaybe<Array<Scalars['ID']>>;
+  id_not_in?: InputMaybe<Array<Scalars['ID']>>;
+  timestamp?: InputMaybe<Scalars['Int']>;
+  timestamp_not?: InputMaybe<Scalars['Int']>;
+  timestamp_gt?: InputMaybe<Scalars['Int']>;
+  timestamp_lt?: InputMaybe<Scalars['Int']>;
+  timestamp_gte?: InputMaybe<Scalars['Int']>;
+  timestamp_lte?: InputMaybe<Scalars['Int']>;
+  timestamp_in?: InputMaybe<Array<Scalars['Int']>>;
+  timestamp_not_in?: InputMaybe<Array<Scalars['Int']>>;
+  blockNumber?: InputMaybe<Scalars['BigInt']>;
+  blockNumber_not?: InputMaybe<Scalars['BigInt']>;
+  blockNumber_gt?: InputMaybe<Scalars['BigInt']>;
+  blockNumber_lt?: InputMaybe<Scalars['BigInt']>;
+  blockNumber_gte?: InputMaybe<Scalars['BigInt']>;
+  blockNumber_lte?: InputMaybe<Scalars['BigInt']>;
+  blockNumber_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  blockNumber_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  from?: InputMaybe<Scalars['String']>;
+  from_not?: InputMaybe<Scalars['String']>;
+  from_gt?: InputMaybe<Scalars['String']>;
+  from_lt?: InputMaybe<Scalars['String']>;
+  from_gte?: InputMaybe<Scalars['String']>;
+  from_lte?: InputMaybe<Scalars['String']>;
+  from_in?: InputMaybe<Array<Scalars['String']>>;
+  from_not_in?: InputMaybe<Array<Scalars['String']>>;
+  from_contains?: InputMaybe<Scalars['String']>;
+  from_contains_nocase?: InputMaybe<Scalars['String']>;
+  from_not_contains?: InputMaybe<Scalars['String']>;
+  from_not_contains_nocase?: InputMaybe<Scalars['String']>;
+  from_starts_with?: InputMaybe<Scalars['String']>;
+  from_starts_with_nocase?: InputMaybe<Scalars['String']>;
+  from_not_starts_with?: InputMaybe<Scalars['String']>;
+  from_not_starts_with_nocase?: InputMaybe<Scalars['String']>;
+  from_ends_with?: InputMaybe<Scalars['String']>;
+  from_ends_with_nocase?: InputMaybe<Scalars['String']>;
+  from_not_ends_with?: InputMaybe<Scalars['String']>;
+  from_not_ends_with_nocase?: InputMaybe<Scalars['String']>;
+  to?: InputMaybe<Scalars['String']>;
+  to_not?: InputMaybe<Scalars['String']>;
+  to_gt?: InputMaybe<Scalars['String']>;
+  to_lt?: InputMaybe<Scalars['String']>;
+  to_gte?: InputMaybe<Scalars['String']>;
+  to_lte?: InputMaybe<Scalars['String']>;
+  to_in?: InputMaybe<Array<Scalars['String']>>;
+  to_not_in?: InputMaybe<Array<Scalars['String']>>;
+  to_contains?: InputMaybe<Scalars['String']>;
+  to_contains_nocase?: InputMaybe<Scalars['String']>;
+  to_not_contains?: InputMaybe<Scalars['String']>;
+  to_not_contains_nocase?: InputMaybe<Scalars['String']>;
+  to_starts_with?: InputMaybe<Scalars['String']>;
+  to_starts_with_nocase?: InputMaybe<Scalars['String']>;
+  to_not_starts_with?: InputMaybe<Scalars['String']>;
+  to_not_starts_with_nocase?: InputMaybe<Scalars['String']>;
+  to_ends_with?: InputMaybe<Scalars['String']>;
+  to_ends_with_nocase?: InputMaybe<Scalars['String']>;
+  to_not_ends_with?: InputMaybe<Scalars['String']>;
+  to_not_ends_with_nocase?: InputMaybe<Scalars['String']>;
+  amount?: InputMaybe<Scalars['BigInt']>;
+  amount_not?: InputMaybe<Scalars['BigInt']>;
+  amount_gt?: InputMaybe<Scalars['BigInt']>;
+  amount_lt?: InputMaybe<Scalars['BigInt']>;
+  amount_gte?: InputMaybe<Scalars['BigInt']>;
+  amount_lte?: InputMaybe<Scalars['BigInt']>;
+  amount_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  amount_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  SwapPool?: InputMaybe<Scalars['String']>;
+  SwapPool_not?: InputMaybe<Scalars['String']>;
+  SwapPool_gt?: InputMaybe<Scalars['String']>;
+  SwapPool_lt?: InputMaybe<Scalars['String']>;
+  SwapPool_gte?: InputMaybe<Scalars['String']>;
+  SwapPool_lte?: InputMaybe<Scalars['String']>;
+  SwapPool_in?: InputMaybe<Array<Scalars['String']>>;
+  SwapPool_not_in?: InputMaybe<Array<Scalars['String']>>;
+  SwapPool_contains?: InputMaybe<Scalars['String']>;
+  SwapPool_contains_nocase?: InputMaybe<Scalars['String']>;
+  SwapPool_not_contains?: InputMaybe<Scalars['String']>;
+  SwapPool_not_contains_nocase?: InputMaybe<Scalars['String']>;
+  SwapPool_starts_with?: InputMaybe<Scalars['String']>;
+  SwapPool_starts_with_nocase?: InputMaybe<Scalars['String']>;
+  SwapPool_not_starts_with?: InputMaybe<Scalars['String']>;
+  SwapPool_not_starts_with_nocase?: InputMaybe<Scalars['String']>;
+  SwapPool_ends_with?: InputMaybe<Scalars['String']>;
+  SwapPool_ends_with_nocase?: InputMaybe<Scalars['String']>;
+  SwapPool_not_ends_with?: InputMaybe<Scalars['String']>;
+  SwapPool_not_ends_with_nocase?: InputMaybe<Scalars['String']>;
+  SwapPool_?: InputMaybe<SwapPool_filter>;
+  /** Filter for the block changed event. */
+  _change_block?: InputMaybe<BlockChangedFilter>;
+  and?: InputMaybe<Array<InputMaybe<SwapLPTokenTransferEvent_filter>>>;
+  or?: InputMaybe<Array<InputMaybe<SwapLPTokenTransferEvent_filter>>>;
+};
+
+export type SwapLPTokenTransferEvent_orderBy =
+  | 'id'
+  | 'timestamp'
+  | 'blockNumber'
+  | 'from'
+  | 'to'
+  | 'amount'
   | 'SwapPool'
   | 'SwapPool__id'
   | 'SwapPool__createdAtTimestamp'
@@ -2126,7 +2300,7 @@ export type SwapPool_orderBy =
 export type SwapUnlockBuyEvent = {
   id: Scalars['ID'];
   timestamp: Scalars['Int'];
-  blockNumber: Scalars['Int'];
+  blockNumber: Scalars['BigInt'];
   account: Scalars['String'];
   unlock: Unlock;
   asset: Scalars['String'];
@@ -2153,14 +2327,14 @@ export type SwapUnlockBuyEvent_filter = {
   timestamp_lte?: InputMaybe<Scalars['Int']>;
   timestamp_in?: InputMaybe<Array<Scalars['Int']>>;
   timestamp_not_in?: InputMaybe<Array<Scalars['Int']>>;
-  blockNumber?: InputMaybe<Scalars['Int']>;
-  blockNumber_not?: InputMaybe<Scalars['Int']>;
-  blockNumber_gt?: InputMaybe<Scalars['Int']>;
-  blockNumber_lt?: InputMaybe<Scalars['Int']>;
-  blockNumber_gte?: InputMaybe<Scalars['Int']>;
-  blockNumber_lte?: InputMaybe<Scalars['Int']>;
-  blockNumber_in?: InputMaybe<Array<Scalars['Int']>>;
-  blockNumber_not_in?: InputMaybe<Array<Scalars['Int']>>;
+  blockNumber?: InputMaybe<Scalars['BigInt']>;
+  blockNumber_not?: InputMaybe<Scalars['BigInt']>;
+  blockNumber_gt?: InputMaybe<Scalars['BigInt']>;
+  blockNumber_lt?: InputMaybe<Scalars['BigInt']>;
+  blockNumber_gte?: InputMaybe<Scalars['BigInt']>;
+  blockNumber_lte?: InputMaybe<Scalars['BigInt']>;
+  blockNumber_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  blockNumber_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
   account?: InputMaybe<Scalars['String']>;
   account_not?: InputMaybe<Scalars['String']>;
   account_gt?: InputMaybe<Scalars['String']>;
@@ -2308,7 +2482,7 @@ export type SwapUnlockBuyEvent_orderBy =
 export type SwapUnlockRedeemedEvent = {
   id: Scalars['ID'];
   timestamp: Scalars['Int'];
-  blockNumber: Scalars['Int'];
+  blockNumber: Scalars['BigInt'];
   account: Scalars['String'];
   unlock: Unlock;
   asset: Scalars['String'];
@@ -2335,14 +2509,14 @@ export type SwapUnlockRedeemedEvent_filter = {
   timestamp_lte?: InputMaybe<Scalars['Int']>;
   timestamp_in?: InputMaybe<Array<Scalars['Int']>>;
   timestamp_not_in?: InputMaybe<Array<Scalars['Int']>>;
-  blockNumber?: InputMaybe<Scalars['Int']>;
-  blockNumber_not?: InputMaybe<Scalars['Int']>;
-  blockNumber_gt?: InputMaybe<Scalars['Int']>;
-  blockNumber_lt?: InputMaybe<Scalars['Int']>;
-  blockNumber_gte?: InputMaybe<Scalars['Int']>;
-  blockNumber_lte?: InputMaybe<Scalars['Int']>;
-  blockNumber_in?: InputMaybe<Array<Scalars['Int']>>;
-  blockNumber_not_in?: InputMaybe<Array<Scalars['Int']>>;
+  blockNumber?: InputMaybe<Scalars['BigInt']>;
+  blockNumber_not?: InputMaybe<Scalars['BigInt']>;
+  blockNumber_gt?: InputMaybe<Scalars['BigInt']>;
+  blockNumber_lt?: InputMaybe<Scalars['BigInt']>;
+  blockNumber_gte?: InputMaybe<Scalars['BigInt']>;
+  blockNumber_lte?: InputMaybe<Scalars['BigInt']>;
+  blockNumber_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  blockNumber_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
   account?: InputMaybe<Scalars['String']>;
   account_not?: InputMaybe<Scalars['String']>;
   account_gt?: InputMaybe<Scalars['String']>;
@@ -2490,10 +2664,10 @@ export type SwapUnlockRedeemedEvent_orderBy =
 export type SwapWithdrawEvent = {
   id: Scalars['ID'];
   timestamp: Scalars['Int'];
-  blockNumber: Scalars['Int'];
+  blockNumber: Scalars['BigInt'];
   account: Scalars['String'];
   amount: Scalars['BigInt'];
-  sharesBurned: Scalars['BigInt'];
+  sharesBurnt: Scalars['BigInt'];
   SwapPool: SwapPool;
 };
 
@@ -2514,14 +2688,14 @@ export type SwapWithdrawEvent_filter = {
   timestamp_lte?: InputMaybe<Scalars['Int']>;
   timestamp_in?: InputMaybe<Array<Scalars['Int']>>;
   timestamp_not_in?: InputMaybe<Array<Scalars['Int']>>;
-  blockNumber?: InputMaybe<Scalars['Int']>;
-  blockNumber_not?: InputMaybe<Scalars['Int']>;
-  blockNumber_gt?: InputMaybe<Scalars['Int']>;
-  blockNumber_lt?: InputMaybe<Scalars['Int']>;
-  blockNumber_gte?: InputMaybe<Scalars['Int']>;
-  blockNumber_lte?: InputMaybe<Scalars['Int']>;
-  blockNumber_in?: InputMaybe<Array<Scalars['Int']>>;
-  blockNumber_not_in?: InputMaybe<Array<Scalars['Int']>>;
+  blockNumber?: InputMaybe<Scalars['BigInt']>;
+  blockNumber_not?: InputMaybe<Scalars['BigInt']>;
+  blockNumber_gt?: InputMaybe<Scalars['BigInt']>;
+  blockNumber_lt?: InputMaybe<Scalars['BigInt']>;
+  blockNumber_gte?: InputMaybe<Scalars['BigInt']>;
+  blockNumber_lte?: InputMaybe<Scalars['BigInt']>;
+  blockNumber_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  blockNumber_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
   account?: InputMaybe<Scalars['String']>;
   account_not?: InputMaybe<Scalars['String']>;
   account_gt?: InputMaybe<Scalars['String']>;
@@ -2550,14 +2724,14 @@ export type SwapWithdrawEvent_filter = {
   amount_lte?: InputMaybe<Scalars['BigInt']>;
   amount_in?: InputMaybe<Array<Scalars['BigInt']>>;
   amount_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
-  sharesBurned?: InputMaybe<Scalars['BigInt']>;
-  sharesBurned_not?: InputMaybe<Scalars['BigInt']>;
-  sharesBurned_gt?: InputMaybe<Scalars['BigInt']>;
-  sharesBurned_lt?: InputMaybe<Scalars['BigInt']>;
-  sharesBurned_gte?: InputMaybe<Scalars['BigInt']>;
-  sharesBurned_lte?: InputMaybe<Scalars['BigInt']>;
-  sharesBurned_in?: InputMaybe<Array<Scalars['BigInt']>>;
-  sharesBurned_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  sharesBurnt?: InputMaybe<Scalars['BigInt']>;
+  sharesBurnt_not?: InputMaybe<Scalars['BigInt']>;
+  sharesBurnt_gt?: InputMaybe<Scalars['BigInt']>;
+  sharesBurnt_lt?: InputMaybe<Scalars['BigInt']>;
+  sharesBurnt_gte?: InputMaybe<Scalars['BigInt']>;
+  sharesBurnt_lte?: InputMaybe<Scalars['BigInt']>;
+  sharesBurnt_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  sharesBurnt_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
   SwapPool?: InputMaybe<Scalars['String']>;
   SwapPool_not?: InputMaybe<Scalars['String']>;
   SwapPool_gt?: InputMaybe<Scalars['String']>;
@@ -2591,7 +2765,7 @@ export type SwapWithdrawEvent_orderBy =
   | 'blockNumber'
   | 'account'
   | 'amount'
-  | 'sharesBurned'
+  | 'sharesBurnt'
   | 'SwapPool'
   | 'SwapPool__id'
   | 'SwapPool__createdAtTimestamp'
@@ -3824,6 +3998,9 @@ export type ResolversTypes = ResolversObject<{
   SwapEvent: ResolverTypeWrapper<SwapEvent>;
   SwapEvent_filter: SwapEvent_filter;
   SwapEvent_orderBy: SwapEvent_orderBy;
+  SwapLPTokenTransferEvent: ResolverTypeWrapper<SwapLPTokenTransferEvent>;
+  SwapLPTokenTransferEvent_filter: SwapLPTokenTransferEvent_filter;
+  SwapLPTokenTransferEvent_orderBy: SwapLPTokenTransferEvent_orderBy;
   SwapPool: ResolverTypeWrapper<SwapPool>;
   SwapPoolDay: ResolverTypeWrapper<SwapPoolDay>;
   SwapPoolDay_filter: SwapPoolDay_filter;
@@ -3897,6 +4074,8 @@ export type ResolversParentTypes = ResolversObject<{
   SwapDepositEvent_filter: SwapDepositEvent_filter;
   SwapEvent: SwapEvent;
   SwapEvent_filter: SwapEvent_filter;
+  SwapLPTokenTransferEvent: SwapLPTokenTransferEvent;
+  SwapLPTokenTransferEvent_filter: SwapLPTokenTransferEvent_filter;
   SwapPool: SwapPool;
   SwapPoolDay: SwapPoolDay;
   SwapPoolDay_filter: SwapPoolDay_filter;
@@ -4033,6 +4212,8 @@ export type QueryResolvers<ContextType = MeshContext, ParentType extends Resolve
   swapDepositEvents?: Resolver<Array<ResolversTypes['SwapDepositEvent']>, ParentType, ContextType, RequireFields<QueryswapDepositEventsArgs, 'skip' | 'first' | 'subgraphError'>>;
   swapWithdrawEvent?: Resolver<Maybe<ResolversTypes['SwapWithdrawEvent']>, ParentType, ContextType, RequireFields<QueryswapWithdrawEventArgs, 'id' | 'subgraphError'>>;
   swapWithdrawEvents?: Resolver<Array<ResolversTypes['SwapWithdrawEvent']>, ParentType, ContextType, RequireFields<QueryswapWithdrawEventsArgs, 'skip' | 'first' | 'subgraphError'>>;
+  swapLPTokenTransferEvent?: Resolver<Maybe<ResolversTypes['SwapLPTokenTransferEvent']>, ParentType, ContextType, RequireFields<QueryswapLPTokenTransferEventArgs, 'id' | 'subgraphError'>>;
+  swapLPTokenTransferEvents?: Resolver<Array<ResolversTypes['SwapLPTokenTransferEvent']>, ParentType, ContextType, RequireFields<QueryswapLPTokenTransferEventsArgs, 'skip' | 'first' | 'subgraphError'>>;
   swapUnlockBuyEvent?: Resolver<Maybe<ResolversTypes['SwapUnlockBuyEvent']>, ParentType, ContextType, RequireFields<QueryswapUnlockBuyEventArgs, 'id' | 'subgraphError'>>;
   swapUnlockBuyEvents?: Resolver<Array<ResolversTypes['SwapUnlockBuyEvent']>, ParentType, ContextType, RequireFields<QueryswapUnlockBuyEventsArgs, 'skip' | 'first' | 'subgraphError'>>;
   swapUnlockRedeemedEvent?: Resolver<Maybe<ResolversTypes['SwapUnlockRedeemedEvent']>, ParentType, ContextType, RequireFields<QueryswapUnlockRedeemedEventArgs, 'id' | 'subgraphError'>>;
@@ -4097,6 +4278,8 @@ export type SubscriptionResolvers<ContextType = MeshContext, ParentType extends 
   swapDepositEvents?: SubscriptionResolver<Array<ResolversTypes['SwapDepositEvent']>, "swapDepositEvents", ParentType, ContextType, RequireFields<SubscriptionswapDepositEventsArgs, 'skip' | 'first' | 'subgraphError'>>;
   swapWithdrawEvent?: SubscriptionResolver<Maybe<ResolversTypes['SwapWithdrawEvent']>, "swapWithdrawEvent", ParentType, ContextType, RequireFields<SubscriptionswapWithdrawEventArgs, 'id' | 'subgraphError'>>;
   swapWithdrawEvents?: SubscriptionResolver<Array<ResolversTypes['SwapWithdrawEvent']>, "swapWithdrawEvents", ParentType, ContextType, RequireFields<SubscriptionswapWithdrawEventsArgs, 'skip' | 'first' | 'subgraphError'>>;
+  swapLPTokenTransferEvent?: SubscriptionResolver<Maybe<ResolversTypes['SwapLPTokenTransferEvent']>, "swapLPTokenTransferEvent", ParentType, ContextType, RequireFields<SubscriptionswapLPTokenTransferEventArgs, 'id' | 'subgraphError'>>;
+  swapLPTokenTransferEvents?: SubscriptionResolver<Array<ResolversTypes['SwapLPTokenTransferEvent']>, "swapLPTokenTransferEvents", ParentType, ContextType, RequireFields<SubscriptionswapLPTokenTransferEventsArgs, 'skip' | 'first' | 'subgraphError'>>;
   swapUnlockBuyEvent?: SubscriptionResolver<Maybe<ResolversTypes['SwapUnlockBuyEvent']>, "swapUnlockBuyEvent", ParentType, ContextType, RequireFields<SubscriptionswapUnlockBuyEventArgs, 'id' | 'subgraphError'>>;
   swapUnlockBuyEvents?: SubscriptionResolver<Array<ResolversTypes['SwapUnlockBuyEvent']>, "swapUnlockBuyEvents", ParentType, ContextType, RequireFields<SubscriptionswapUnlockBuyEventsArgs, 'skip' | 'first' | 'subgraphError'>>;
   swapUnlockRedeemedEvent?: SubscriptionResolver<Maybe<ResolversTypes['SwapUnlockRedeemedEvent']>, "swapUnlockRedeemedEvent", ParentType, ContextType, RequireFields<SubscriptionswapUnlockRedeemedEventArgs, 'id' | 'subgraphError'>>;
@@ -4107,7 +4290,7 @@ export type SubscriptionResolvers<ContextType = MeshContext, ParentType extends 
 export type SwapDepositEventResolvers<ContextType = MeshContext, ParentType extends ResolversParentTypes['SwapDepositEvent'] = ResolversParentTypes['SwapDepositEvent']> = ResolversObject<{
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   timestamp?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
-  blockNumber?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  blockNumber?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
   account?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   amount?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
   sharesMinted?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
@@ -4118,10 +4301,21 @@ export type SwapDepositEventResolvers<ContextType = MeshContext, ParentType exte
 export type SwapEventResolvers<ContextType = MeshContext, ParentType extends ResolversParentTypes['SwapEvent'] = ResolversParentTypes['SwapEvent']> = ResolversObject<{
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   timestamp?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
-  blockNumber?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  blockNumber?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
   account?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   amount?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
   fee?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
+  SwapPool?: Resolver<ResolversTypes['SwapPool'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type SwapLPTokenTransferEventResolvers<ContextType = MeshContext, ParentType extends ResolversParentTypes['SwapLPTokenTransferEvent'] = ResolversParentTypes['SwapLPTokenTransferEvent']> = ResolversObject<{
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  timestamp?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  blockNumber?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
+  from?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  to?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  amount?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
   SwapPool?: Resolver<ResolversTypes['SwapPool'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
@@ -4167,7 +4361,7 @@ export type SwapPoolDayResolvers<ContextType = MeshContext, ParentType extends R
 export type SwapUnlockBuyEventResolvers<ContextType = MeshContext, ParentType extends ResolversParentTypes['SwapUnlockBuyEvent'] = ResolversParentTypes['SwapUnlockBuyEvent']> = ResolversObject<{
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   timestamp?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
-  blockNumber?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  blockNumber?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
   account?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   unlock?: Resolver<ResolversTypes['Unlock'], ParentType, ContextType>;
   asset?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -4181,7 +4375,7 @@ export type SwapUnlockBuyEventResolvers<ContextType = MeshContext, ParentType ex
 export type SwapUnlockRedeemedEventResolvers<ContextType = MeshContext, ParentType extends ResolversParentTypes['SwapUnlockRedeemedEvent'] = ResolversParentTypes['SwapUnlockRedeemedEvent']> = ResolversObject<{
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   timestamp?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
-  blockNumber?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  blockNumber?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
   account?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   unlock?: Resolver<ResolversTypes['Unlock'], ParentType, ContextType>;
   asset?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -4195,10 +4389,10 @@ export type SwapUnlockRedeemedEventResolvers<ContextType = MeshContext, ParentTy
 export type SwapWithdrawEventResolvers<ContextType = MeshContext, ParentType extends ResolversParentTypes['SwapWithdrawEvent'] = ResolversParentTypes['SwapWithdrawEvent']> = ResolversObject<{
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   timestamp?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
-  blockNumber?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  blockNumber?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
   account?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   amount?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
-  sharesBurned?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
+  sharesBurnt?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
   SwapPool?: Resolver<ResolversTypes['SwapPool'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
@@ -4327,6 +4521,7 @@ export type Resolvers<ContextType = MeshContext> = ResolversObject<{
   Subscription?: SubscriptionResolvers<ContextType>;
   SwapDepositEvent?: SwapDepositEventResolvers<ContextType>;
   SwapEvent?: SwapEventResolvers<ContextType>;
+  SwapLPTokenTransferEvent?: SwapLPTokenTransferEventResolvers<ContextType>;
   SwapPool?: SwapPoolResolvers<ContextType>;
   SwapPoolDay?: SwapPoolDayResolvers<ContextType>;
   SwapUnlockBuyEvent?: SwapUnlockBuyEventResolvers<ContextType>;
@@ -4395,7 +4590,7 @@ const tenderizeTransforms = [];
 const additionalTypeDefs = [] as any[];
 const tenderizeHandler = new GraphqlHandler({
               name: "Tenderize",
-              config: {"endpoint":"https://api.studio.thegraph.com/query/45970/tenderize-v2-mainnet/version/latest"},
+              config: {"endpoint":"https://api.studio.thegraph.com/query/93675/tenderize-v2-arbitrum/version/latest"},
               baseDir,
               cache,
               pubsub,

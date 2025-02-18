@@ -37,10 +37,14 @@ query getPools($dateFilter: Int = 0, $first: Int = 1000, $skip: Int = 0) {
     lpRewards
     lpRewardsUSD
 
-    poolDays(where: { date_gte: $dateFilter }, orderBy: date, orderDirection: desc) {
+    poolDays(
+      where: { date_gte: $dateFilter }
+      orderBy: date
+      orderDirection: desc
+    ) {
       date
       id
-      
+
       liabilities
       totalSupply
       unlocking
@@ -56,7 +60,7 @@ query getPools($dateFilter: Int = 0, $first: Int = 1000, $skip: Int = 0) {
 }
 
 query getPool($id: ID!, $dateFilter: Int = 0) {
-    swapPool (id: $id) {
+  swapPool(id: $id) {
     id
     asset
     lpToken
@@ -72,10 +76,14 @@ query getPool($id: ID!, $dateFilter: Int = 0) {
     lpRewards
     lpRewardsUSD
 
-    poolDays(where: { date_gte: $dateFilter }, orderBy: date, orderDirection: desc) {
+    poolDays(
+      where: { date_gte: $dateFilter }
+      orderBy: date
+      orderDirection: desc
+    ) {
       date
       id
-      
+
       liabilities
       totalSupply
       unlocking

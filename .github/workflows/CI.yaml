@@ -54,7 +54,7 @@ jobs:
 
       - name: Run client prettier:check
         run: bun run prettier:check
-        working-directory: packages/grap-client
+        working-directory: packages/graph-client
 
       - name: Run client codegen
         run: bun run codegen

@@ -82,7 +82,12 @@ export function handleUnlock(event: EmitUnlock): void {
   if (balanceBefore.minus(stake.netDeposits).lt(amount)) {
     // if rewards less than amount, set net deposits
     // to balance minus what wasnt subtracted from the rewards
-    stake.netDeposits = balanceBefore.minus(amount)
+    let remainder = amount.minus(balanceBefore.minus(stake.netDeposits))
+    if (remainder.lt(stake.netDeposits)) {
+      stake.netDeposits = balanceBefore.minus(remainder)
+    } else {
+      stake.netDeposits = BD_ZERO
+    }
   }
   stake.shares = stake.shares.minus(sharesUnlocked)
   stake.save()
@@ -146,18 +151,23 @@ export function handleTransfer(event: EmitTransfer): void {
 
   let fromID = event.params.from.toHex().concat('-').concat(event.address.toHex())
   let from = Stake.load(fromID)
-  if (from == null) return
-
   let amount = convertToDecimal(event.params.value)
-  let balanceBefore = from.shares.times(tenderizer.tvl).div(tenderizer.shares)
   let sharestransferred = amount.times(tenderizer.shares).div(tenderizer.tvl)
-  if (balanceBefore.minus(from.netDeposits).lt(amount)) {
-    // if rewards less than amount, set net deposits
-    // to balance minus what wasnt subtracted from the rewards
-    from.netDeposits = balanceBefore.minus(amount)
+  if (from != null) {
+    let balanceBefore = from.shares.times(tenderizer.tvl).div(tenderizer.shares)
+    if (balanceBefore.minus(from.netDeposits).lt(amount)) {
+      // if rewards less than amount, set net deposits
+      // to balance minus what wasnt subtracted from the rewards
+      let remainder = amount.minus(balanceBefore.minus(from.netDeposits))
+      if (remainder.lt(from.netDeposits)) {
+        from.netDeposits = balanceBefore.minus(remainder)
+      } else {
+        from.netDeposits = BD_ZERO
+      }
+    }
+    from.shares = from.shares.minus(sharestransferred)
+    from.save()
   }
-  from.shares = from.shares.minus(sharestransferred)
-  from.save()
 
   let toID = event.params.to.toHex().concat('-').concat(event.address.toHex())
   let to = Stake.load(toID)

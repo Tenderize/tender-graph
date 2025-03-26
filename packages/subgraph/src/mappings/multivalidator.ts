@@ -1,123 +1,23 @@
 import { BigInt, Bytes } from '@graphprotocol/graph-ts'
-
-/// reomve this code once types will be auto genrated by the graph
-/// ############################################
-class DepositEntity {
-  id: string
-  sender: Bytes
-  amount: BigInt
-  shares: BigInt
-  timestamp: BigInt
-
-  constructor(id: string) {
-    this.id = id
-  }
-
-  save(): void {
-    // placeholder: The actual save is provided by The Graph runtime
-  }
-
-  static load(id: string): DepositEntity | null {
-    return null // placeholder
-  }
-}
-
-class UnstakeEntity {
-  id: string
-  sender: Bytes
-  unstakeID: BigInt
-  shares: BigInt
-  amount: BigInt
-  timestamp: BigInt
-
-  constructor(id: string) {
-    this.id = id
-  }
-
-  save(): void {}
-  static load(id: string): UnstakeEntity | null {
-    return null
-  }
-}
-
-class WithdrawEntity {
-  id: string
-  sender: Bytes
-  unstakeID: BigInt
-  amount: BigInt
-  timestamp: BigInt
-
-  constructor(id: string) {
-    this.id = id
-  }
-
-  save(): void {}
-  static load(id: string): WithdrawEntity | null {
-    return null
-  }
-}
-
-class Validator {
-  id: string
-  tToken: Bytes
-  target: BigInt
-  balance: BigInt
-
-  constructor(id: string) {
-    this.id = id
-    this.tToken = Bytes.empty()
-    this.target = BigInt.zero()
-    this.balance = BigInt.zero()
-  }
-
-  save(): void {}
-  static load(id: string): Validator | null {
-    return null
-  }
-}
-
-class MultiValidatorUnstake {
-  id: string
-  user: string
-  lst: string
-  claimed: boolean
-
-  constructor(id: string) {
-    this.id = id
-    this.claimed = false
-  }
-
-  save(): void {}
-  static load(id: string): MultiValidatorUnstake | null {
-    return null
-  }
-}
-
-class User {
-  id: string
-
-  constructor(id: string) {
-    this.id = id
-  }
-
-  save(): void {}
-  static load(id: string): User | null {
-    return null
-  }
-}
-
-/// TODO: fix types for these events
-type ValidatorAdded = any
-type ValidatorRemoved = any
-type WeightsUpdated = any
-type Deposit = any
-type Unstake = any
-type Withdraw = any
-// ############################################
+import {
+  Deposit,
+  Unstake,
+  ValidatorAdded,
+  ValidatorRemoved,
+  WeightsUpdated,
+  Withdraw,
+} from '../types/MultiValidatorLST/MultiValidatorLST'
+import {
+  MultiValidatorDeposit as DepositEntity,
+  MultiValidator,
+  MultiValidatorUnstake as UnstakeEntity,
+  User,
+  MultiValidatorWithdraw as WithdrawEntity,
+} from '../types/schema'
 
 export function handleValidatorAdded(event: ValidatorAdded): void {
   let id = event.params.id.toString()
-  let validator = new Validator(id)
+  let validator = new MultiValidator(id)
   validator.tToken = event.params.tToken
   validator.target = event.params.target
   validator.balance = BigInt.zero()
@@ -126,7 +26,7 @@ export function handleValidatorAdded(event: ValidatorAdded): void {
 
 export function handleValidatorRemoved(event: ValidatorRemoved): void {
   let id = event.params.id.toString()
-  let validator = Validator.load(id)
+  let validator = MultiValidator.load(id)
   if (validator) {
     validator.target = BigInt.zero()
     validator.tToken = Bytes.empty()
@@ -140,7 +40,7 @@ export function handleWeightsUpdated(event: WeightsUpdated): void {
   let weights = event.params.weights
   for (let i = 0; i < ids.length; i++) {
     let id = ids[i].toString()
-    let validator = Validator.load(id)
+    let validator = MultiValidator.load(id)
     if (validator) {
       validator.target = weights[i]
       validator.save()
@@ -161,8 +61,6 @@ export function handleUnstake(event: Unstake): void {
   let entity = new UnstakeEntity(event.transaction.hash.toHex() + '-' + event.logIndex.toString())
   entity.sender = event.params.sender
   entity.unstakeID = event.params.unstakeID
-  entity.shares = event.params.shares
-  entity.amount = event.params.amount
   entity.timestamp = event.block.timestamp
   entity.save()
   // Track unstake NFTs per user
@@ -173,7 +71,7 @@ export function handleUnstake(event: Unstake): void {
     user.save()
   }
 
-  let unstake = new MultiValidatorUnstake(event.params.unstakeID.toString())
+  let unstake = new UnstakeEntity(event.params.unstakeID.toString())
   unstake.user = user.id
   unstake.lst = event.address.toHex()
   unstake.claimed = false
@@ -187,7 +85,7 @@ export function handleWithdraw(event: Withdraw): void {
   entity.amount = event.params.amount
   entity.timestamp = event.block.timestamp
   entity.save()
-  let unstake = MultiValidatorUnstake.load(event.params.unstakeID.toString())
+  let unstake = UnstakeEntity.load(event.params.unstakeID.toString())
   if (unstake) {
     unstake.claimed = true
     unstake.save()

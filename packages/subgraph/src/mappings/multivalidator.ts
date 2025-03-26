@@ -76,6 +76,36 @@ class Validator {
   }
 }
 
+class MultiValidatorUnstake {
+  id: string
+  user: string
+  lst: string
+  claimed: boolean
+
+  constructor(id: string) {
+    this.id = id
+    this.claimed = false
+  }
+
+  save(): void {}
+  static load(id: string): MultiValidatorUnstake | null {
+    return null
+  }
+}
+
+class User {
+  id: string
+
+  constructor(id: string) {
+    this.id = id
+  }
+
+  save(): void {}
+  static load(id: string): User | null {
+    return null
+  }
+}
+
 /// TODO: fix types for these events
 type ValidatorAdded = any
 type ValidatorRemoved = any
@@ -135,6 +165,19 @@ export function handleUnstake(event: Unstake): void {
   entity.amount = event.params.amount
   entity.timestamp = event.block.timestamp
   entity.save()
+  // Track unstake NFTs per user
+  let userId = event.params.sender.toHex()
+  let user = User.load(userId)
+  if (user == null) {
+    user = new User(userId)
+    user.save()
+  }
+
+  let unstake = new MultiValidatorUnstake(event.params.unstakeID.toString())
+  unstake.user = user.id
+  unstake.lst = event.address.toHex()
+  unstake.claimed = false
+  unstake.save()
 }
 
 export function handleWithdraw(event: Withdraw): void {
@@ -144,4 +187,9 @@ export function handleWithdraw(event: Withdraw): void {
   entity.amount = event.params.amount
   entity.timestamp = event.block.timestamp
   entity.save()
+  let unstake = MultiValidatorUnstake.load(event.params.unstakeID.toString())
+  if (unstake) {
+    unstake.claimed = true
+    unstake.save()
+  }
 }

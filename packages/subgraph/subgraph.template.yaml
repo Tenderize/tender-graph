@@ -86,6 +86,8 @@ dataSources:
         - Unstake
         - Withdraw
         - Validator
+        - MultiValidatorUnstake
+        - User
       abis:
         - name: MultiValidatorLST
           file: ./abis/MultiValidatorLST.json

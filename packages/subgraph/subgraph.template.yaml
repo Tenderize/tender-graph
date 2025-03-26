@@ -8,7 +8,7 @@ dataSources:
     name: Registry
     network: '{{ networkName }}'
     source:
-      startBlock: {{ startBlock }} # Define start block
+      startBlock: { { startBlock } } # Define start block
       address: '0xa7cA8732Be369CaEaE8C230537Fc8EF82a3387EE' # Define deterministic Registry address here
       abi: Registry
     mapping:
@@ -31,7 +31,7 @@ dataSources:
     name: Unlocks
     network: '{{ networkName }}'
     source:
-      startBlock: {{ startBlock }} # Define start block
+      startBlock: { { startBlock } } # Define start block
       address: '0xb98c7e67f63d198BD96574073AD5B3427a835796' # Define deterministic Unlocks address here
       abi: Unlocks
     mapping:
@@ -52,7 +52,7 @@ dataSources:
     name: SwapFactory # Swap Factory
     network: '{{ networkName }}'
     source:
-      startBlock: {{ swapStartBlock }} # Define start block
+      startBlock: { { swapStartBlock } } # Define start block
       address: '{{ swapFactory }}' # Define deterministic Factory address here
       abi: SwapFactory
     mapping:
@@ -70,6 +70,46 @@ dataSources:
       eventHandlers:
         - event: SwapDeployed(address,address,address)
           handler: handleNewSwapPool
+  - kind: ethereum/contract
+    name: MultiValidatorLST
+    network: '{{ networkName }}'
+    source:
+      address: '{{ multiValidatorAddress }}'
+      abi: MultiValidatorLST
+      startBlock: { { multiValidatorStartBlock } } # Replace with actual deployment block
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      entities:
+        - Deposit
+        - Unstake
+        - Withdraw
+        - Validator
+      abis:
+        - name: MultiValidatorLST
+          file: ./abis/MultiValidatorLST.json
+      callHandlers:
+        - function: addValidator(address,uint200)
+          handler: handleAddValidator
+        - function: removeValidator(uint24)
+          handler: handleRemoveValidator
+        - function: updateTarget(uint24,uint200)
+          handler: handleUpdateTarget
+      eventHandlers:
+        - event: Deposit(indexed address,uint256,uint256)
+          handler: handleDeposit
+        - event: Unstake(indexed address,uint256,uint256,uint256)
+          handler: handleUnstake
+        - event: Withdraw(indexed address,uint256,uint256)
+          handler: handleWithdraw
+        - event: ValidatorAdded(uint256,address,uint256)
+          handler: handleValidatorAdded
+        - event: ValidatorRemoved(uint256)
+          handler: handleValidatorRemoved
+        - event: WeightsUpdated(uint256[],uint256[])
+          handler: handleWeightsUpdated
+      file: ./src/mappings/multivalidator.ts
 templates:
   - name: Tenderizer
     kind: ethereum/contract

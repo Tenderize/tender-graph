@@ -3,7 +3,7 @@
 import {
   Address,
   DataSourceTemplate,
-  DataSourceContext
+  DataSourceContext,
 } from "@graphprotocol/graph-ts";
 
 export class Tenderizer extends DataSourceTemplate {
@@ -15,7 +15,7 @@ export class Tenderizer extends DataSourceTemplate {
     DataSourceTemplate.createWithContext(
       "Tenderizer",
       [address.toHex()],
-      context
+      context,
     );
   }
 }
@@ -29,7 +29,7 @@ export class SwapPool extends DataSourceTemplate {
     DataSourceTemplate.createWithContext(
       "SwapPool",
       [address.toHex()],
-      context
+      context,
     );
   }
 }
@@ -43,7 +43,7 @@ export class SwapPoolToken extends DataSourceTemplate {
     DataSourceTemplate.createWithContext(
       "SwapPoolToken",
       [address.toHex()],
-      context
+      context,
     );
   }
 }
@@ -57,7 +57,7 @@ export class MultiValidatorLST extends DataSourceTemplate {
     DataSourceTemplate.createWithContext(
       "MultiValidatorLST",
       [address.toHex()],
-      context
+      context,
     );
   }
 }

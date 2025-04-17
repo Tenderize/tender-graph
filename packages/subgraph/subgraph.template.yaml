@@ -8,8 +8,8 @@ dataSources:
     name: Registry
     network: '{{ networkName }}'
     source:
-      startBlock: {{ startBlock }} # Define start block
-      address: '0xa7cA8732Be369CaEaE8C230537Fc8EF82a3387EE' # Define deterministic Registry address here
+      startBlock: {{ startBlock }}
+      address: '0xa7cA8732Be369CaEaE8C230537Fc8EF82a3387EE'
       abi: Registry
     mapping:
       kind: ethereum/events
@@ -27,12 +27,13 @@ dataSources:
       eventHandlers:
         - event: NewTenderizer(indexed address,indexed address,address)
           handler: handleNewTenderizer
+
   - kind: ethereum/contract
     name: Unlocks
     network: '{{ networkName }}'
     source:
-      startBlock: {{ startBlock }} # Define start block
-      address: '0xb98c7e67f63d198BD96574073AD5B3427a835796' # Define deterministic Unlocks address here
+      startBlock: {{ startBlock }}
+      address: '0xb98c7e67f63d198BD96574073AD5B3427a835796'
       abi: Unlocks
     mapping:
       kind: ethereum/events
@@ -48,12 +49,13 @@ dataSources:
       eventHandlers:
         - event: Transfer(indexed address,indexed address,indexed uint256)
           handler: handleUnlockTransfer
+
   - kind: ethereum/contract
-    name: SwapFactory # Swap Factory
+    name: SwapFactory
     network: '{{ networkName }}'
     source:
-      startBlock: {{ swapStartBlock }} # Define start block
-      address: '{{ swapFactory }}' # Define deterministic Factory address here
+      startBlock: {{ swapStartBlock }}
+      address: '{{ swapFactory }}'
       abi: SwapFactory
     mapping:
       kind: ethereum/events
@@ -70,17 +72,117 @@ dataSources:
       eventHandlers:
         - event: SwapDeployed(address,address,address)
           handler: handleNewSwapPool
+
   - kind: ethereum/contract
-    name: MultiValidatorLST
+    name: MultiValidatorFactory
     network: '{{ networkName }}'
     source:
-      address: '0xb98c7e67f63d198BD96574073AD5B3427a835796' #Todo: replace with real address ########
-      abi: MultiValidatorLST
-      startBlock: {{ multiValidatorStartBlock }} # Replace with actual deployment block
+      startBlock: {{ factoryStartBlock }}
+      address: '0x55a573db8010Fb8C9BeD65aD6f975dDe8A96494e'
+      abi: MultiValidatorFactory
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.7
       language: wasm/assemblyscript
+      file: ./src/mappings/multiValidatorFactory.ts
+      entities:
+        - MultiValidator
+      abis:
+        - name: MultiValidatorFactory
+          file: ./abis/MultiValidatorFactory.json
+      callHandlers:
+        - function: deploy(address)
+          handler: handleDeployCall
+
+templates:
+  - name: Tenderizer
+    kind: ethereum/contract
+    network: '{{ networkName }}'
+    source:
+      abi: Tenderizer
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      file: ./src/mappings/tenderizer.ts
+      entities:
+        - Asset
+        - Tenderizer
+        - Stake
+      abis:
+        - name: Tenderizer
+          file: ./abis/Tenderizer.json
+      eventHandlers:
+        - event: Deposit(indexed address,indexed address,uint256,uint256)
+          handler: handleDeposit
+        - event: Unlock(indexed address,uint256,uint256)
+          handler: handleUnlock
+        - event: Withdraw(indexed address,uint256,uint256)
+          handler: handleWithdraw
+        - event: Rebase(uint256,uint256)
+          handler: handleRebase
+        - event: Transfer(indexed address,indexed address,uint256)
+          handler: handleTransfer
+
+  - name: SwapPool
+    kind: ethereum/contract
+    network: '{{ networkName }}'
+    source:
+      abi: TenderSwap
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      file: ./src/mappings/tenderswap.ts
+      entities:
+        - SwapPool
+      abis:
+        - name: TenderSwap
+          file: ./abis/TenderSwap.json
+        - name: UniswapQuoter
+          file: ./abis/UniswapQuoter.json
+      eventHandlers:
+        - event: Swap(indexed address,indexed address,uint256,uint256,uint256)
+          handler: handleSwap
+        - event: Deposit(indexed address,uint256,uint256)
+          handler: handleSwapDeposit
+        - event: Withdraw(indexed address,uint256,uint256)
+          handler: handleSwapWithdraw
+        - event: UnlockBought(indexed address,uint256,uint256,uint256,uint256)
+          handler: handleSwapUnlockBought
+        - event: UnlockRedeemed(indexed address,uint256,uint256,uint256,uint256)
+          handler: handleSwapUnlockRedeemed
+
+  - name: SwapPoolToken
+    kind: ethereum/contract
+    network: '{{ networkName }}'
+    source:
+      abi: ERC20
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      file: ./src/mappings/tenderswap.ts
+      entities:
+        - SwapPool
+        - SwapLPTokenTransfer
+      abis:
+        - name: ERC20
+          file: ./abis/ERC20.json
+      eventHandlers:
+        - event: Transfer(indexed address,indexed address,uint256)
+          handler: handleSwapTokenTransfer
+
+  - name: MultiValidatorLST
+    kind: ethereum/contract
+    network: '{{ networkName }}'
+    source:
+      abi: MultiValidatorLST
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      file: ./src/mappings/multivalidator.ts
       entities:
         - Deposit
         - Unstake
@@ -114,80 +216,3 @@ dataSources:
           handler: handleValidatorRemoved
         - event: WeightsUpdated(uint256[],uint256[])
           handler: handleWeightsUpdated
-      file: ./src/mappings/multivalidator.ts
-templates:
-  - name: Tenderizer
-    kind: ethereum/contract
-    network: '{{ networkName }}'
-    source:
-      abi: Tenderizer
-    mapping:
-      kind: ethereum/events
-      apiVersion: 0.0.6
-      language: wasm/assemblyscript
-      file: ./src/mappings/tenderizer.ts
-      entities:
-        - Asset
-        - Tenderizer
-        - Stake
-      abis:
-        - name: Tenderizer
-          file: ./abis/Tenderizer.json
-      eventHandlers:
-        - event: Deposit(indexed address,indexed address,uint256,uint256)
-          handler: handleDeposit
-        - event: Unlock(indexed address,uint256,uint256)
-          handler: handleUnlock
-        - event: Withdraw(indexed address,uint256,uint256)
-          handler: handleWithdraw
-        - event: Rebase(uint256,uint256)
-          handler: handleRebase
-        - event: Transfer(indexed address,indexed address,uint256)
-          handler: handleTransfer
-  - name: SwapPool
-    kind: ethereum/contract
-    network: '{{ networkName }}'
-    source:
-      abi: TenderSwap
-    mapping:
-      kind: ethereum/events
-      apiVersion: 0.0.6
-      language: wasm/assemblyscript
-      file: ./src/mappings/tenderswap.ts
-      entities:
-        - SwapPool
-      abis:
-        - name: TenderSwap
-          file: ./abis/TenderSwap.json
-        - name: UniswapQuoter
-          file: ./abis/UniswapQuoter.json
-      eventHandlers:
-        - event: Swap(indexed address,indexed address,uint256,uint256,uint256)
-          handler: handleSwap
-        - event: Deposit(indexed address,uint256,uint256)
-          handler: handleSwapDeposit
-        - event: Withdraw(indexed address,uint256,uint256)
-          handler: handleSwapWithdraw
-        - event: UnlockBought(indexed address,uint256,uint256,uint256,uint256)
-          handler: handleSwapUnlockBought
-        - event: UnlockRedeemed(indexed address,uint256,uint256,uint256,uint256)
-          handler: handleSwapUnlockRedeemed
-  - name: SwapPoolToken
-    kind: ethereum/contract
-    network: '{{ networkName }}'
-    source:
-      abi: ERC20
-    mapping:
-      kind: ethereum/events
-      apiVersion: 0.0.6
-      language: wasm/assemblyscript
-      file: ./src/mappings/tenderswap.ts
-      entities:
-        - SwapPool
-        - SwapLPTokenTransfer
-      abis:
-        - name: ERC20
-          file: ./abis/ERC20.json
-      eventHandlers:
-        - event: Transfer(indexed address,indexed address,uint256)
-          handler: handleSwapTokenTransfer

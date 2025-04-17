@@ -1,19 +1,19 @@
 import { BigInt, Bytes } from '@graphprotocol/graph-ts'
 import {
-  Deposit,
-  Unstake,
-  ValidatorAdded,
-  ValidatorRemoved,
-  WeightsUpdated,
-  Withdraw,
-} from '../types/MultiValidatorLST/MultiValidatorLST'
-import {
   MultiValidatorDeposit as DepositEntity,
   MultiValidator,
   MultiValidatorUnstake as UnstakeEntity,
   User,
   MultiValidatorWithdraw as WithdrawEntity,
 } from '../types/schema'
+import {
+  Deposit,
+  Unstake,
+  ValidatorAdded,
+  ValidatorRemoved,
+  WeightsUpdated,
+  Withdraw,
+} from '../types/templates/MultiValidatorLST/MultiValidatorLST'
 
 export function handleValidatorAdded(event: ValidatorAdded): void {
   let id = event.params.id.toString()

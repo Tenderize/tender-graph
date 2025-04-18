@@ -4,11 +4,15 @@ import {
   MultiValidator,
   MultiValidatorUnstake as UnstakeEntity,
   User,
+  ValidatorAction,
   MultiValidatorWithdraw as WithdrawEntity,
 } from '../types/schema'
 import {
+  AddValidatorCall,
   Deposit,
+  RemoveValidatorCall,
   Unstake,
+  UpdateTargetCall,
   ValidatorAdded,
   ValidatorRemoved,
   WeightsUpdated,
@@ -90,4 +94,49 @@ export function handleWithdraw(event: Withdraw): void {
     unstake.claimed = true
     unstake.save()
   }
+}
+// The following functions are used to track validator actions call handlers
+
+export function handleAddValidator(call: AddValidatorCall): void {
+  const id = call.transaction.hash.toHex() + '-' + call.transaction.index.toString() + '-add'
+  const action = new ValidatorAction(id)
+
+  action.lst = call.to.toHex()
+  action.action = 'add'
+  action.validatorId = call.inputs.tToken.toHex()
+  action.target = call.inputs.target
+  action.timestamp = call.block.timestamp
+  action.blockNumber = call.block.number
+  action.transactionHash = call.transaction.hash.toHex()
+
+  action.save()
+}
+export function handleRemoveValidator(call: RemoveValidatorCall): void {
+  const id = call.transaction.hash.toHex() + '-' + call.transaction.index.toString() + '-remove'
+  const action = new ValidatorAction(id)
+
+  action.lst = call.to.toHex()
+  action.action = 'remove'
+  action.validatorId = call.inputs.id
+  action.target = BigInt.zero()
+  action.timestamp = call.block.timestamp
+  action.blockNumber = call.block.number
+  action.transactionHash = call.transaction.hash.toHex()
+
+  action.save()
+}
+
+export function handleUpdateTarget(call: UpdateTargetCall): void {
+  const id = call.transaction.hash.toHex() + '-' + call.transaction.index.toString() + '-update'
+  const action = new ValidatorAction(id)
+
+  action.lst = call.to.toHex()
+  action.action = 'update'
+  action.validatorId = call.inputs.id
+  action.target = call.inputs.target
+  action.timestamp = call.block.timestamp
+  action.blockNumber = call.block.number
+  action.transactionHash = call.transaction.hash.toHex()
+
+  action.save()
 }

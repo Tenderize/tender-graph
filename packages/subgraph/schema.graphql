@@ -355,3 +355,14 @@ type MultiValidatorWithdraw @entity {
   amount: BigInt!
   timestamp: BigInt!
 }
+
+type ValidatorAction @entity {
+  id: ID!
+  lst: String!
+  action: String! # "add", "remove", "update"
+  validatorId: String!
+  target: BigInt!
+  timestamp: BigInt!
+  blockNumber: BigInt!
+  transactionHash: String!
+}

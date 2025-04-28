@@ -77,12 +77,12 @@ dataSources:
     name: MultiValidatorFactory
     network: '{{ networkName }}'
     source:
-      startBlock: {{ factoryStartBlock }}
+      startBlock: {{ multiValidatorStartBlock }}
       address: '0x55a573db8010Fb8C9BeD65aD6f975dDe8A96494e'
       abi: MultiValidatorFactory
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.7
+      apiVersion: 0.0.6
       language: wasm/assemblyscript
       file: ./src/mappings/multiValidatorFactory.ts
       entities:
@@ -180,7 +180,7 @@ templates:
       abi: MultiValidatorLST
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.7
+      apiVersion: 0.0.6
       language: wasm/assemblyscript
       file: ./src/mappings/multivalidator.ts
       entities:

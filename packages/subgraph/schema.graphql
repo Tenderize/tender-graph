@@ -313,6 +313,11 @@ type LPToken @entity {
   pool: SwapPool!
 }
 
+type MultiValidatorLST @entity {
+  id: ID! # token address
+  treeSize: Int!
+}
+
 type MultiValidator @entity {
   id: ID!
   tToken: Bytes!
@@ -360,7 +365,7 @@ type ValidatorAction @entity {
   id: ID!
   lst: String!
   action: String! # "add", "remove", "update"
-  validatorId: String!
+  validatorId: Int!
   target: BigInt!
   timestamp: BigInt!
   blockNumber: BigInt!

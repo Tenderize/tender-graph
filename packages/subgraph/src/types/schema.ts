@@ -2876,6 +2876,63 @@ export class LPToken extends Entity {
   }
 }
 
+export class MultiValidatorLST extends Entity {
+  constructor(id: string) {
+    super();
+    this.set("id", Value.fromString(id));
+  }
+
+  save(): void {
+    let id = this.get("id");
+    assert(id != null, "Cannot save MultiValidatorLST entity without an ID");
+    if (id) {
+      assert(
+        id.kind == ValueKind.STRING,
+        `Entities of type MultiValidatorLST must have an ID of type String but the id '${id.displayData()}' is of type ${id.displayKind()}`
+      );
+      store.set("MultiValidatorLST", id.toString(), this);
+    }
+  }
+
+  static loadInBlock(id: string): MultiValidatorLST | null {
+    return changetype<MultiValidatorLST | null>(
+      store.get_in_block("MultiValidatorLST", id)
+    );
+  }
+
+  static load(id: string): MultiValidatorLST | null {
+    return changetype<MultiValidatorLST | null>(
+      store.get("MultiValidatorLST", id)
+    );
+  }
+
+  get id(): string {
+    let value = this.get("id");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toString();
+    }
+  }
+
+  set id(value: string) {
+    this.set("id", Value.fromString(value));
+  }
+
+  get treeSize(): i32 {
+    let value = this.get("treeSize");
+    if (!value || value.kind == ValueKind.NULL) {
+      return 0;
+    } else {
+      return value.toI32();
+    }
+  }
+
+  set treeSize(value: i32) {
+    this.set("treeSize", Value.fromI32(value));
+  }
+}
+
 export class MultiValidator extends Entity {
   constructor(id: string) {
     super();
@@ -3469,17 +3526,17 @@ export class ValidatorAction extends Entity {
     this.set("action", Value.fromString(value));
   }
 
-  get validatorId(): string {
+  get validatorId(): i32 {
     let value = this.get("validatorId");
     if (!value || value.kind == ValueKind.NULL) {
-      throw new Error("Cannot return null for a required field.");
+      return 0;
     } else {
-      return value.toString();
+      return value.toI32();
     }
   }
 
-  set validatorId(value: string) {
-    this.set("validatorId", Value.fromString(value));
+  set validatorId(value: i32) {
+    this.set("validatorId", Value.fromI32(value));
   }
 
   get target(): BigInt {

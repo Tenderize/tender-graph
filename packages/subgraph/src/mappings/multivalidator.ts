@@ -2,6 +2,7 @@ import { BigInt, Bytes } from '@graphprotocol/graph-ts'
 import {
   MultiValidatorDeposit as DepositEntity,
   MultiValidator,
+  MultiValidatorLST,
   MultiValidatorUnstake as UnstakeEntity,
   User,
   ValidatorAction,
@@ -101,15 +102,21 @@ export function handleAddValidator(call: AddValidatorCall): void {
   const id = call.transaction.hash.toHex() + '-' + call.transaction.index.toString() + '-add'
   const action = new ValidatorAction(id)
 
+  const lst = MultiValidatorLST.load(call.to.toHex())
+  if (lst == null) return;
+
   action.lst = call.to.toHex()
   action.action = 'add'
-  action.validatorId = call.inputs.tToken.toHex()
+  action.validatorId = lst.treeSize
   action.target = call.inputs.target
   action.timestamp = call.block.timestamp
   action.blockNumber = call.block.number
   action.transactionHash = call.transaction.hash.toHex()
 
   action.save()
+
+  lst.treeSize = lst.treeSize + 1
+  lst.save()
 }
 export function handleRemoveValidator(call: RemoveValidatorCall): void {
   const id = call.transaction.hash.toHex() + '-' + call.transaction.index.toString() + '-remove'

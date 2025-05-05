@@ -1,12 +1,12 @@
 import { BigInt, Bytes } from '@graphprotocol/graph-ts'
 import {
-  MultiValidatorDeposit as DepositEntity,
   MultiValidator,
+  MultiValidatorDeposit,
   MultiValidatorLST,
-  MultiValidatorUnstake as UnstakeEntity,
+  MultiValidatorUnstake,
+  MultiValidatorWithdraw,
   User,
   ValidatorAction,
-  MultiValidatorWithdraw as WithdrawEntity,
 } from '../types/schema'
 import {
   AddValidatorCall,
@@ -54,58 +54,72 @@ export function handleWeightsUpdated(event: WeightsUpdated): void {
 }
 
 export function handleDeposit(event: Deposit): void {
-  let entity = new DepositEntity(event.transaction.hash.toHex() + '-' + event.logIndex.toString())
-  entity.sender = event.params.sender
-  entity.amount = event.params.amount
-  entity.shares = event.params.shares
-  entity.timestamp = event.block.timestamp
-  entity.save()
+  const id = event.transaction.hash.toHex() + '-' + event.logIndex.toString()
+  const deposit = new MultiValidatorDeposit(id)
+
+  deposit.sender = event.params.sender
+  deposit.amount = event.params.amount
+  deposit.shares = event.params.shares
+  deposit.timestamp = event.block.timestamp
+
+  deposit.save()
 }
 
 export function handleUnstake(event: Unstake): void {
-  let entity = new UnstakeEntity(event.transaction.hash.toHex() + '-' + event.logIndex.toString())
-  entity.sender = event.params.sender
-  entity.unstakeID = event.params.unstakeID
-  entity.timestamp = event.block.timestamp
-  entity.save()
-  // Track unstake NFTs per user
-  let userId = event.params.sender.toHex()
+  const id = event.transaction.hash.toHex() + '-' + event.logIndex.toString()
+
+  // Create or load user
+  const userId = event.params.sender.toHex()
   let user = User.load(userId)
-  if (user == null) {
+  if (user === null) {
     user = new User(userId)
     user.save()
   }
 
-  let unstake = new UnstakeEntity(event.params.unstakeID.toString())
+  // Create MultiValidatorUnstake entity
+  const unstake = new MultiValidatorUnstake(id)
   unstake.user = user.id
+  unstake.sender = event.params.sender
+  unstake.amount = event.params.amount
+  unstake.shares = event.params.shares
+  unstake.unstakeID = event.params.unstakeID
   unstake.lst = event.address.toHex()
+  unstake.timestamp = event.block.timestamp
   unstake.claimed = false
+
   unstake.save()
 }
 
 export function handleWithdraw(event: Withdraw): void {
-  let entity = new WithdrawEntity(event.transaction.hash.toHex() + '-' + event.logIndex.toString())
-  entity.sender = event.params.sender
-  entity.unstakeID = event.params.unstakeID
-  entity.amount = event.params.amount
-  entity.timestamp = event.block.timestamp
-  entity.save()
-  let unstake = UnstakeEntity.load(event.params.unstakeID.toString())
-  if (unstake) {
+  const id = event.transaction.hash.toHex() + '-' + event.logIndex.toString()
+
+  const withdraw = new MultiValidatorWithdraw(id)
+  withdraw.sender = event.params.sender
+  withdraw.unstakeID = event.params.unstakeID
+  withdraw.amount = event.params.amount
+  withdraw.timestamp = event.block.timestamp
+  withdraw.save()
+
+  const unstakeId = event.params.unstakeID.toString()
+  const unstake = MultiValidatorUnstake.load(unstakeId)
+
+  if (unstake !== null) {
     unstake.claimed = true
     unstake.save()
   }
 }
+
 // The following functions are used to track validator actions call handlers
 
 export function handleAddValidator(call: AddValidatorCall): void {
   const id = call.transaction.hash.toHex() + '-' + call.transaction.index.toString() + '-add'
   const action = new ValidatorAction(id)
 
-  const lst = MultiValidatorLST.load(call.to.toHex())
-  if (lst == null) return;
+  const lstId = call.to.toHex()
+  const lst = MultiValidatorLST.load(lstId)
+  if (lst == null) return
 
-  action.lst = call.to.toHex()
+  action.lst = lstId
   action.action = 'add'
   action.validatorId = lst.treeSize
   action.target = call.inputs.target

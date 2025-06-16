@@ -57,7 +57,9 @@ export function handleDeposit(event: Deposit): void {
   const id = event.transaction.hash.toHex() + '-' + event.logIndex.toString()
   const deposit = new MultiValidatorDeposit(id)
 
+  deposit.lst = event.address.toHex()
   deposit.sender = event.params.sender
+  deposit.user = event.params.sender.toHex() // Assuming the sender is the user
   deposit.amount = event.params.amount
   deposit.shares = event.params.shares
   deposit.timestamp = event.block.timestamp
@@ -66,7 +68,7 @@ export function handleDeposit(event: Deposit): void {
 }
 
 export function handleUnstake(event: Unstake): void {
-  const id = event.transaction.hash.toHex() + '-' + event.logIndex.toString()
+  const id = event.address.toHex() + "." + event.params.unstakeID.toString()
 
   // Create or load user
   const userId = event.params.sender.toHex()
@@ -94,13 +96,15 @@ export function handleWithdraw(event: Withdraw): void {
   const id = event.transaction.hash.toHex() + '-' + event.logIndex.toString()
 
   const withdraw = new MultiValidatorWithdraw(id)
+  withdraw.lst = event.address.toHex()
   withdraw.sender = event.params.sender
+  withdraw.user = event.params.sender.toHex() // Assuming the sender is the user
   withdraw.unstakeID = event.params.unstakeID
   withdraw.amount = event.params.amount
   withdraw.timestamp = event.block.timestamp
   withdraw.save()
 
-  const unstakeId = event.params.unstakeID.toString()
+  const unstakeId = event.address.toHex() + "." + event.params.unstakeID.toString()
   const unstake = MultiValidatorUnstake.load(unstakeId)
 
   if (unstake !== null) {

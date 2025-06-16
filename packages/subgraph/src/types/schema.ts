@@ -3307,6 +3307,19 @@ export class MultiValidatorDeposit extends Entity {
     this.set("id", Value.fromString(value));
   }
 
+  get lst(): string {
+    let value = this.get("lst");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toString();
+    }
+  }
+
+  set lst(value: string) {
+    this.set("lst", Value.fromString(value));
+  }
+
   get sender(): Bytes {
     let value = this.get("sender");
     if (!value || value.kind == ValueKind.NULL) {
@@ -3318,6 +3331,19 @@ export class MultiValidatorDeposit extends Entity {
 
   set sender(value: Bytes) {
     this.set("sender", Value.fromBytes(value));
+  }
+
+  get user(): string {
+    let value = this.get("user");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toString();
+    }
+  }
+
+  set user(value: string) {
+    this.set("user", Value.fromString(value));
   }
 
   get amount(): BigInt {
@@ -3406,6 +3432,19 @@ export class MultiValidatorWithdraw extends Entity {
     this.set("id", Value.fromString(value));
   }
 
+  get lst(): string {
+    let value = this.get("lst");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toString();
+    }
+  }
+
+  set lst(value: string) {
+    this.set("lst", Value.fromString(value));
+  }
+
   get sender(): Bytes {
     let value = this.get("sender");
     if (!value || value.kind == ValueKind.NULL) {
@@ -3417,6 +3456,19 @@ export class MultiValidatorWithdraw extends Entity {
 
   set sender(value: Bytes) {
     this.set("sender", Value.fromBytes(value));
+  }
+
+  get user(): string {
+    let value = this.get("user");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toString();
+    }
+  }
+
+  set user(value: string) {
+    this.set("user", Value.fromString(value));
   }
 
   get unstakeID(): BigInt {

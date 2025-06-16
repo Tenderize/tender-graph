@@ -347,7 +347,9 @@ type MultiValidatorUnstake @entity {
 
 type MultiValidatorDeposit @entity {
   id: ID!
+  lst: String!
   sender: Bytes!
+  user: User!
   amount: BigInt!
   shares: BigInt!
   timestamp: BigInt!
@@ -355,7 +357,9 @@ type MultiValidatorDeposit @entity {
 
 type MultiValidatorWithdraw @entity {
   id: ID!
+  lst: String!
   sender: Bytes!
+  user: User!
   unstakeID: BigInt!
   amount: BigInt!
   timestamp: BigInt!

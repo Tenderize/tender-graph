@@ -196,13 +196,6 @@ templates:
       abis:
         - name: MultiValidatorLST
           file: ./abis/MultiValidatorLST.json
-      callHandlers:
-        - function: addValidator(address,uint200)
-          handler: handleAddValidator
-        - function: removeValidator(uint24)
-          handler: handleRemoveValidator
-        - function: updateTarget(uint24,uint200)
-          handler: handleUpdateTarget
       eventHandlers:
         - event: Deposit(indexed address,uint256,uint256)
           handler: handleDeposit

@@ -1,19 +1,19 @@
 import { BigInt, Bytes } from '@graphprotocol/graph-ts'
 import {
-  MultiValidator,
-  MultiValidatorDeposit,
-  MultiValidatorUnstake,
-  MultiValidatorWithdraw,
-  User,
-} from '../types/schema'
-import {
   Deposit,
   Unstake,
   ValidatorAdded,
   ValidatorRemoved,
   WeightsUpdated,
   Withdraw,
-} from '../types/templates/MultiValidatorLST/MultiValidatorLST'
+} from '../types/MultiValidatorLST_Livepeer/MultiValidatorLST'
+import {
+  MultiValidator,
+  MultiValidatorDeposit,
+  MultiValidatorUnstake,
+  MultiValidatorWithdraw,
+  User,
+} from '../types/schema'
 
 export function handleValidatorAdded(event: ValidatorAdded): void {
   let id = event.params.id.toString()
@@ -63,7 +63,7 @@ export function handleDeposit(event: Deposit): void {
 }
 
 export function handleUnstake(event: Unstake): void {
-  const id = event.address.toHex() + "." + event.params.unstakeID.toString()
+  const id = event.address.toHex() + '.' + event.params.unstakeID.toString()
 
   // Create or load user
   const userId = event.params.sender.toHex()
@@ -99,7 +99,7 @@ export function handleWithdraw(event: Withdraw): void {
   withdraw.timestamp = event.block.timestamp
   withdraw.save()
 
-  const unstakeId = event.address.toHex() + "." + event.params.unstakeID.toString()
+  const unstakeId = event.address.toHex() + '.' + event.params.unstakeID.toString()
   const unstake = MultiValidatorUnstake.load(unstakeId)
 
   if (unstake !== null) {

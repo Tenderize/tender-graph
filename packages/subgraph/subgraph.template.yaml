@@ -73,26 +73,85 @@ dataSources:
         - event: SwapDeployed(address,address,address)
           handler: handleNewSwapPool
 
+{{#ifEquals networkName "arbitrum-one"}}
   - kind: ethereum/contract
-    name: MultiValidatorFactory
+    name: MultiValidatorLST_Livepeer
     network: '{{ networkName }}'
     source:
-      startBlock: {{ multiValidatorStartBlock }}
-      address: '0x55a573db8010Fb8C9BeD65aD6f975dDe8A96494e'
-      abi: MultiValidatorFactory
+      startBlock: {{ multiLivepeerStartBlock }}
+      address: '0x388b0faf9de300ffc21e3dc849202544901792cb'
+      abi: MultiValidatorLST
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6
       language: wasm/assemblyscript
-      file: ./src/mappings/multiValidatorFactory.ts
+      file: ./src/mappings/multivalidator.ts
       entities:
+        - Deposit
+        - Unstake
+        - Withdraw
         - MultiValidator
+        - MultiValidatorUnstake
+        - MultiValidatorStake
+        - MultiValidatorDeposit
+        - MultiValidatorWithdraw
+        - User
       abis:
-        - name: MultiValidatorFactory
-          file: ./abis/MultiValidatorFactory.json
-      callHandlers:
-        - function: deploy(address)
-          handler: handleDeployCall
+        - name: MultiValidatorLST
+          file: ./abis/MultiValidatorLST.json
+      eventHandlers:
+        - event: Deposit(indexed address,uint256,uint256)
+          handler: handleDeposit
+        - event: Unstake(indexed address,uint256,uint256,uint256)
+          handler: handleUnstake
+        - event: Withdraw(indexed address,uint256,uint256)
+          handler: handleWithdraw
+        - event: ValidatorAdded(indexed uint256,address,uint256)
+          handler: handleValidatorAdded
+        - event: ValidatorRemoved(indexed uint256)
+          handler: handleValidatorRemoved
+        - event: WeightsUpdated(uint256[],uint256[])
+          handler: handleWeightsUpdated
+
+  - kind: ethereum/contract
+    name: MultiValidatorLST_Graph
+    network: '{{ networkName }}'
+    source:
+      startBlock: {{ multiGraphStartBlock }}
+      address: '0x9f5540f4a9777ea678d80a7b508dcd924a4b1187'
+      abi: MultiValidatorLST
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      file: ./src/mappings/multivalidator.ts
+      entities:
+        - Deposit
+        - Unstake
+        - Withdraw
+        - MultiValidator
+        - MultiValidatorUnstake
+        - MultiValidatorStake
+        - MultiValidatorDeposit
+        - MultiValidatorWithdraw
+        - User
+      abis:
+        - name: MultiValidatorLST
+          file: ./abis/MultiValidatorLST.json
+      eventHandlers:
+        - event: Deposit(indexed address,uint256,uint256)
+          handler: handleDeposit
+        - event: Unstake(indexed address,uint256,uint256,uint256)
+          handler: handleUnstake
+        - event: Withdraw(indexed address,uint256,uint256)
+          handler: handleWithdraw
+        - event: ValidatorAdded(indexed uint256,address,uint256)
+          handler: handleValidatorAdded
+        - event: ValidatorRemoved(indexed uint256)
+          handler: handleValidatorRemoved
+        - event: WeightsUpdated(uint256[],uint256[])
+          handler: handleWeightsUpdated
+{{/ifEquals}}
 
 templates:
   - name: Tenderizer
@@ -172,40 +231,3 @@ templates:
       eventHandlers:
         - event: Transfer(indexed address,indexed address,uint256)
           handler: handleSwapTokenTransfer
-
-  - name: MultiValidatorLST
-    kind: ethereum/contract
-    network: '{{ networkName }}'
-    source:
-      abi: MultiValidatorLST
-    mapping:
-      kind: ethereum/events
-      apiVersion: 0.0.6
-      language: wasm/assemblyscript
-      file: ./src/mappings/multivalidator.ts
-      entities:
-        - Deposit
-        - Unstake
-        - Withdraw
-        - MultiValidator
-        - MultiValidatorUnstake
-        - MultiValidatorStake
-        - MultiValidatorDeposit
-        - MultiValidatorWithdraw
-        - User
-      abis:
-        - name: MultiValidatorLST
-          file: ./abis/MultiValidatorLST.json
-      eventHandlers:
-        - event: Deposit(indexed address,uint256,uint256)
-          handler: handleDeposit
-        - event: Unstake(indexed address,uint256,uint256,uint256)
-          handler: handleUnstake
-        - event: Withdraw(indexed address,uint256,uint256)
-          handler: handleWithdraw
-        - event: ValidatorAdded(indexed uint256,address,uint256)
-          handler: handleValidatorAdded
-        - event: ValidatorRemoved(indexed uint256)
-          handler: handleValidatorRemoved
-        - event: WeightsUpdated(uint256[],uint256[])
-          handler: handleWeightsUpdated

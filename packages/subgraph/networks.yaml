@@ -9,6 +9,8 @@ arbitrum-one:
   swapFactory: '0xac273c1187ddf51e2e57fa71e85ba0924bfb7bb6'
   swapStartBlock: 201228435
   multiValidatorStartBlock: 327284040
+  multiLivepeerStartBlock: 330165177
+  multiGraphStartBlock: 330146021
 localhost:
   networkName: localhost
   startBlock: 19427276

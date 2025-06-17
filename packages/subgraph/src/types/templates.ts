@@ -47,17 +47,3 @@ export class SwapPoolToken extends DataSourceTemplate {
     );
   }
 }
-
-export class MultiValidatorLST extends DataSourceTemplate {
-  static create(address: Address): void {
-    DataSourceTemplate.create("MultiValidatorLST", [address.toHex()]);
-  }
-
-  static createWithContext(address: Address, context: DataSourceContext): void {
-    DataSourceTemplate.createWithContext(
-      "MultiValidatorLST",
-      [address.toHex()],
-      context
-    );
-  }
-}

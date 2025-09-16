@@ -312,3 +312,66 @@ type LPToken @entity {
   id: ID! # LP token address
   pool: SwapPool!
 }
+
+type MultiValidatorLST @entity {
+  id: ID! # token address
+  treeSize: Int!
+}
+
+type MultiValidator @entity {
+  id: ID!
+  tToken: Bytes!
+  target: BigInt!
+  balance: BigInt!
+}
+
+type MultiValidatorStake @entity {
+  id: ID!
+  user: User!
+  lst: Bytes!
+  amount: BigInt!
+  claimed: Boolean!
+}
+
+type MultiValidatorUnstake @entity {
+  id: ID!
+  user: User!
+  claimed: Boolean!
+  sender: Bytes!
+  amount: BigInt!
+  timestamp: BigInt!
+  shares: BigInt!
+  unstakeID: BigInt!
+  lst: String!
+}
+
+type MultiValidatorDeposit @entity {
+  id: ID!
+  lst: String!
+  sender: Bytes!
+  user: User!
+  amount: BigInt!
+  shares: BigInt!
+  timestamp: BigInt!
+}
+
+type MultiValidatorWithdraw @entity {
+  id: ID!
+  lst: String!
+  sender: Bytes!
+  user: User!
+  unstakeID: BigInt!
+  amount: BigInt!
+  timestamp: BigInt!
+}
+
+type ValidatorAction @entity {
+  id: ID!
+  lst: String!
+  action: String! # "add", "remove", "update"
+  validatorId: Int!
+  target: BigInt!
+  timestamp: BigInt!
+  blockNumber: BigInt!
+  transactionHash: String!
+}

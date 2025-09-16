@@ -9,7 +9,7 @@ dataSources:
     network: '{{ networkName }}'
     source:
       startBlock: {{ startBlock }}
-      address: '0xa7cA8732Be369CaEaE8C230537Fc8EF82a3387EE'
+      address: '{{ registry }}'
       abi: Registry
     mapping:
       kind: ethereum/events
@@ -33,7 +33,7 @@ dataSources:
     network: '{{ networkName }}'
     source:
       startBlock: {{ startBlock }}
-      address: '0xb98c7e67f63d198BD96574073AD5B3427a835796'
+      address: '{{ unlocks }}'
       abi: Unlocks
     mapping:
       kind: ethereum/events

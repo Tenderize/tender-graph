@@ -1,16 +1,28 @@
 mainnet:
   networkName: mainnet
   startBlock: 19115200
+  registry: '0xa7cA8732Be369CaEaE8C230537Fc8EF82a3387EE'
+  unlocks: '0xb98c7e67f63d198BD96574073AD5B3427a835796'
   swapFactory: '0xcB78EbD81D08df037973Afd70D7FeF7b6b0C6B06'
   swapStartBlock: 19660555
 arbitrum-one:
   networkName: arbitrum-one
   startBlock: 175531000
+  registry: '0xa7cA8732Be369CaEaE8C230537Fc8EF82a3387EE'
+  unlocks: '0xb98c7e67f63d198BD96574073AD5B3427a835796'
   swapFactory: '0xac273c1187ddf51e2e57fa71e85ba0924bfb7bb6'
   swapStartBlock: 201228435
   multiValidatorStartBlock: 327284040
   multiLivepeerStartBlock: 330165177
   multiGraphStartBlock: 330146021
+sei:
+  networkName: sei-network
+  startBlock: 1
+  registry: '0x66a8921FbaAED0ECac453103Dd7B82D8879734d0'
+  unlocks: '0xFEE26F753cb7978a6899b0a343D5f5a3C7a11414'
+  swapFactory: '0xac273c1187ddf51e2e57fa71e85ba0924bfb7bb6'
+  swapStartBlock: 201228435
+  multiValidatorStartBlock: 327284040
 localhost:
   networkName: localhost
   startBlock: 19427276

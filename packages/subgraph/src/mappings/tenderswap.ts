@@ -16,6 +16,7 @@ import {
   Swap as SwapEmitted,
   UnlockBought as UnlockBoughtEmitted,
   UnlockRedeemed as UnlockRedeemedEmitted,
+  TenderSwap,
 } from '../types/templates/SwapPool/TenderSwap'
 import { Transfer as SwapTokenTransferEmitted } from '../types/templates/SwapPoolToken/ERC20'
 import { Address, BigInt } from '@graphprotocol/graph-ts'
@@ -42,6 +43,21 @@ const initiatePoolDay = (pool: SwapPool, dayID: BigInt): SwapPoolDay => {
   poolDay.treasuryCutUSD = BD_ZERO
 
   return poolDay
+}
+
+function checkOnChainLiabilities(poolAddress: Address, expectedLiabilities: BigInt): void {
+  let contract = TenderSwap.bind(poolAddress)
+  let onChainLiabilities = contract.try_liabilities()
+
+  if (!onChainLiabilities.reverted) {
+    if (!onChainLiabilities.value.equals(expectedLiabilities)) {
+      log.warning('LIABILITY MISMATCH: Pool {} - OnChain: {}, Subgraph: {}', [
+        poolAddress.toHex(),
+        onChainLiabilities.value.toString(),
+        expectedLiabilities.toString()
+      ])
+    }
+  }
 }
 
 export function handleSwap(event: SwapEmitted): void {
@@ -84,6 +100,12 @@ export function handleSwapUnlockBought(event: UnlockBoughtEmitted): void {
   let pool = SwapPool.load(event.address.toHex())
   if (pool == null) return
 
+  log.info('UNLOCK_BOUGHT: Pool {} liabilities BEFORE: {}, adding lpFees: {}', [
+    pool.id,
+    pool.liabilities.toString(),
+    event.params.lpFees.toString()
+  ])
+
   const usdPrice = getUsdPrice(Address.fromString(pool.asset))
   const lpRewardsInUSD = usdPrice.times(convertToDecimal(event.params.lpFees))
   const treasuryCut = event.params.amount.minus(event.params.lpFees).minus(event.params.reward)
@@ -95,6 +117,10 @@ export function handleSwapUnlockBought(event: UnlockBoughtEmitted): void {
   pool.treasuryCut = pool.treasuryCut.plus(treasuryCut)
   pool.treasuryCutUSD = pool.treasuryCutUSD.plus(treasuryCutInUSD)
   pool.liabilities = pool.liabilities.plus(event.params.lpFees)
+
+  log.info('UNLOCK_BOUGHT: Pool {} liabilities AFTER: {}', [pool.id, pool.liabilities.toString()])
+  checkOnChainLiabilities(event.address, pool.liabilities)
+
   let dayID = calculateDayID(event.block.timestamp)
   let poolDay = SwapPoolDay.load(pool.id.concat('-').concat(dayID.toString()))
   if (poolDay == null) poolDay = initiatePoolDay(pool, dayID)
@@ -111,6 +137,12 @@ export function handleSwapUnlockRedeemed(event: UnlockRedeemedEmitted): void {
   let pool = SwapPool.load(event.address.toHex())
   if (pool == null) return
 
+  log.info('UNLOCK_REDEEMED: Pool {} liabilities BEFORE: {}, adding lpFees: {}', [
+    pool.id,
+    pool.liabilities.toString(),
+    event.params.lpFees.toString()
+  ])
+
   const usdPrice = getUsdPrice(Address.fromString(pool.asset))
   const lpRewardsInUSD = usdPrice.times(convertToDecimal(event.params.lpFees))
 
@@ -123,6 +155,10 @@ export function handleSwapUnlockRedeemed(event: UnlockRedeemedEmitted): void {
   pool.treasuryCut = pool.treasuryCut.plus(treasuryCut)
   pool.treasuryCutUSD = pool.treasuryCutUSD.plus(treasuryCutInUSD)
   pool.liabilities = pool.liabilities.plus(event.params.lpFees)
+
+  log.info('UNLOCK_REDEEMED: Pool {} liabilities AFTER: {}', [pool.id, pool.liabilities.toString()])
+  checkOnChainLiabilities(event.address, pool.liabilities)
+
   let dayID = calculateDayID(event.block.timestamp)
   let poolDay = SwapPoolDay.load(pool.id.concat('-').concat(dayID.toString()))
   if (poolDay == null) poolDay = initiatePoolDay(pool, dayID)
@@ -139,8 +175,17 @@ export function handleSwapDeposit(event: DepositEmitted): void {
   let pool = SwapPool.load(event.address.toHex())
   if (pool == null) return
 
+  log.info('DEPOSIT: Pool {} liabilities BEFORE: {}, adding: {}', [
+    pool.id,
+    pool.liabilities.toString(),
+    event.params.amount.toString()
+  ])
+
   pool.totalSupply = pool.totalSupply.plus(event.params.lpSharesMinted)
   pool.liabilities = pool.liabilities.plus(event.params.amount)
+
+  log.info('DEPOSIT: Pool {} liabilities AFTER: {}', [pool.id, pool.liabilities.toString()])
+  checkOnChainLiabilities(event.address, pool.liabilities)
 
   let dayID = calculateDayID(event.block.timestamp)
   let poolDay = SwapPoolDay.load(pool.id.concat('-').concat(dayID.toString()))
@@ -182,15 +227,26 @@ export function handleSwapWithdraw(event: WithdrawEmitted): void {
   let pool = SwapPool.load(event.address.toHex())
   if (pool == null) return
 
+  log.info('WITHDRAW: Pool {} liabilities BEFORE: {}, subtracting: {}', [
+    pool.id,
+    pool.liabilities.toString(),
+    event.params.amount.toString()
+  ])
+
   let totalSupply = pool.totalSupply
+  let liabilitiesBefore = pool.liabilities
   pool.totalSupply = pool.totalSupply.minus(event.params.lpSharesBurnt)
   pool.liabilities = pool.liabilities.minus(event.params.amount)
+
+  log.info('WITHDRAW: Pool {} liabilities AFTER: {}', [pool.id, pool.liabilities.toString()])
+  checkOnChainLiabilities(event.address, pool.liabilities)
+
   let user = event.params.to.toHex()
   let lp = LiquidityPosition.load(user.concat('-').concat(pool.id))
   if (lp == null) {
     log.debug('Liquidity Position not found with id: {}', [user.concat('-').concat(pool.id)])
   } else {
-    let bal = lp.shares.times(pool.liabilities).div(totalSupply)
+    let bal = lp.shares.times(liabilitiesBefore).div(totalSupply)
     let amount = event.params.amount
     if (bal.minus(lp.netDeposits).lt(amount)) {
       // if rewards less than amount, set net deposits
